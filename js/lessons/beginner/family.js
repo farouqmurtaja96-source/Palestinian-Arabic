@@ -42,7 +42,7 @@ export const lesson = {
             {
                 id: "ahl",
                 ar: "أَهْل",
-                en: "family / parents (household)",
+                en: " parents",
                 enArabeezy: "ahl",
                 hint:
                     "أَهْل can mean ‘family’ or specifically ‘parents’. أَهْلِي = my family / my parents.",
@@ -589,14 +589,22 @@ Add the suffix to show who owns it.`,
                     ["ـك", "-ak/-ik", "your", "بيتك/بيتكِ"],
                     ["ـه", "-o", "his", "أبوه"],
                     ["ـها", "-ha", "her", "أمها"],
+                     ["ـنا", "-na", "our", "بَيْتْنَا"],
+                      ["ـكم", "-kum", "your (plural)", "بَيْتْكُم"],
+                    ["ـهم", "-hom", "their", "أُمَّهُمْ"]
                 ]
             },
             examples: [
-                { ar: "هذا بيتي", arabeezy: "haada beeti", en: "This is my house." },
-                { ar: "وين أمك؟", arabeezy: "ween ommak?", en: "Where is your mother?" },
-                { ar: "أخوه ساكن معنا", arabeezy: "akh-o saaken ma3na", en: "His brother lives with us." },
-                { ar: "أختها بالجامعة", arabeezy: "okht-ha bel-jaam3a", en: "Her sister is at the university." },
-                { ar: "صديقي من غزة", arabeezy: "Sadee2i min ghazze", en: "My friend is from Gaza." }
+              { ar: "هذا بيتنا", arabeezy: "haada beetna", en: "This is our house." },
+{ ar: "وين أبوك؟", arabeezy: "ween abook?", en: "Where is your father?" },
+{ ar: "أختي تعبانة اليوم", arabeezy: "okhti ta3baaneh el-yom", en: "My sister is tired today." },
+{ ar: "أخوها بالبيت", arabeezy: "akhoha bel-beet", en: "Her brother is at home." },
+{ ar: "أمهم في السوق", arabeezy: "omhom fis-soo2", en: "Their mother is at the market." },
+{ ar: "صديقنا ساكن هون", arabeezy: "sadee2na saaken hon", en: "Our friend lives here." },
+{ ar: "وين بيتكم؟", arabeezy: "ween beetkom?", en: "Where is your (plural) house?" },
+{ ar: "أستاذهم مبسوط", arabeezy: "ostazhom mabsut", en: "Their teacher is happy." },
+{ ar: "سيارتي جديدة", arabeezy: "sayyaarti jdeedeh", en: "My car is new." },
+{ ar: "مدرستها قريبة", arabeezy: "madrastha 2areebeh", en: "Her school is close." }
             ],
             teacherNotes:
                 `Spoken uses short suffixes more than MSA forms.
