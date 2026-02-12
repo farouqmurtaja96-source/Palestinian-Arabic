@@ -1,266 +1,250 @@
-﻿import { LESSON_ID_GREETING } from '../../core/constants.js';
+import { LESSON_ID_GREETING } from '../../core/constants.js';
 
 export const dialogueId = 'BD::' + LESSON_ID_GREETING;
+
 export const dialogue = {
-  meta: { level: 'Beginner', unit: 'Greetings', title: 'Greetings - Decisions' },
-  startNodeId: 's1',
+  meta: {
+    level: 'Beginner',
+    unit: 'Greetings',
+    title: 'Greetings - Office Reception Decisions',
+    emotionalTracking: true,
+    tensionCurve: true,
+    trapLayering: true,
+    setting: 'Workplace',
+  },
+  startNodeId: 'g1',
   nodes: {
-    s1: {
+    g1: {
+      id: 'g1',
+      speaker: 'Noor',
+      ar: 'صباح الخير يا أحمد. أول يوم إلك بالمكتب؟',
+      en: 'Good morning Ahmed. Is this your first day in the office?',
+      arZ: 'Saba7 el-kheir ya Ahmed. Awwal yom elk bel-maktab?',
+      state: 'neutral',
+      tension: 1,
+      choices: [
+        { id: 'g1_sup', ar: 'صباح النور. آه أول يوم، متحمس.', en: 'Good morning. Yes first day, excited.', arZ: 'Saba7 el-noor. Ah awwal yom, mte7ammes.', next: 'g2' },
+        { id: 'g1_neu', ar: 'صباح النور. آه، أول يوم.', en: 'Good morning. Yes, first day.', arZ: 'Saba7 el-noor. Ah, awwal yom.', next: 'g2b' },
+        { id: 'g1_trap', ar: 'صباح النور. شو المطلوب بسرعة؟', en: 'Morning. What is needed quickly?', arZ: 'Saba7 el-noor. Sho el-matloub b-ser3a?', next: 'g2c' },
+      ],
+    },
+    g2: {
+      id: 'g2',
+      speaker: 'Noor',
+      ar: 'منيح! أنا شوي تعبانة، بس اليوم خفيف.',
+      en: 'Nice! I am a bit tired, but today is light.',
+      arZ: 'Mnee7! Ana shway ta3baneh, bas el-yom khafeef.',
+      state: 'tired',
+      tension: 2,
+      choices: [
+        { id: 'g2_sup', ar: 'سلامتك. إذا بدك بأخذ أول استقبال.', en: 'Hope you are well. I can take first reception.', arZ: 'Salamtik. Iza biddik baakhod awwal istiqbal.', next: 'g3' },
+        { id: 'g2_neu', ar: 'تمام، شو ترتيب التحيات عندكم؟', en: 'Okay, how do you greet here?', arZ: 'Tamaam, sho tartib el-ta7iyyat 3indkom?', next: 'g3' },
+        { id: 'g2_trap', ar: 'كلنا تعبانين يعني.', en: 'We are all tired anyway.', arZ: 'Kolna ta3baneen ya3ni.', next: 'g2r' },
+      ],
+    },
+    g2b: {
+      id: 'g2b',
+      speaker: 'Noor',
+      ar: 'أهلين فيك. بالمناسبة، بدنا نجهز استقبال الزوار.',
+      en: 'Welcome. By the way, we need to prepare visitor reception.',
+      arZ: 'Ahleen feek. Belmonasabe, badna njehhez istiqbal el-zowwar.',
+      state: 'neutral',
+      tension: 2,
+      choices: [
+        { id: 'g2b_sup', ar: 'أكيد، ورجيني الأسلوب هون.', en: 'Sure, show me the style here.', arZ: 'Akeed, warjeeni el-osloob hon.', next: 'g3' },
+        { id: 'g2b_neu', ar: 'تمام، نبلش بالتحية الرسمية.', en: 'Okay, start with formal greeting.', arZ: 'Tamaam, nballesh bel-ta7iyyeh el-rasmiyyeh.', next: 'g3' },
+        { id: 'g2b_trap', ar: 'في داعي لكل هالرسميات؟', en: 'Do we need all this formality?', arZ: 'Fi da3i le-kol hal-rasmiyyat?', next: 'g2r' },
+      ],
+    },
+    g2c: {
+      id: 'g2c',
+      speaker: 'Noor',
+      ar: 'آه... صباح الخير كمان مهم، مش بس المهام.',
+      en: 'Ah... saying good morning matters too, not only tasks.',
+      arZ: 'Ah... saba7 el-kheir kaman mohem, mish bas el-mham.',
+      state: 'slightly_offended',
+      tension: 3,
+      choices: [
+        { id: 'g2c_rep', ar: 'معك حق، آسف. كيفك اليوم؟', en: 'You are right, sorry. How are you today?', arZ: 'Ma3ik 7a2, asef. Keefik el-yom?', next: 'g2' },
+        { id: 'g2c_neu', ar: 'تمام، خلينا نبلش.', en: 'Okay, let us start.', arZ: 'Tamaam, khallina nballesh.', next: 'g3' },
+      ],
+    },
+    g2r: {
+      id: 'g2r',
+      speaker: 'Noor',
+      ar: 'يعني... أول انطباع للزوار بيفرق كتير.',
+      en: 'I mean... first impression for visitors matters a lot.',
+      arZ: 'Ya3ni... awwal inteba3 lel-zowwar byefre2 kteer.',
+      state: 'stressed',
+      tension: 4,
+      choices: [
+        { id: 'g2r_rep', ar: 'صح، خلينا نضبطها من أول دقيقة.', en: 'Right, let us do it well from first minute.', arZ: 'Sa7, khallina nzabitha men awwal da2ee2a.', next: 'g3' },
+        { id: 'g2r_keep', ar: 'اعملي اللي بدك.', en: 'Do whatever you want.', arZ: 'E3mali elli biddik.', next: 'g_end_awk' },
+      ],
+    },
+    g3: {
+      id: 'g3',
+      speaker: 'Noor',
+      ar: 'قاعدة بسيطة: بنسلم، بنبتسم، وبنعرّف حالنا.',
+      en: 'Simple rule: greet, smile, and introduce ourselves.',
+      arZ: 'Qa3deh baseeta: bnsallem, bnibtisem, w bne3arref 7alna.',
+      state: 'neutral',
+      tension: 2,
+      choices: [
+        { id: 'g3_sup', ar: 'ممتاز. بدي أجرب جملة استقبال كاملة.', en: 'Great. I want to try a full welcome line.', arZ: 'Momtaz. Biddi ajarrib jomleh istiqbal kamleh.', next: 'g4' },
+        { id: 'g3_neu', ar: 'تمام، أعطيني مثال سريع.', en: 'Okay, give me a quick example.', arZ: 'Tamaam, a3teeni methal saree3.', next: 'g4' },
+        { id: 'g3_trap', ar: 'الابتسامة مش ضرورية برأيي.', en: 'Smiling is not necessary, in my opinion.', arZ: 'El-ibtisameh mish darooriyyeh b-ra2yi.', next: 'g3r' },
+      ],
+    },
+    g3r: {
+      id: 'g3r',
+      speaker: 'Noor',
+      ar: 'هَه... بدون ابتسامة المكان بيبين متوتر.',
+      en: 'Heh... without a smile, the place looks tense.',
+      arZ: 'Hah... bdoon ibtisameh el-makan bybayyen mtawatter.',
+      state: 'slightly_offended',
+      tension: 3,
+      choices: [
+        { id: 'g3r_rep', ar: 'مفهوم، خليني أركز على النبرة والوجه.', en: 'Understood, I will focus on tone and face.', arZ: 'Mafhoom, khallini arakkez 3ala el-nabreh wel-wajeh.', next: 'g4' },
+        { id: 'g3r_neu', ar: 'طيب، بعتمد أسلوبكم.', en: 'Okay, I will follow your style.', arZ: 'Tayyeb, ba3tamed osloobkom.', next: 'g4' },
+      ],
+    },
+    g4: {
+      id: 'g4',
+      speaker: 'Rami',
+      ar: 'مقاطعة صغيرة: الضيف وصل عالباب.',
+      en: 'Small interruption: the guest arrived at the door.',
+      arZ: 'Moqata3a zghireh: el-dayf wesel 3al-bab.',
+      state: 'stressed',
+      tension: 3,
+      choices: [
+        { id: 'g4_sup', ar: 'تمام، أنا بفتحه وبرحب فيه.', en: 'Okay, I will open and welcome him.', arZ: 'Tamaam, ana bafta7o w bra7eb feeh.', next: 'g5' },
+        { id: 'g4_neu', ar: 'نوّرنا. مين بيستقبله أول؟', en: 'Welcome. Who receives him first?', arZ: 'Nawwarna. Meen byesta2blo awwal?', next: 'g5' },
+        { id: 'g4_trap', ar: 'مش دوري، خليه يستنى.', en: 'Not my role, let him wait.', arZ: 'Mish dowri, khalleeh yistanna.', next: 'g4r' },
+      ],
+    },
+    g4r: {
+      id: 'g4r',
+      speaker: 'Noor',
+      ar: 'استنى شوي... هاد أول ضيف اليوم.',
+      en: 'Wait a second... this is first guest today.',
+      arZ: 'Istanna shway... had awwal dayf el-yom.',
+      state: 'slightly_offended',
+      tension: 4,
+      choices: [
+        { id: 'g4r_rep', ar: 'معك حق. أنا بطلع هلق.', en: 'You are right. I am going now.', arZ: 'Ma3ik 7a2. Ana ba6la3 halla2.', next: 'g5' },
+        { id: 'g4r_keep', ar: 'اعمليها إنتِ.', en: 'You do it.', arZ: 'E3maliha enti.', next: 'g_end_awk' },
+      ],
+    },
+    g5: {
+      id: 'g5',
+      speaker: 'Noor',
+      ar: 'الضيف انبسط. بس بدي منك مساعدة صغيرة.',
+      en: 'The guest was happy. But I need a small help.',
+      arZ: 'El-dayf inbasat. Bas biddi منك msa3adeh zghireh.',
+      state: 'warm',
+      tension: 2,
+      choices: [
+        { id: 'g5_sup', ar: 'أكيد، شو المطلوب؟', en: 'Sure, what do you need?', arZ: 'Akeed, sho el-matloub?', next: 'g6' },
+        { id: 'g5_neu', ar: 'تمام، احكيلي بسرعة.', en: 'Okay, tell me quickly.', arZ: 'Tamaam, e7keeli b-ser3a.', next: 'g6' },
+        { id: 'g5_trap', ar: 'هلق؟ عندي شغل ثاني.', en: 'Now? I have other work.', arZ: 'Halla2? 3ندي shoghl thani.', next: 'g5r' },
+      ],
+    },
+    g5r: {
+      id: 'g5r',
+      speaker: 'Noor',
+      ar: 'بس سطرين ترحيب للإيميل... وبعدها خلص.',
+      en: 'Just two greeting lines for email... then done.',
+      arZ: 'Bas sa6rein tar7eeb lel-email... w ba3daha khalas.',
+      state: 'stressed',
+      tension: 3,
+      choices: [
+        { id: 'g5r_rep', ar: 'تمام، ابعتيه وأنا بصيغه فوراً.', en: 'Okay, send it and I will draft now.', arZ: 'Tamaam, eb3ateeh w ana basoogho فوراً.', next: 'g6' },
+        { id: 'g5r_neu', ar: 'دقيقة وبرجعلك.', en: 'One minute and I come back.', arZ: 'Da2ee2a w barja3lik.', next: 'g6' },
+      ],
+    },
+    g6: {
+      id: 'g6',
+      speaker: 'Noor',
+      ar: 'طيب، النص هيك: أهلين وسهلين بزيارتكم.',
+      en: 'Okay, text is: welcome to your visit.',
+      arZ: 'Tayyeb, el-nass heik: ahleen w sahleen b-ziyaritkom.',
+      state: 'relaxed',
+      tension: 2,
+      choices: [
+        { id: 'g6_sup', ar: 'حلو. وبنضيف: سعدنا باستقبالكم اليوم.', en: 'Nice. Add: happy to host you today.', arZ: '7elw. W bneDeef: sa3edna b-istiqbalkom el-yom.', next: 'g7' },
+        { id: 'g6_neu', ar: 'تمام، واضح ومهني.', en: 'Okay, clear and professional.', arZ: 'Tamaam, wade7 w mehni.', next: 'g7' },
+        { id: 'g6_trap', ar: 'طويل. اختصريه كلمة كلمتين.', en: 'Long. Make it one or two words.', arZ: 'Taweel. Ikhtasrih kelmeh kelmteen.', next: 'g6r' },
+      ],
+    },
+    g6r: {
+      id: 'g6r',
+      speaker: 'Noor',
+      ar: 'مش مشكلة... بس الرسالة لازم تبين محترمة.',
+      en: 'No problem... but message should look respectful.',
+      arZ: 'Mish mushkileh... bas el-risaleh lazem tbayyen mo7tarameh.',
+      state: 'slightly_offended',
+      tension: 3,
+      choices: [
+        { id: 'g6r_rep', ar: 'صح، خلينا نخليها قصيرة ومحترمة.', en: 'Right, let us keep it short and respectful.', arZ: 'Sa7, khallina nkhalleha qaSeereh w mo7tarameh.', next: 'g7' },
+        { id: 'g6r_neu', ar: 'تمام، عدليها على ذوقك.', en: 'Okay, adjust it your way.', arZ: 'Tamaam, 3addeliha 3ala zo2ik.', next: 'g_end_neu' },
+      ],
+    },
+    g7: {
+      id: 'g7',
+      speaker: 'Noor',
+      ar: 'خلصنا. عنجد شكراً، اليوم مشي معنا.',
+      en: 'We are done. Really thanks, today went well.',
+      arZ: 'Khalasna. 3anjad shukran, el-yom meshi ma3na.',
+      state: 'warm',
+      tension: 2,
+      choices: [
+        { id: 'g7_warm', ar: 'يسعدك. بكرا بكون أسرع بالاستقبال.', en: 'Great. Tomorrow I will be faster in reception.', arZ: 'Yis3idik. Bokra bakoon asra3 bel-istiqbal.', next: 'g_end_warm' },
+        { id: 'g7_neu', ar: 'تمام، يوم جيد.', en: 'Okay, good day.', arZ: 'Tamaam, yom jayyid.', next: 'g_end_neu' },
+        { id: 'g7_trap', ar: 'كان ممكن أمشي بدون كل هالحكي.', en: 'Could have done it without all this talk.', arZ: 'Kan ممكن amshi bdoon kol hal-7aki.', next: 'g_end_awk' },
+      ],
+    },
+    g_end_warm: {
+      id: 'g_end_warm',
+      speaker: 'Noor',
+      ar: 'ولا يهمك. بكرا القهوة عليّ.',
+      en: 'No worries. Tomorrow coffee is on me.',
+      arZ: 'Wala yhemmik. Bokra el-ahwe 3alay.',
+      state: 'warm',
+      tension: 1,
+      choices: [{ id: 'g_end_warm_c', ar: 'اتفقنا.', en: 'Deal.', arZ: 'Ittafaqna.', next: 'END' }],
+    },
+    g_end_neu: {
+      id: 'g_end_neu',
+      speaker: 'Noor',
+      ar: 'تمام، منشوفك بعد الاجتماع.',
+      en: 'Okay, see you after the meeting.',
+      arZ: 'Tamaam, mnshoofak ba3d el-ijtima3.',
+      state: 'neutral',
+      tension: 2,
+      choices: [{ id: 'g_end_neu_c', ar: 'تمام.', en: 'Okay.', arZ: 'Tamaam.', next: 'END' }],
+    },
+    g_end_awk: {
+      id: 'g_end_awk',
+      speaker: 'Noor',
+      ar: 'طيب... كل واحد يكمل شغله.',
+      en: 'Okay... each one continues their work.',
+      arZ: 'Tayyeb... kol wa7ad ykammel shoghlo.',
+      state: 'slightly_offended',
+      tension: 4,
+      choices: [
+        { id: 'g_end_awk_fix', ar: 'استني، آسف. خلينا نفتح صفحة جديدة.', en: 'Wait, sorry. Let us start fresh.', arZ: 'Istanni, asef. Khallina nifta7 saf7a jdeedeh.', next: 'g_end_neu' },
+        { id: 'g_end_awk_keep', ar: 'تمام.', en: 'Fine.', arZ: 'Tamaam.', next: 'END' },
+      ],
+    },
+    END: {
+      id: 'END',
       speaker: 'System',
-      ar: 'اختر مكان الحوار:',
-      en: 'Choose the dialogue location:',
-      choices: [
-        { id: 's1a', ar: 'في الشارع ثم القهوة', en: 'Street then cafe', next: 'c1' },
-        { id: 's1b', ar: 'في الصف (أول درس)', en: 'In class (first lesson)', next: 'k1' },
-      ],
-    },
-
-    // =====================
-    // Scenario A: Street -> Cafe (natural flow)
-    // =====================
-    c1: {
-      speaker: 'A',
-      ar: 'السلام عليكم، عفوا ممكن أسأل سؤال؟',
-      en: 'Peace be upon you, excuse me, can I ask a question?',
-      choices: [
-        { id: 'c1a', ar: 'وعليكم السلام، تفضل.', en: 'And peace be upon you, go ahead.', next: 'c2' },
-        { id: 'c1b', ar: 'أهلا، شو بدك؟', en: 'Hi, what do you need?', next: 'c2' },
-      ],
-    },
-    c2: {
-      speaker: 'A',
-      ar: 'أنا أول مرة هون. في كافيه قريب؟',
-      en: 'It’s my first time here. Is there a cafe nearby?',
-      choices: [
-        { id: 'c2a', ar: 'آه، في واحد قريب.', en: 'Yes, there’s one nearby.', next: 'c3' },
-        { id: 'c2b', ar: 'في كافيه على الزاوية.', en: 'There’s a cafe on the corner.', next: 'c3' },
-      ],
-    },
-    c3: {
-      speaker: 'A',
-      ar: 'يسلمو. بدك تيجي معي؟',
-      en: 'Thanks. Want to go with me?',
-      choices: [
-        { id: 'c3a', ar: 'آه، يلا.', en: 'Yes, let’s go.', next: 'c4' },
-        { id: 'c3b', ar: 'تمام، خلينا نروح.', en: 'Sure, let’s go.', next: 'c4' },
-      ],
-    },
-    c4: {
-      speaker: 'A',
-      ar: 'بالمناسبة، أنا اسمي أحمد.',
-      en: 'By the way, my name is Ahmed.',
-      choices: [
-        { id: 'c4a', ar: 'تشرفنا أحمد، أنا سارة.', en: 'Nice to meet you, Ahmed. I’m Sara.', next: 'c5' },
-        { id: 'c4b', ar: 'أنا مارك، تشرفنا.', en: 'I’m Mark, nice to meet you.', next: 'c5' },
-      ],
-    },
-    c5: {
-      speaker: 'A',
-      ar: 'كيفك اليوم؟',
-      en: 'How are you today?',
-      choices: [
-        { id: 'c5a', ar: 'منيح الحمد لله، وإنت؟', en: 'I’m good, thank God. And you?', next: 'c6' },
-        { id: 'c5b', ar: 'شوي تعبان، بس تمام.', en: 'A bit tired, but fine.', next: 'c6' },
-      ],
-    },
-    c6: {
-      speaker: 'A',
-      ar: 'أنا كمان منيح. إنت من وين؟',
-      en: 'I’m good too. Where are you from?',
-      choices: [
-        { id: 'c6a', ar: 'أنا من غزة.', en: 'I’m from Gaza.', next: 'c7' },
-        { id: 'c6b', ar: 'أنا من مصر.', en: 'I’m from Egypt.', next: 'c7' },
-      ],
-    },
-    c7: {
-      speaker: 'A',
-      ar: 'وأصلك من نفس المكان؟',
-      en: 'And are you originally from the same place?',
-      choices: [
-        { id: 'c7a', ar: 'آه، من نفس المكان.', en: 'Yes, the same place.', next: 'c8' },
-        { id: 'c7b', ar: 'لا، أصلي من نابلس.', en: 'No, I’m originally from Nablus.', next: 'c8' },
-      ],
-    },
-    c8: {
-      speaker: 'A',
-      ar: 'ساكن وين هالأيام؟',
-      en: 'Where do you live these days?',
-      choices: [
-        { id: 'c8a', ar: 'ساكن في رام الله.', en: 'I live in Ramallah.', next: 'c9' },
-        { id: 'c8b', ar: 'ساكن في غزة.', en: 'I live in Gaza.', next: 'c9' },
-      ],
-    },
-    c9: {
-      speaker: 'A',
-      ar: 'وصلنا. تفضل قعد هون.',
-      en: 'We arrived. Please sit here.',
-      choices: [
-        { id: 'c9a', ar: 'يسلمو.', en: 'Thanks.', next: 'c10' },
-        { id: 'c9b', ar: 'يعطيك العافية.', en: 'Thanks a lot.', next: 'c10' },
-      ],
-    },
-    c10: {
-      speaker: 'Barista',
-      ar: 'أهلا، شو بتحبوا تشربوا؟',
-      en: 'Hi, what would you like to drink?',
-      choices: [
-        { id: 'c10a', ar: 'قهوة سادة لو سمحت.', en: 'Plain coffee, please.', next: 'c11' },
-        { id: 'c10b', ar: 'شاي نعنع، لو سمحت.', en: 'Mint tea, please.', next: 'c11' },
-      ],
-    },
-    c11: {
-      speaker: 'Barista',
-      ar: 'بدكم سكر؟',
-      en: 'Do you want sugar?',
-      choices: [
-        { id: 'c11a', ar: 'سكر قليل.', en: 'A little sugar.', next: 'c12' },
-        { id: 'c11b', ar: 'بدون سكر.', en: 'No sugar.', next: 'c12' },
-      ],
-    },
-    c12: {
-      speaker: 'A',
-      ar: 'أول مرة تقعد بهالكافيه؟',
-      en: 'Is this your first time at this cafe?',
-      choices: [
-        { id: 'c12a', ar: 'آه، أول مرة.', en: 'Yes, first time.', next: 'c13' },
-        { id: 'c12b', ar: 'لا، بجي كتير.', en: 'No, I come a lot.', next: 'c13' },
-      ],
-    },
-    c13: {
-      speaker: 'A',
-      ar: 'شو رأيك بالمكان؟',
-      en: 'What do you think of the place?',
-      choices: [
-        { id: 'c13a', ar: 'مرتب ورايق.', en: 'Neat and calm.', next: 'c14' },
-        { id: 'c13b', ar: 'حلو بس زحمة.', en: 'Nice but crowded.', next: 'c14' },
-      ],
-    },
-    c14: {
-      speaker: 'A',
-      ar: 'بتحكي عربي من زمان؟',
-      en: 'Have you been speaking Arabic for long?',
-      choices: [
-        { id: 'c14a', ar: 'لا، أنا مبتدئ.', en: 'No, I’m a beginner.', next: 'c15' },
-        { id: 'c14b', ar: 'شوي شوي بتعلم.', en: 'Little by little I’m learning.', next: 'c15' },
-      ],
-    },
-    c15: {
-      speaker: 'A',
-      ar: 'القهوة وصلت. تفضل.',
-      en: 'The coffee arrived. Here you go.',
-      choices: [
-        { id: 'c15a', ar: 'يسلمو كتير.', en: 'Thanks a lot.', next: 'c16' },
-        { id: 'c15b', ar: 'شكرا.', en: 'Thanks.', next: 'c16' },
-      ],
-    },
-    c16: {
-      speaker: 'A',
-      ar: 'شو بتعمل؟ طالب ولا شغل؟',
-      en: 'What do you do? Student or work?',
-      choices: [
-        { id: 'c16a', ar: 'أنا طالب.', en: 'I’m a student.', next: 'c17' },
-        { id: 'c16b', ar: 'أنا بشتغل.', en: 'I work.', next: 'c17' },
-      ],
-    },
-    c17: {
-      speaker: 'A',
-      ar: 'تشرفنا. بنشوفك كمان مرة؟',
-      en: 'Nice meeting you. Will we see you again?',
-      choices: [
-        { id: 'c17a', ar: 'أكيد، إن شاء الله.', en: 'Sure, God willing.', next: 'c18' },
-        { id: 'c17b', ar: 'إن شاء الله.', en: 'God willing.', next: 'c18' },
-      ],
-    },
-    c18: {
-      speaker: 'A',
-      ar: 'مع السلامة.',
-      en: 'Goodbye.',
-      choices: [],
-    },
-
-    // =====================
-    // Scenario B: In Class (First Lesson)
-    // =====================
-    k1: {
-      speaker: 'A',
-      ar: 'مرحبا، هادا صف العربي؟',
-      en: 'Hi, is this the Arabic class?',
-      choices: [
-        { id: 'k1a', ar: 'آه، هون.', en: 'Yes, here.', next: 'k2' },
-        { id: 'k1b', ar: 'لا، غلطت.', en: 'No, you’re in the wrong place.', next: 'k1b' },
-      ],
-    },
-    k1b: {
-      speaker: 'A',
-      ar: 'أوه، شكرا. مع السلامة.',
-      en: 'Oh, thanks. Goodbye.',
-      choices: [],
-    },
-    k2: {
-      speaker: 'A',
-      ar: 'أول مرة بالصف؟',
-      en: 'First time in class?',
-      choices: [
-        { id: 'k2a', ar: 'آه، أول مرة.', en: 'Yes, first time.', next: 'k3' },
-        { id: 'k2b', ar: 'لا، حضرت قبل.', en: 'No, I attended before.', next: 'k3' },
-      ],
-    },
-    k3: {
-      speaker: 'A',
-      ar: 'أنا ليلى. إنت شو اسمك؟',
-      en: 'I’m Layla. What’s your name?',
-      choices: [
-        { id: 'k3a', ar: 'أنا مارك، تشرفنا.', en: 'I’m Mark, nice to meet you.', next: 'k4' },
-        { id: 'k3b', ar: 'أنا سارة، تشرفنا.', en: 'I’m Sara, nice to meet you.', next: 'k4' },
-      ],
-    },
-    k4: {
-      speaker: 'A',
-      ar: 'كيفك اليوم؟',
-      en: 'How are you today?',
-      choices: [
-        { id: 'k4a', ar: 'منيح الحمد لله.', en: 'Good, thank God.', next: 'k5' },
-        { id: 'k4b', ar: 'متوتر/ة شوي.', en: 'A little nervous.', next: 'k5' },
-      ],
-    },
-    k5: {
-      speaker: 'A',
-      ar: 'عادي، كلنا هيك بالبداية.',
-      en: 'It’s normal, we all feel that at first.',
-      choices: [
-        { id: 'k5a', ar: 'إنت من وين؟', en: 'Where are you from?', next: 'k6' },
-        { id: 'k5b', ar: 'بتحكي عربي قبل؟', en: 'Did you speak Arabic before?', next: 'k7' },
-      ],
-    },
-    k6: {
-      speaker: 'A',
-      ar: 'أنا من مصر.',
-      en: 'I’m from Egypt.',
-      choices: [
-        { id: 'k6a', ar: 'حلو كتير.', en: 'That’s great.', next: 'k7' },
-      ],
-    },
-    k7: {
-      speaker: 'A',
-      ar: 'أنا بس كلمات بسيطة.',
-      en: 'I only know a few words.',
-      choices: [
-        { id: 'k7a', ar: 'وأنا كمان.', en: 'Me too.', next: 'k8' },
-      ],
-    },
-    k8: {
-      speaker: 'A',
-      ar: 'إن شاء الله نتعلم بسرعة.',
-      en: 'Hopefully we learn fast.',
-      choices: [
-        { id: 'k8a', ar: 'يلا نبلّش.', en: 'Let’s start.', next: 'k9' },
-        { id: 'k8b', ar: 'جاهز/ة.', en: 'Ready.', next: 'k9' },
-      ],
-    },
-    k9: {
-      speaker: 'A',
-      ar: 'المعلمة إجت. يلا نبلّش.',
-      en: 'The teacher arrived. Let’s start.',
+      ar: '✅ نهاية المشهد.',
+      en: '✅ End of scene.',
+      arZ: '✅ Nehayet el-mashhad.',
+      state: 'neutral',
+      tension: 1,
       choices: [],
     },
   },

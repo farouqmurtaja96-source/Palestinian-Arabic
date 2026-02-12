@@ -1,179 +1,237 @@
 import { LESSON_ID_FOOD_DRINK } from '../../core/constants.js';
 
-
-
 export const dialogueId = 'BD::' + LESSON_ID_FOOD_DRINK;
 
 export const dialogue = {
   meta: {
-     level: 'Beginner',
-  unit: 'Food & Drink',
-  title: 'Food & Drink - Decisions',
+    level: 'Beginner',
+    unit: 'Food & Drink',
+    title: 'Food & Drink - Office Lunch Decisions',
+    emotionalTracking: true,
+    tensionCurve: true,
+    trapLayering: true,
+    setting: 'Workplace',
   },
-  startNodeId: 'sarah_1',
-
+  startNodeId: 'f1',
   nodes: {
-
-    // =====================
-    // SCENE 1 — Greeting
-    // =====================
-    sarah_1: {
-      speaker: 'Sarah',
-      ar: 'مرحبا أحمد! كيفك اليوم؟',
-      en: 'Hello Ahmed! How are you today?',
-      arZ: 'Marhaba Ahmed! Keefak el-yom?',
+    f1: {
+      id: 'f1',
+      speaker: 'Dima',
+      ar: 'صباح الخير أحمد. بدنا نطلب غدا للفريق.',
+      en: 'Good morning Ahmed. We need to order lunch for the team.',
+      arZ: 'Saba7 el-kheir Ahmed. Badna netlob ghada lel-faree2.',
+      state: 'neutral',
+      tension: 1,
       choices: [
-        { id: 'a1_good', ar: 'اهلا تمام الحمد لله. وإنتِ؟', en: 'hi I’m good, thanks. And you?', arZ: ' Ahlan Tamaam el7amdulillah. W enti?', next: 'sarah_2_status' },
-        { id: 'a1_neu', ar: 'ماشي الحال… يوم عادي.', en: 'Okay… normal day.', arZ: 'Maashi el7al… yom 3adi.', next: 'sarah_2_bridge' },
-        { id: 'a1_trap', ar: 'أهلين… شو في شغل؟', en: 'Hey… what work is there?', arZ: 'Ahleen… shu fe shoghl?', next: 'sarah_1_trap_react' },
+        { id: 'f1_sup', ar: 'صباح النور. ممتاز، أنا جاهز.', en: 'Morning. Great, I am ready.', arZ: 'Saba7 el-noor. Momtaz, ana جاهز.', next: 'f2' },
+        { id: 'f1_neu', ar: 'صباح النور. شو الخيارات؟', en: 'Morning. What are options?', arZ: 'Saba7 el-noor. Sho el-khiyarat?', next: 'f2b' },
+        { id: 'f1_trap', ar: 'لسا بكير عالغدا.', en: 'It is too early for lunch.', arZ: 'Lissa بكير 3al-ghada.', next: 'f2c' },
       ],
     },
-
-    sarah_1_trap_react: {
-      speaker: 'Sarah',
-      ar: 'ولا شي خلص…  شكلك مشغول اليوم.',
-      en: 'Nothing’s left…  you look busy today.',
-      arZ: 'Wala shi khalaṣ…  shaklak mashghool el-yom.',
+    f2: {
+      id: 'f2',
+      speaker: 'Dima',
+      ar: 'آه... أنا شوي جوعانة وتعبانة اليوم.',
+      en: 'Ah... I am a bit hungry and tired today.',
+      arZ: 'Ah... ana shway jaw3aneh w ta3baneh el-yom.',
+      state: 'tired',
+      tension: 2,
       choices: [
-        { id: 'a1_rep', ar: 'آسف، قصدي كيف يومك؟', en: 'Sorry, I meant how’s your day?', arZ: 'Asef, qaṣdi keef yomik?', next: 'sarah_2_status' },
-        { id: 'a1_move', ar: 'لا عادي… بس شوي جعان.', en: 'No, just a bit hungry.', arZ: 'La 3adi… bas shway ju3an.', next: 'sarah_3_hungry' },
+        { id: 'f2_sup', ar: 'سلامتك. خليني أكتب الطلبات عنك.', en: 'Hope you are well. I will write orders for you.', arZ: 'Salamtik. Khallini aktob el-talabat 3annek.', next: 'f3' },
+        { id: 'f2_neu', ar: 'تمام، نختار بسرعة.', en: 'Okay, let us choose quickly.', arZ: 'Tamaam, nkhtar b-ser3a.', next: 'f3' },
+        { id: 'f2_trap', ar: 'كل يوم نفس التعب.', en: 'Every day same tiredness.', arZ: 'Kol yom nafs el-ta3ab.', next: 'f2r' },
       ],
     },
-
-    sarah_2_status: {
-      speaker: 'Sarah',
-      ar: 'منيحة… بس شوي جوعانة.',
-      en: 'I’m good… just a bit hungry.',
-      arZ: 'Mnee7a… bas shway ju3aneh.',
+    f2b: {
+      id: 'f2b',
+      speaker: 'Dima',
+      ar: 'في منسف، شاورما، وسلطة. وعلى فكرة في حساسية.',
+      en: 'There is mansaf, shawarma, and salad. By the way there is allergy.',
+      arZ: 'Fi mansaf, shawarma, w salata. W 3ala fekra fi 7asaseeyyeh.',
+      state: 'neutral',
+      tension: 2,
       choices: [
-        { id: 'a2_same', ar: 'حتى أنا! نروح نأكل؟', en: 'Me too! Want to eat?', arZ: '7atta ana! Nroo7 nakol?', next: 'sarah_4_where' },
-        { id: 'a2_neu', ar: 'آه معقول…', en: 'Yeah makes sense…', arZ: 'Ah ma3ool…', next: 'sarah_4_where' },
-        { id: 'a2_trap', ar: 'استني شوي.', en: 'Wait a bit.', arZ: 'Istanni shway.', next: 'sarah_2_trap_react' },
+        { id: 'f2b_sup', ar: 'تمام، نراعي الحساسية أول.', en: 'Okay, allergy comes first.', arZ: 'Tamaam, nra3i el-7asaseeyyeh awwal.', next: 'f3' },
+        { id: 'f2b_neu', ar: 'منيح، بنعمل جدول سريع.', en: 'Good, we make quick table.', arZ: 'Mnee7, bna3mel jadwal saree3.', next: 'f3' },
+        { id: 'f2b_trap', ar: 'شو هالتعقيد بطلب غدا؟', en: 'Why all this complexity in lunch order?', arZ: 'Sho hal-ta3qeed b-talab ghada?', next: 'f2r' },
       ],
     },
-
-    sarah_2_bridge: {
-      speaker: 'Sarah',
-      ar: 'عفكرة… أنا كتير جعانة.',
-      en: 'By the way… I’m really hungry.',
-      arZ: '3a fekra… ana kteer Jaw‘aaneh..',
+    f2c: {
+      id: 'f2c',
+      speaker: 'Dima',
+      ar: 'يعني... إذا تأخرنا، المطعم بسكر الطلب بدري.',
+      en: 'I mean... if we delay, restaurant closes orders early.',
+      arZ: 'Ya3ni... iza ta2akharna, el-mat3am bysakkir el-talab badri.',
+      state: 'slightly_offended',
+      tension: 3,
       choices: [
-        { id: 'a2b_same', ar: 'حتى أنا! نطلع نأكل؟', en: 'Me too! Let’s go eat.', arZ: '7atta ana! Nṭla3 nakol?', next: 'sarah_4_where' },
+        { id: 'f2c_rep', ar: 'معك حق، يلا نبلش هلق.', en: 'You are right, let us start now.', arZ: 'Ma3ik 7a2, yalla nballesh halla2.', next: 'f3' },
+        { id: 'f2c_neu', ar: 'تمام، شو المطلوب مني؟', en: 'Okay, what do you need from me?', arZ: 'Tamaam, sho el-matloub مني?', next: 'f3' },
       ],
     },
-
-    sarah_2_trap_react: {
-      speaker: 'Sarah',
-      ar: 'طيب بس لا تتأخر، معدتي عم توجعني.',
-      en: 'Okay but don’t take long, my stomach hurts.',
-      arZ: 'Tayyeb bas la tit2akhar, ma3dti 3am twaja3ni.',
-      choices: [{ id: 'a2_rep', ar: 'خلص يلا نروح.', en: 'Okay let’s go.', arZ: 'Khalas yalla nroo7.', next: 'sarah_4_where' }],
-    },
-
-    sarah_3_hungry: {
-      speaker: 'Sarah',
-      ar: 'حتى أنا! يلا نطلع.',
-      en: 'Me too! Let’s go.',
-      arZ: '7atta ana! Yalla nṭla3.',
-      choices: [{ id: 'go', ar: 'وين بدك؟', en: 'Where to?', arZ: 'Wein baddek?', next: 'sarah_4_where' }],
-    },
-
-    // =====================
-    // SCENE 2 — Choosing place
-    // =====================
-    sarah_4_where: {
-      speaker: 'Sarah',
-      ar: 'شو رأيك بالمطعم اللي جنب المكتب؟',
-      en: 'What about the restaurant near the office?',
-      arZ: 'Sho ra2yak bel-maṭ3am elli janb el-maktab?',
+    f2r: {
+      id: 'f2r',
+      speaker: 'Dima',
+      ar: 'الموضوع بسيط... بس في زميل ما بأكل جلوتين.',
+      en: 'It is simple... but one colleague avoids gluten.',
+      arZ: 'El-mawdoo3 baseet... bas fi zameel ma b-ya2kol gluten.',
+      state: 'stressed',
+      tension: 4,
       choices: [
-        { id: 'a4_yes', ar: 'فكرة ممتازة.', en: 'Great idea.', arZ: 'Fekra momtaza.', next: 'waitress_1' },
-        { id: 'a4_trap', ar: 'أي واحد مش فارقة.', en: 'Whatever.', arZ: 'Ay wa7ad mish fare2a.', next: 'sarah_4_trap_react' },
+        { id: 'f2r_rep', ar: 'حقك علي، نضبط الطلب صح.', en: 'My bad, we set order correctly.', arZ: '7a2ik 3alay, nzabbet el-talab sa7.', next: 'f3' },
+        { id: 'f2r_keep', ar: 'اعملي اللي مناسبك.', en: 'Do what suits you.', arZ: 'E3mali elli mnasibik.', next: 'f_end_awk' },
       ],
     },
-
-    sarah_4_trap_react: {
-      speaker: 'Sarah',
-      ar: 'طيب خلينا نختار بسرعة.',
-      en: 'Okay let’s choose quickly.',
-      arZ: 'Tayyeb khallina nkhtar bser3a.',
-      choices: [{ id: 'fix', ar: 'يلا المطعم اللي جنبنا.', en: 'Let’s go to the nearby one.', arZ: 'Yalla el-maṭ3am elli janbna.', next: 'waitress_1' }],
-    },
-
-    // =====================
-    // SCENE 3 — Restaurant
-    // =====================
-    waitress_1: {
-      speaker: 'Waitress',
-      ar: 'أهلاً وسهلاً! تفضلوا.',
-      en: 'Welcome! Please come in.',
-      arZ: 'Ahlan w sahlan! Tfaddalo.',
-      choices: [{ id: 'a5', ar: 'شكراً.', en: 'Thanks.', arZ: 'Shukran.', next: 'waitress_2' }],
-    },
-
-    waitress_2: {
-      speaker: 'Waitress',
-      ar: 'تفضلوا اقعدوا هون.',
-      en: 'Please sit here.',
-      arZ: 'Tfaddalo o3do hon.',
-      choices: [{ id: 'a6', ar: 'المكان حلو.', en: 'Nice place.', arZ: 'El-makan 7elo.', next: 'sarah_menu' }],
-    },
-
-    sarah_menu: {
-      speaker: 'Sarah',
-      ar: 'ممكن تساعديني؟ مش فاهمة المينيو.',
-      en: 'Can you help? I don’t understand the menu.',
-      arZ: 'Mumkin tsa3deeni? Mish fahmeh el-menu.',
+    f3: {
+      id: 'f3',
+      speaker: 'Fadi',
+      ar: 'مقاطعة: شباب، الدليفري بده تأكيد خلال خمس دقايق.',
+      en: 'Interruption: team, delivery needs confirmation in five minutes.',
+      arZ: 'Moqata3a: shabab, el-delivery بدو ta2keed khilal khams da2aye2.',
+      state: 'stressed',
+      tension: 3,
       choices: [
-        { id: 'a7', ar: 'ولا يهمك، اسأليها.', en: 'No worries, ask her.', arZ: 'Wala yhemmik, is2aliha.', next: 'waitress_explain' },
+        { id: 'f3_sup', ar: 'تمام، أنا بأكد حالاً.', en: 'Okay, I confirm right away.', arZ: 'Tamaam, ana ba2akked 7alan.', next: 'f4' },
+        { id: 'f3_neu', ar: 'منيح، خلينا نحسم الخيارات.', en: 'Good, let us finalize options.', arZ: 'Mnee7, khallina n7sem el-khiyarat.', next: 'f4' },
+        { id: 'f3_trap', ar: 'ينتظروا شوي، مش قصة.', en: 'They can wait, no big deal.', arZ: 'Yentazro shway, mish 2issa.', next: 'f3r' },
       ],
     },
-
-    waitress_explain: {
-      speaker: 'Waitress',
-      ar: 'هاد دجاج مع رز.',
-      en: 'This is chicken with rice.',
-      arZ: 'Had dajaj ma3 roz.',
-      choices: [{ id: 'a8', ar: 'منيح! باخد نفس الطلب.', en: 'Nice! I’ll take the same.', arZ: 'Mnee7! Bakhod nafs el-talab.', next: 'food_serve' }],
+    f3r: {
+      id: 'f3r',
+      speaker: 'Dima',
+      ar: 'استنى... مبارح نفس التأخير، ووصل الأكل بارد.',
+      en: 'Wait... yesterday same delay, food arrived cold.',
+      arZ: 'Istanna... mbar7 nafs el-ta2kheer, w wesel el-akel bared.',
+      state: 'slightly_offended',
+      tension: 4,
+      choices: [
+        { id: 'f3r_rep', ar: 'صح، خلينا نخلص الطلب هلق.', en: 'Right, let us finish the order now.', arZ: 'Sa7, khallina nkhalles el-talab halla2.', next: 'f4' },
+        { id: 'f3r_neu', ar: 'تمام، أعطيني القائمة النهائية.', en: 'Okay, give me final list.', arZ: 'Tamaam, a3teeni el-qa2meh el-niha2iyyeh.', next: 'f4' },
+      ],
     },
-
-    food_serve: {
-      speaker: 'Waitress',
-      ar: 'تفضلوا، صحتين!',
-      en: 'Here you go, enjoy!',
-      arZ: 'Tfaddalo, sa7tein!',
-      choices: [{ id: 'eat', ar: 'يسلمو.', en: 'Thanks.', arZ: 'Yislamo.', next: 'sarah_after_food' }],
+    f4: {
+      id: 'f4',
+      speaker: 'Dima',
+      ar: 'بدي مساعدة صغيرة: راجعلي الأسماء قبل الإرسال.',
+      en: 'I need a small help: review names before sending.',
+      arZ: 'Biddi msa3adeh zghireh: raje3li el-asma2 qabel el-ersal.',
+      state: 'neutral',
+      tension: 3,
+      choices: [
+        { id: 'f4_sup', ar: 'أكيد، ابعتي القائمة هلق.', en: 'Sure, send list now.', arZ: 'Akeed, eb3ati el-qa2meh halla2.', next: 'f5' },
+        { id: 'f4_neu', ar: 'بعد دقيقتين براجعها.', en: 'I review it in two minutes.', arZ: 'Ba3d da2ee2tein braje3ha.', next: 'f5b' },
+        { id: 'f4_trap', ar: 'مش فاضي للتفاصيل.', en: 'Not free for details.', arZ: 'Mish fadi lel-tafaseel.', next: 'f4r' },
+      ],
     },
-
-    sarah_after_food: {
-      speaker: 'Sarah',
-      ar: 'الأكل زاكي!',
-      en: 'The food is delicious!',
-      arZ: 'El-akel zaki!',
-      choices: [{ id: 'agree', ar: 'كتير طيب.', en: 'Very good.', arZ: 'Kteer ṭayyeb.', next: 'bill_time' }],
+    f4r: {
+      id: 'f4r',
+      speaker: 'Dima',
+      ar: 'طيب... لو غلط اسم، الطلب كله بيتلخبط.',
+      en: 'Okay... if one name is wrong, whole order gets messy.',
+      arZ: 'Tayyeb... law ghalat esem, el-talab kollo byetlakhbat.',
+      state: 'stressed',
+      tension: 4,
+      choices: [
+        { id: 'f4r_rep', ar: 'معك حق، خليني أراجع فوراً.', en: 'You are right, I review now.', arZ: 'Ma3ik 7a2, khallini araje3 فوراً.', next: 'f5' },
+        { id: 'f4r_keep', ar: 'اعملي اللي بدك.', en: 'Do what you want.', arZ: 'E3mali elli biddik.', next: 'f_end_awk' },
+      ],
     },
-
-    bill_time: {
-      speaker: 'Ahmed',
-      ar: 'ممكن الحساب لو سمحتي؟',
-      en: 'Can we have the bill please?',
-      arZ: 'Mumkin el-7saab law sama7ti?',
-      choices: [{ id: 'pay', ar: 'أنا بدفع.', en: 'I’ll pay.', arZ: 'Ana badfa3.', next: 'end_scene' }],
+    f5: {
+      id: 'f5',
+      speaker: 'Dima',
+      ar: 'تمام. القائمة مضبوطة. بدنا مشروب كمان؟',
+      en: 'Great. List is correct. Need drinks too?',
+      arZ: 'Tamaam. El-qa2meh mazboota. Badna mashroob kaman?',
+      state: 'relaxed',
+      tension: 2,
+      choices: [
+        { id: 'f5_sup', ar: 'آه، مي وعصير بدون سكر.', en: 'Yes, water and sugar-free juice.', arZ: 'Ah, may w 3aseer bdoon sokkar.', next: 'f6' },
+        { id: 'f5_neu', ar: 'مي بس كفاية اليوم.', en: 'Water only is enough today.', arZ: 'May bas kifayeh el-yom.', next: 'f6' },
+        { id: 'f5_trap', ar: 'هاتوا أي شي وخلاص.', en: 'Bring anything and done.', arZ: 'Hato ay shi w khalas.', next: 'f5r' },
+      ],
     },
-
-    end_scene: {
-      speaker: 'Sarah',
-      ar: 'يسلمو أحمد!',
-      en: 'Thanks Ahmed!',
-      arZ: 'Yislamo Ahmed!',
-      choices: [{ id: 'end', ar: 'يلا نرجع.', en: 'Let’s head back.', arZ: 'Yalla nirja3.', next: 'END' }],
+    f5b: {
+      id: 'f5b',
+      speaker: 'Dima',
+      ar: 'دقيقتين؟ أوك... بس عم نلحق الوقت.',
+      en: 'Two minutes? okay... but we are racing time.',
+      arZ: 'Da2ee2tein? ok... bas 3am nla77e2 el-wa2et.',
+      state: 'tired',
+      tension: 3,
+      choices: [
+        { id: 'f5b_sup', ar: 'خلص، ببعتها هلق للمطعم.', en: 'Done, I send now to restaurant.', arZ: 'Khalas, bab3atha halla2 lel-mat3am.', next: 'f6' },
+        { id: 'f5b_neu', ar: 'تمام، بعطيني دقيقة واحدة.', en: 'Okay, give me one minute.', arZ: 'Tamaam, ba3teeni da2ee2a wa7deh.', next: 'f6' },
+        { id: 'f5b_trap', ar: 'إذا تأخر، مش مشكلتي.', en: 'If delayed, not my problem.', arZ: 'Iza ta2akhar, mish mushkilti.', next: 'f_end_awk' },
+      ],
     },
-
+    f5r: {
+      id: 'f5r',
+      speaker: 'Dima',
+      ar: 'هههه... لو هيك، بنرجع نجوع بعد ساعة.',
+      en: 'Haha... if so, we get hungry again in one hour.',
+      arZ: 'Hahaha... law heik, بنرجع njoo3 ba3d sa3a.',
+      state: 'slightly_offended',
+      tension: 3,
+      choices: [
+        { id: 'f5r_rep', ar: 'معك حق. اختاري عصير خفيف للفريق.', en: 'You are right. Pick light juice for team.', arZ: 'Ma3ik 7a2. Ikhtari 3aseer khafeef lel-faree2.', next: 'f6' },
+        { id: 'f5r_neu', ar: 'تمام، مي وعصير.', en: 'Okay, water and juice.', arZ: 'Tamaam, may w 3aseer.', next: 'f6' },
+      ],
+    },
+    f6: {
+      id: 'f6',
+      speaker: 'Dima',
+      ar: 'انرسل الطلب. يسلمو إلك، سهلت اليوم.',
+      en: 'Order sent. Thanks, you made today easier.',
+      arZ: 'Inrasal el-talab. Yislamo elk, sahhalt el-yom.',
+      state: 'warm',
+      tension: 2,
+      choices: [
+        { id: 'f6_warm', ar: 'ولا يهمك. بكرا أنا برتب الطلب.', en: 'Anytime. Tomorrow I organize the order.', arZ: 'Wala yhemmik. Bokra ana baratteb el-talab.', next: 'f_end_warm' },
+        { id: 'f6_neu', ar: 'تمام، مننسق بكرا كمان.', en: 'Okay, we coordinate tomorrow too.', arZ: 'Tamaam, mnansseq bokra kaman.', next: 'f_end_neu' },
+        { id: 'f6_trap', ar: 'خلص، المهم ييجي بسرعة.', en: 'Done, just let it arrive fast.', arZ: 'Khalas, el-mohem yeeji b-ser3a.', next: 'f_end_neu' },
+      ],
+    },
+    f_end_warm: {
+      id: 'f_end_warm',
+      speaker: 'Dima',
+      ar: 'اتفقنا. وبكرة القهوة عليّ.',
+      en: 'Deal. Tomorrow coffee on me.',
+      arZ: 'Ittafaqna. W bokra el-ahwe 3alay.',
+      state: 'warm',
+      tension: 1,
+      choices: [{ id: 'f_end_warm_c', ar: 'تم.', en: 'Done.', arZ: 'Tam.', next: 'END' }],
+    },
+    f_end_neu: {
+      id: 'f_end_neu',
+      speaker: 'Dima',
+      ar: 'تمام، بنرجع للشغل قبل ما يوصل الأكل.',
+      en: 'Okay, back to work before food arrives.',
+      arZ: 'Tamaam, بنرجع lel-shoghl qabel ma yoosal el-akel.',
+      state: 'neutral',
+      tension: 2,
+      choices: [{ id: 'f_end_neu_c', ar: 'يلا.', en: 'Let us go.', arZ: 'Yalla.', next: 'END' }],
+    },
+    f_end_awk: {
+      id: 'f_end_awk',
+      speaker: 'Dima',
+      ar: 'طيب... أنا بكمل الطلب لحالي.',
+      en: 'Okay... I will finish the order alone.',
+      arZ: 'Tayyeb... ana بكمل el-talab la7ali.',
+      state: 'slightly_offended',
+      tension: 4,
+      choices: [
+        { id: 'f_end_awk_fix', ar: 'استني، آسف. خلينا نكمله سوا.', en: 'Wait, sorry. Let us finish together.', arZ: 'Istanni, asef. Khallina nkammlo sawa.', next: 'f_end_neu' },
+        { id: 'f_end_awk_keep', ar: 'تمام.', en: 'Fine.', arZ: 'Tamaam.', next: 'END' },
+      ],
+    },
     END: {
+      id: 'END',
       speaker: 'System',
       ar: '✅ نهاية المشهد.',
-      en: 'End of scene.',
-      arZ: 'Nehayet el-mashhad.',
+      en: '✅ End of scene.',
+      arZ: '✅ Nehayet el-mashhad.',
+      state: 'neutral',
+      tension: 1,
       choices: [],
     },
   },
