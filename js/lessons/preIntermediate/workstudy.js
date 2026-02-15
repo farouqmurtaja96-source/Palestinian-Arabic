@@ -31,7 +31,7 @@ export const lesson = {
                 id: "taleb",
                 ar: "طالِب / طالْبِة",
                 en: "student (m/f)",
-                enArabeezy: "Taleb / Talbe",
+                enArabeezy: "taleb / talbe",
                 hint: "Person who studies at school or university.",
                 exampleAr: "أنا طالْبَة جامْعِيّة.",
                 exampleArabeezy: "ana talba jam3ya.",
@@ -287,12 +287,12 @@ export const lesson = {
 },
             {
                 id: "dawam_kamel",
-                ar: "بِدَوَّام كامِل",
+                ar: "دَوام كامِل",
                 en: "full-time",
-                enArabeezy: "bidawwam_kamel",
+                enArabeezy: "dawam_kamel",
                 hint: "Full-time work or study schedule.",
-                exampleAr: "أَبوي بِشْتِغِل بِدَوَّام كامِل.",
-                exampleArabeezy: "abwy bshtghl bdwam kaml.",
+                exampleAr: "أَبوي بِشْتِغِل دَوام كامِل.",
+                exampleArabeezy: "abwy bishtighil dawam kamil.",
                 exampleEn: "My father works full-time.",
 },
             {
@@ -535,7 +535,7 @@ export const lesson = {
             {
                 "speaker": "Majd",
                 "ar": "جَدّ؟ وين بَشْتِغِلي؟",
-                "arArabeezy": "jd?wyn bshtghly?",
+                "arArabeezy": "jad? wein bteshtghli?",
                 "en": "Really? Where do you work?"
             },
             {
@@ -546,8 +546,8 @@ export const lesson = {
             },
             {
                 "speaker": "Majd",
-                "ar": "قدّيش ساعات شغلك؟ وكم يوم بتدوامي",
-                "arArabeezy": "qdysh sa3at shghlk?wkm ywm btdwamy",
+                "ar": "قدّيش ساعات شغلك؟ وكم يوم بتدوامي؟",
+                "arArabeezy": "addeish sa3at shoghlek? w kam yom btedawmi?",
                 "en": "How long are your work hours? And how many days do you work?"
             },
             {
@@ -559,7 +559,7 @@ export const lesson = {
             {
                 "speaker": "Majd",
                 "ar": "وطَبْعًا قبل هيك عَندِك مُحاضَرات بِالجامْعَة؟",
-                "arArabeezy": "wtb3a qbl hyk 3ndk m7adrat beljam3a?",
+                "arArabeezy": "w tab3an, qabl heik 3indek mo7adarat bel-jam3a?",
                 "en": "And of course before that you have lectures at the university?"
             },
             {
@@ -770,7 +770,7 @@ Keep numbers consistent with learner level.`,
                 id: "mc_match_5",
                 type: "match",
                 prompt: "Match the English word to Arabic: break",
-                options: ["اِسْتِراحَة", "شُغُل", "وَظِيفَة", "دْوَام / دَوام", "بِدَوَّام كامِل"],
+                options: ["اِسْتِراحَة", "شُغُل", "وَظِيفَة", "دْوَام / دَوام", "دَوام كامِل"],
                 correct: "اِسْتِراحَة",
             },
             {

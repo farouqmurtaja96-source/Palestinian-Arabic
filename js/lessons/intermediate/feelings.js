@@ -143,12 +143,12 @@ export const lesson = {
 },
             {
                 id: "ma_eli_maal",
-                ar: "مش رايق",
+                ar: "ما إلي خِلِق",
                 en: "I’m not in the mood / I don’t feel like it",
                 hint:
-                    "Chunk to refuse softly or explain low energy.",
-                exampleAr: "صحابي بدّهم يطلعوا، بس اليوم مش رايق",
-                exampleArabeezy: "s7aby bdhm ytl3wa, bs elywm msh rayq",
+                    "Palestinian chunk for low mood/energy. Variant: مش رايق.",
+                exampleAr: "صحابي بدّهم يطلعوا، بس اليوم ما إلي خِلِق.",
+                exampleArabeezy: "s7abi biddhom yitla3o, bas elyoom ma ili khili2.",
                 exampleEn: "My friends want to go out, but today I’m not in the mood.",
 },
             {
@@ -162,7 +162,7 @@ export const lesson = {
                 exampleEn: "My energy is low from all the work and study.",
 },
             {
-                id: "bihاجa_istiraaha",
+                id: "bi7aja_istiraaha",
                 ar: "بِحَاجَة لاسْتِرَاحَة",
                 en: "in need of a break",
                 hint:

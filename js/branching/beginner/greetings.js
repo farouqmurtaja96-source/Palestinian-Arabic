@@ -1,4 +1,4 @@
-import { LESSON_ID_GREETING } from '../../core/constants.js';
+﻿import { LESSON_ID_GREETING } from '../../core/constants.js';
 
 export const dialogueId = 'BD::' + LESSON_ID_GREETING;
 
@@ -31,7 +31,7 @@ export const dialogue = {
     g2: {
       id: 'g2',
       speaker: 'Noor',
-      ar: 'منيح! أنا شوي تعبانة، بس اليوم خفيف.',
+      ar: 'منيح! أنا شوية تعبانة، بس اليوم خفيف.',
       en: 'Nice! I am a bit tired, but today is light.',
       arZ: 'Mnee7! Ana shway ta3baneh, bas el-yom khafeef.',
       state: 'tired',
@@ -59,9 +59,9 @@ export const dialogue = {
     g2c: {
       id: 'g2c',
       speaker: 'Noor',
-      ar: 'آه... صباح الخير كمان مهم، مش بس المهام.',
+      ar: 'آه… قول صباح الخير مهم كمان، مش بس الشغل.',
       en: 'Ah... saying good morning matters too, not only tasks.',
-      arZ: 'Ah... saba7 el-kheir kaman mohem, mish bas el-mham.',
+      arZ: 'Ah… 2ol saba7 el-kheir mohem kaman, mish bas el-shoghl.',
       state: 'slightly_offended',
       tension: 3,
       choices: [

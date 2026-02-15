@@ -498,7 +498,7 @@ export const lesson = {
             {
                 "speaker": "Samer",
                 "ar": "جدّ؟ أنا شايف العكس تمامًا.",
-                "arArabeezy": "jd?ana shayf el3ks tmama.",
+                "arArabeezy": "jad? ana shayef el-3aks tamaman.",
                 "en": "Really? I see it completely the opposite."
             },
             {
