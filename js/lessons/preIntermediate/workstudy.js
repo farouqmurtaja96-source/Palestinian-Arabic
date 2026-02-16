@@ -528,9 +528,9 @@ export const lesson = {
             },
             {
                 "speaker": "Sara",
-                "ar": "صباح الخير يا مجد، جدّ جدولي ملخبط! عندي جامعة وشغل.",
-                "arArabeezy": "sba7 elkhyr ya mjd, jd jdwly mlkhbt! 3ndy jam3a wshghl.",
-                "en": "Good morning, Majd, my schedule is crazy! I have university and work."
+                "ar": "صباح الخير يا مجد، جدّ جدولي مليان! عندي جامعة وشغل.",
+                "arArabeezy": "sba7 elkhyr ya mjd, jd jdwly malyaneh! 3ndy jam3a wshghl.",
+                "en": "Good morning, Majd, my schedule is full! I have university and work."
             },
             {
                 "speaker": "Majd",
@@ -546,13 +546,13 @@ export const lesson = {
             },
             {
                 "speaker": "Majd",
-                "ar": "قدّيش ساعات شغلك؟ وكم يوم بتدوامي؟",
-                "arArabeezy": "addeish sa3at shoghlek? w kam yom btedawmi?",
-                "en": "How long are your work hours? And how many days do you work?"
+                "ar": "كم ساعة بتشتغلي وكم يوم بتدوامي؟",
+                "arArabeezy": "Kam sa3a bteshtghli w kam yom btdewami?",
+                "en": "How many hours do you work, and how many days do you work?"
             },
             {
                 "speaker": "Sara",
-                "ar": "مِن التّْنين لَلخَميس، مِن السّاعَة تْنين لَلْخَمْسَة.",
+                "ar": "مِن الاتنين لَلخَميس، مِن السّاعَة 2 لَ 5.",
                 "arArabeezy": "mn eltnyn lelkhmys, mn elsa3a tnyn lelkhmsa.",
                 "en": "From Monday to Thursday, from two o’clock to five."
             },
@@ -570,14 +570,14 @@ export const lesson = {
             },
             {
                 "speaker": "Majd",
-                "ar": "ما بِتْحِسّي إنّو ما عِنْدِك وَقْت فاضي؟",
-                "arArabeezy": "ma bt7sy inw ma 3ndk wqt fady?",
+                "ar": "مش حاسة إنو ما عندِك وقت فراغ؟",
+                "arArabeezy": "Mish 7asseh enno ma 3indik wa2et faraagh?",
                 "en": "Don’t you feel like you have no free time?"
             },
             {
                 "speaker": "Sara",
-                "ar": "بصِراحَةً، نادِرًا ما بْلاقي وَقْت فاضي. لاِزِم أَدْرُس لِلْمَشْروع وِلْاِمْتِحانات كْمان.",
-                "arArabeezy": "bsra7a, nadra ma blaqy wqt fady. lazm adrs lelmshrw3 wlamt7anat kman.",
+                "ar": "بصِراحَةً، نادِرًا ما بْلاقي وَقْت فراغ. لاِزِم أَدْرُس لِلْمَشْروع وِلْاِمْتِحانات كْمان.",
+                "arArabeezy": "bsra7a, nadra ma blaqy wqt faraagh. lazm adrs lelmshrw3 wlamt7anat kman.",
                 "en": "Honestly, I rarely find free time. I have to study for the project and for exams too."
             },
             {
