@@ -39,17 +39,7 @@ export const lesson = {
                 exampleArabeezy: "3ylty mw kbyra, bs ktyr qrybyn mn b3d.",
                 exampleEn: "My family is not big, but we are very close to each other.",
             },
-            {
-                id: "ahl",
-                ar: "أَهْل",
-                en: " parents",
-                enArabeezy: "ahl",
-                hint:
-                    "أَهْل can mean ‘family’ or specifically ‘parents’. أَهْلِي = my family / my parents.",
-                exampleAr: "أَهْلِي سَاكْنِين فِي غَزَّة.",
-                exampleArabeezy: "ahly saknyn fy ghza.",
-                exampleEn: "My family lives in Gaza.",
-            },
+           
 
             // ===== PARENTS =====
             {
@@ -78,12 +68,12 @@ export const lesson = {
             // ===== SIBLINGS & CHILDREN =====
             {
                 id: "akh",
-                ar: "أَخ",
+                ar: "أَخو",
                 en: "brother",
                 enArabeezy: "akh",
                 hint:
                     "أَخ = brother. أَخُوي = my brother. Plural: إِخْوَة = siblings/brothers.",
-                exampleAr: "عِنْدي أَخ أَكبَر مِنّي بِسِنِين.",
+                exampleAr: "عِنْدي أَخو أَكبَر مِنّي بِسِنِين.",
                 exampleArabeezy: "3ndy akh akbr mny bsnyn.",
                 exampleEn: "I have a brother older than me by a few years.",
             },
@@ -99,10 +89,21 @@ export const lesson = {
                 exampleEn: "My sister studies at university.",
             },
             {
+  id: "tawam",
+  ar: "توأم",
+  en: "twin",
+  enArabeezy: "taw'am",
+  hint: "Used for one twin. Plural: توائم (tawa'em).",
+  exampleAr: "أنا وتوأمي بنفس الصف.",
+  exampleArabeezy: "ana w taw'ami b-nafs el-saff.",
+  exampleEn: "My twin and I are in the same class.",
+}
+,
+            {
                 id: "walad",
                 ar: "ابن",
                 en: "son",
-                enArabeezy: "walad",
+                enArabeezy: "íbin",
                 hint: "Can mean boy or son depending on context.",
                 exampleAr: "عندهم ابن واحد وبنتين",
                 exampleArabeezy: "3ndhm abn wa7d wbntyn",
@@ -119,27 +120,38 @@ export const lesson = {
                 exampleEn: "He has a very young daughter.",
             },
             {
-                id: "walad_bint",
-                ar: "وَلَد / بِنْت",
-                en: "boy / girl (and son / daughter)",
-                enArabeezy: "walad_bint",
-                hint:
-                    "وَلَد = boy or son (by context). بِنْت = girl or daughter. بِنْتِي = my daughter.",
-                exampleAr: "عندهم ولد صغير وبنت أكبر منه شوي",
-                exampleArabeezy: "3ndhm wld sghyr wbnt akbr mnh shwy",
-                exampleEn: "They have a little boy and a slightly older girl.",
-            },
+  id: "zawj",
+  ar: "زوج / جوز",
+  en: "husband",
+  enArabeezy: "zawj / joz",
+  hint: "زوج is more formal. In spoken Palestinian Arabic, جوز is more common.",
+  exampleAr: "جوزي مسافر اليوم.",
+  exampleArabeezy: "jozi msaafer el-yom.",
+  exampleEn: "My husband is traveling today.",
+}
+,
             {
-                id: "tifl_atfal",
-                ar: "طِفِل / أَطْفَال",
-                en: "child / children",
-                enArabeezy: "tifl/atfal",
-                hint:
-                    "طِفِل = child (singular). أَطْفَال = children. More neutral than وَلَد / بِنْت.",
-                exampleAr: "الْأَطْفَال بِيِلْعَبُوا بَرَّا الْبَيْت.",
-                exampleArabeezy: "elatfal byl3bwa bra elbyt.",
-                exampleEn: "The children are playing outside the house.",
-            },
+  id: "zawjeh",
+  ar: "زوجة / مَرَة",
+  en: "wife",
+  enArabeezy: "zawjeh / mara",
+  hint: "زوجة is more formal. In spoken Palestinian Arabic, مَرَة is commonly used.",
+  exampleAr: "مرتي بتشتغل بالمستشفى.",
+  exampleArabeezy: "marti bteshtghol bel-mustashfa.",
+  exampleEn: "My wife works at the hospital.",
+}
+,
+{
+  id: "wlad",
+  ar: "ولاد",
+  en: "children / kids",
+  enArabeezy: "wlad",
+  hint: "Common spoken Palestinian word for children. More natural than أطفال in daily speech.",
+  exampleAr: "الوِلاد بيلعبوا بالحارة.",
+  exampleArabeezy: "el-wlad byel3abo bel-7ara.",
+  exampleEn: "The kids are playing in the neighborhood.",
+}
+,
 
             // ===== GRANDPARENTS =====
 
@@ -163,7 +175,17 @@ export const lesson = {
                 exampleArabeezy: "sty tskn qryb mna.",
                 exampleEn: "My grandmother lives near us.",
             },
-
+{
+  id: "7afeed_7afeedeh",
+  ar: "حفيد / حفيدة",
+  en: "grandson / granddaughter",
+  enArabeezy: "7afeed / 7afeedeh",
+  hint: "حفيد = grandson (male). حفيدة = granddaughter (female). Plural: أحفاد (a7faad).",
+  exampleAr: "هادي حفيدتي، وهادا حفيدي.",
+  exampleArabeezy: "hai 7afeedti, w hada 7afeedi.",
+  exampleEn: "This is my granddaughter, and this is my grandson.",
+}
+,
             // ===== UNCLES, AUNTS & COUSINS =====
             {
                 id: "3ammo",
@@ -205,26 +227,54 @@ export const lesson = {
                 exampleArabeezy: "khalty mthl imy tqryba.",
                 exampleEn: "My aunt is almost like my mother.",
             },
-            {
-                id: "walad_3ammi",
-                ar: "وَلاد عَمّي",
-                en: "my cousins (paternal, males/mixed)",
-                enArabeezy: "wlaad_3ammi",
-                hint: "Male/mixed cousins on father’s side.",
-                exampleAr: "وَلاد عَمّي كْمان بِدْرِسوا هُون.",
-                exampleArabeezy: "wlaad 3my kman bdrswa hwn.",
-                exampleEn: "My cousins on my dad’s side also study here.",
-            },
-            {
-                id: "walad_khali",
-                ar: "وَلاد خالي",
-                en: "my cousins (maternal, males/mixed)",
-                enArabeezy: "wlaad_khali",
-                hint: "Male/mixed cousins on mother’s side.",
-                exampleAr: "ولاد خالتي ساكنين برا البلد",
-                exampleArabeezy: "wlaad khalty saknyn bra elbld",
-                exampleEn: "My maternal cousins live outside the town.",
-            },
+              {
+    id: "ibn_bint_3amm",
+    ar: "ابن عم / بنت عم",
+    en: "cousin (father’s brother’s son/daughter)",
+    enArabeezy: "ibn 3amm / bint 3amm",
+    hint:
+        "Used for paternal uncle’s children (father’s brother).",
+    exampleAr: "ابن عمي ساكن قريب منا، وبنت عمي بالجامعة.",
+    exampleArabeezy: "ibn 3ammi saken qareeb menna, w bint 3ammi bel-jam3a.",
+    exampleEn: "My uncle’s son lives near us, and his daughter is at university.",
+}
+,
+{
+    id: "ibn_bint_3ammeh",
+    ar: "ابن عمة / بنت عمة",
+    en: "cousin (father’s sister’s son/daughter)",
+    enArabeezy: "ibn 3ammeh / bint 3ammeh",
+    hint:
+        "Used for paternal aunt’s children (father’s sister).",
+    exampleAr: "ابن عمتي مسافر، وبنت عمتي بتشتغل هون.",
+    exampleArabeezy: "ibn 3ammeti msaafer, w bint 3ammeti bteshtghol hon.",
+    exampleEn: "My aunt’s son is traveling, and her daughter works here.",
+},
+
+           {
+    id: "ibn_bint_khal",
+    ar: "ابن خال / بنت خال",
+    en: "cousin (mother’s brother’s son/daughter)",
+    enArabeezy: "ibn khal / bint khal",
+    hint:
+        "Used for maternal uncle’s children (mother’s brother).",
+    exampleAr: "ابن خالي بلعب كرة، وبنت خالي بتحب الرسم.",
+    exampleArabeezy: "ibn khali byel3ab kora, w bint khali bte7eb el-rasem.",
+    exampleEn: "My uncle’s son plays football, and his daughter likes drawing.",
+}
+,
+{
+    id: "ibn_bint_khaleh",
+    ar: "ابن خالة / بنت خالة",
+    en: "cousin (mother’s sister’s son/daughter)",
+    enArabeezy: "ibn khaleh / bint khaleh",
+    hint:
+        "Used for maternal aunt’s children (mother’s sister).",
+    exampleAr: "ابن خالتي بيسكن بغزة، وبنت خالتي برام الله.",
+    exampleArabeezy: "ibn khalti byesken b-Ghaza, w bint khalti b-Ramallah.",
+    exampleEn: "My aunt’s son lives in Gaza, and her daughter is in Ramallah.",
+}
+,
 
             // ===== RELATIVES & PEOPLE =====
             {
@@ -239,15 +289,16 @@ export const lesson = {
                 exampleEn: "We have relatives in Gaza and relatives abroad.",
             },
             {
-                id: "3areeb",
-                ar: "قَريب / قَريبة",
-                en: "relative (m/f)",
-                enArabeezy: "qarib/qaribeh",
-                hint: "Generic word for one relative (male/female).",
-                exampleAr: "عندنا قرايب كتير برا البلد",
-                exampleArabeezy: "3ndna qrayb ktyr bra elbld",
-                exampleEn: "We have many relatives abroad.",
-            },
+  id: "byqarreb_la",
+  ar: "بيقرب لـ",
+  en: "is related to",
+  enArabeezy: "byqarreb la",
+  hint: "Used to describe family relation. Example: هو بيقربلي = he is related to me.",
+  exampleAr: "هو بيقربلي من جهة أمي.",
+  exampleArabeezy: "howa byqarreb-li men jihet emmi.",
+  exampleEn: "He is related to me from my mother’s side.",
+}
+,
             {
                 id: "nas",
                 ar: "نَاس",
@@ -291,17 +342,7 @@ export const lesson = {
                 exampleArabeezy: "ana asghr wa7d byn ikhwany.",
                 exampleEn: "I’m the youngest among my siblings.",
             },
-            {
-                id: "akbar_asghar",
-                ar: "أَكْبَر / أَصْغَر",
-                en: "older / younger",
-                enArabeezy: "akbar/asghar",
-                hint:
-                    "Use with مِنِّي (than me) or مِنُّه / مِنَّهَا (than him/her). أَكْبَر مِنِّي = older than me. أَصْغَر مِنِّي = younger than me.",
-                exampleAr: "أُخْتِي أَكْبَر مِنِّي، وَأَخُوي أَصْغَر مِنِّي.",
-                exampleArabeezy: "akhty akbr mny, wakhwy asghr mny.",
-                exampleEn: "My sister is older than me, and my brother is younger than me.",
-            },
+          
 
             {
                 id: "2addi",
@@ -325,16 +366,17 @@ export const lesson = {
                 exampleArabeezy: "akhty mtjwza jdyd.",
                 exampleEn: "My sister recently got married.",
             },
-            {
-                id: "3azzab",
-                ar: "عَزابي / عَزابيّة",
-                en: "single (unmarried, m/f)",
-                enArabeezy: "3azabi/3azabiyeh",
-                hint: "Not married.",
-                exampleAr: "أنا لِسّه عَزابي.",
-                exampleArabeezy: "ana lsh 3zaby.",
-                exampleEn: "I’m still single.",
-            },
+          {
+  id: "a3zab_3azba",
+  ar: "أعزب / عَزْابية",
+  en: "single (unmarried, m/f)",
+  enArabeezy: "a3zab / 3azba",
+  hint: "أعزب = single (male). عَزْبا = single (female). In spoken Palestinian Arabic, أعزب is often pronounced عَزَب.",
+  exampleAr: "هو أعزب، وأخته عَزْبا.",
+  exampleArabeezy: "howa a3zab, w okhto 3azba.",
+  exampleEn: "He is single, and his sister is unmarried.",
+}
+,
             {
                 id: "makhtub",
                 ar: "خاطِب / مَخطوبة",
@@ -354,6 +396,38 @@ export const lesson = {
                 exampleAr: "بِنْت خَالْتِي مَكْتُوب كِتَابْهَا مِنْ سَنَة.",
                 exampleArabeezy: "bnt khalty mktwb ktabha mn sna.",
                 exampleEn: "My aunt’s daughter has been engaged for a year.",
+            },
+              {
+    id: "mṭalla2",
+    ar: "مطلّق / مطلّقة",
+    en: "divorced (m/f)",
+    enArabeezy: "mtalla2 / mtalla2a",
+    hint: "Used for someone who is divorced. Masculine: مطلّق. Feminine: مطلّقة.",
+    exampleAr: "هو مطلّق من سنتين، وهي مطلّقة من سنة.",
+    exampleArabeezy: "howa mtalla2 men santeen, w hiyye mtalla2a men sene.",
+    exampleEn: "He has been divorced for two years, and she has been divorced for one year.",
+}
+,
+{
+    id: "armal",
+    ar: "أرمل / أرملة",
+    en: "widower / widow",
+    enArabeezy: "armal / armaleh",
+    hint: "أرمل = widower (male). أرملة = widow (female). Used for someone whose spouse has passed away.",
+    exampleAr: "هو أرمل من خمس سنين، وهي أرملة وعندها ولدين.",
+    exampleArabeezy: "howa armal men khames seneen, w hiyye armaleh w 3endha waladeen.",
+    exampleEn: "He has been a widower for five years, and she is a widow with two children.",
+}
+,
+    {
+                id: "7amay",
+                ar: "حَماي / حَماتي",
+                en: "father-in-law / mother-in-law",
+                enArabeezy: "7amay/7amayeh",
+                hint: "Parents of a spouse.",
+                exampleAr: "حَماي وَحَماتي بيسْكُنوا بِنَفْس البِنَايِة.",
+                exampleArabeezy: "7may w7maty bysknwa bnfs elbnaya.",
+                exampleEn: "My in-laws live in the same building.",
             },
 
             // ===== HAVE & LIVE WITH =====
@@ -391,36 +465,7 @@ export const lesson = {
 
         extra: [
             // ===== MORE STATUS & RELATIONS =====
-            {
-                id: "mutallaq",
-                ar: "مَطَلَّق / مَطَلَّقَة",
-                en: "divorced (m/f)",
-                enArabeezy: "mutallaq/mutallaqa",
-                hint: "Marital status: divorced.",
-                exampleAr: "خالتي مَطَلَّقَة مِن سَنِين.",
-                exampleArabeezy: "khalty mtlqa mn snyn.",
-                exampleEn: "My aunt has been divorced for years.",
-            },
-            {
-                id: "armal",
-                ar: "أَرْمَل / أَرْمَلَة",
-                en: "widower / widow",
-                enArabeezy: "armal/armaleh",
-                hint: "Marital status.",
-                exampleAr: "جارتنا أَرْمَلَة.",
-                exampleArabeezy: "jartna armla.",
-                exampleEn: "Our neighbor is a widow.",
-            },
-            {
-                id: "7amay",
-                ar: "حَماي / حَماتي",
-                en: "father-in-law / mother-in-law",
-                enArabeezy: "7amay/7amayeh",
-                hint: "Parents of a spouse.",
-                exampleAr: "حَماي وَحَماتي بيسْكُنوا بِنَفْس البِنَايِة.",
-                exampleArabeezy: "7may w7maty bysknwa bnfs elbnaya.",
-                exampleEn: "My in-laws live in the same building.",
-            },
+            
 
         ],
     },

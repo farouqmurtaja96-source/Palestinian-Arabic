@@ -247,41 +247,9 @@ export const lesson = {
             ,
 
             // ====== CLASSROOM & ROLE WORDS ======
-            {
-                id: "talib",
-                ar: "طَالِب / طَالْبَة",
-                en: "student",
-                enArabeezy: "taleb / talbeh",
-                hint:
-                    "Masculine: طَالِب, Feminine: طَالْبَة. Used for school or university students.",
-                exampleAr: "أَنَا طَالْبَة فِي الْجَامْعَة.",
-                exampleArabeezy: "ana talbeh fel-jam3a.",
-                exampleEn: "I am a student at the university.",
-            }
-            ,
-            {
-                id: "ustaz",
-                ar: "أُسْتَاذ / أُسْتَاذَة",
-                en: "teacher",
-                enArabeezy: "ostaz / ostaze",
-                hint:
-                    "Masc أُسْتَاذ, fem أُسْتَاذَة. You can call your teacher ‘أُسْتَاذ + name’.",
-                exampleAr: "مَرْحَبَا أُسْتَاذ، كِيف حَالَك الْيَوْم؟",
-                exampleArabeezy: "marhaba ustaz, keef 7alak el-yom?",
-                exampleEn: "Hi teacher, how are you today?",
-            },
-            {
-                id: "dars",
-                ar: "دَرْس",
-                en: "lesson / class",
-                enArabeezy: "dars",
-                hint:
-                    "Used for one lesson or class. Example: دَرْس الْيَوْم = today’s lesson.",
-                exampleAr: "هَادَا أَوَّل دَرْس فِي الْعَرَبِي.",
-                exampleArabeezy: "hada awwal dars fil-3arabi.",
-                exampleEn: "This is the first Arabic lesson.",
-            }
-            ,
+           
+            
+            
 
 
             // ====== POLITENESS & CLOSING ======
@@ -307,6 +275,29 @@ export const lesson = {
                 exampleArabeezy: "shukran ustaz. - 3afwan",
                 exampleEn: "Thank you, teacher. — You’re welcome.",
             },
+             {
+  id: "wala_yhemmak_3ala_rasi",
+  ar: "ولا يهمك، على راسي.",
+  en: "Don’t worry, it’s my pleasure.",
+  enArabeezy: "wala yhemmak, 3ala rasi.",
+  hint: "Very natural Palestinian response. Warm, friendly, and supportive (informal).",
+  exampleAr: "ولا يهمك، على راسي. بأي وقت.",
+  exampleArabeezy: "wala yhemmak, 3ala rasi. bi ay wa2et.",
+  exampleEn: "Don’t worry, it’s my pleasure. Anytime.",
+}
+
+            ,
+            {
+  id: "mumkin_tsa3edni",
+  ar: "ممكن تساعدني؟",
+  en: "Can you help me?",
+  enArabeezy: "mumkin tsa3edni?",
+  hint: "Common polite way to ask for help in Palestinian Arabic.",
+  exampleAr: "ممكن تساعدني بهالموضوع؟",
+  exampleArabeezy: "mumkin tsa3edni b-hal-mawdoo3?",
+  exampleEn: "Can you help me with this matter?",
+}
+,
             {
                 id: "law_samaHt",
                 ar: "لَوْ سَمَحْت",
@@ -341,6 +332,29 @@ export const lesson = {
                 exampleArabeezy: "ma3 es-salameh, bashufak bukra.",
                 exampleEn: "Goodbye, I’ll see you tomorrow.",
             },
+            {
+  id: "bshoofak_2areeb",
+  ar: "بشوفك قريب.",
+  en: "See you soon.",
+  enArabeezy: "bshoofak 2areeb.",
+  hint: "Used casually when saying goodbye. For female: بشوفِك قريب.",
+  exampleAr: "يلا، بشوفك قريب.",
+  exampleArabeezy: "yalla, bshoofak 2areeb.",
+  exampleEn: "Alright, see you soon.",
+}
+
+            ,
+            {
+  id: "yomak_sa3eed",
+  ar: "يومك سعيد.",
+  en: "Have a nice day.",
+  enArabeezy: "yomak sa3eed.",
+  hint: "More formal. In spoken Palestinian Arabic people often say: يومك حلو or نهارك سعيد.",
+  exampleAr: "يلا، يومك سعيد.",
+  exampleArabeezy: "yalla, yomak sa3eed.",
+  exampleEn: "Alright, have a nice day.",
+}
+    ,
             {
                 id: "alla_ma3ak",
                 ar: "الله مَعَك",
