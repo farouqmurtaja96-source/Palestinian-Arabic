@@ -2271,6 +2271,113 @@ select:focus {
     direction: rtl;
 }
 
+.letters-side {
+    display: grid;
+    gap: 12px;
+    direction: ltr;
+}
+
+.letters-panel {
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: #ffffff;
+    padding: 12px 14px;
+}
+
+.letters-panel__title {
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.letters-panel__meta {
+    font-size: 0.78rem;
+    color: #64748b;
+}
+
+.letters-mode {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.letters-mode__btn {
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    color: #0f172a;
+    padding: 6px 10px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.letters-mode__btn.is-active {
+    background: #0f172a;
+    color: #ffffff;
+    border-color: #0f172a;
+}
+
+.letters-focus__glyph {
+    font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
+    font-size: 3rem;
+    line-height: 1.1;
+    text-align: center;
+}
+
+.letters-focus__name {
+    text-align: center;
+    font-weight: 600;
+    margin-top: 6px;
+    margin-bottom: 6px;
+}
+
+.letters-focus__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 6px;
+}
+
+.letters-chip {
+    background: #f1f5f9;
+    color: #0f172a;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.letters-focus__note {
+    font-size: 0.78rem;
+    color: #64748b;
+    text-align: center;
+}
+
+.letters-tiplist {
+    margin: 0;
+    padding-left: 18px;
+    color: #475569;
+    font-size: 0.82rem;
+}
+
+.letters-flow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.letters-flow__step {
+    border: 1px dashed #cbd5f5;
+    border-radius: 999px;
+    padding: 4px 8px;
+    font-size: 0.78rem;
+    color: #1e1b4b;
+    background: #eef2ff;
+}
+
 .letters-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
@@ -2613,6 +2720,9 @@ select:focus {
 @media (max-width: 900px) {
     .letters-layout {
         grid-template-columns: 1fr;
+    }
+    .letters-side {
+        order: 2;
     }
 }
 

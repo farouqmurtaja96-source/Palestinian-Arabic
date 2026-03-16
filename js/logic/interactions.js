@@ -1386,6 +1386,7 @@ const arabicLettersState = {
     tab: "letters",
     selectedForm: "initial",
     initialized: false,
+    mode: "student",
 };
 const arabicLettersModalState = {
     open: false,
@@ -1401,6 +1402,7 @@ function renderArabicLettersScreen() {
     renderArabicLettersExtras();
     renderArabicLettersGrid();
     renderArabicLetterDetail();
+    renderArabicLettersSide();
     renderArabicLettersExercises();
     setArabicLettersTab(arabicLettersState.tab || "letters");
 }
@@ -1461,6 +1463,17 @@ function initArabicLettersScreen() {
         el.addEventListener("click", () => closeLetterModal())
     );
 
+    const lettersSide = $("#lettersSide");
+    if (lettersSide) {
+        lettersSide.addEventListener("click", (event) => {
+            const btn = event.target.closest("[data-letters-mode]");
+            if (!btn) return;
+            const mode = btn.dataset.lettersMode;
+            if (!mode) return;
+            setArabicLettersMode(mode);
+        });
+    }
+
     arabicLettersState.initialized = true;
     renderArabicLettersScreen();
 }
@@ -1479,6 +1492,11 @@ function setArabicLettersTab(tab) {
     });
 }
 
+function setArabicLettersMode(mode) {
+    arabicLettersState.mode = mode === "teacher" ? "teacher" : "student";
+    renderArabicLettersSide();
+}
+
 function renderArabicLettersExtras() {
     const extras = $("#lettersExtras");
     if (!extras) return;
@@ -1492,6 +1510,76 @@ function renderArabicLettersExtras() {
         `
         )
         .join("");
+}
+
+function renderArabicLettersSide() {
+    const side = $("#lettersSide");
+    if (!side) return;
+
+    const letter =
+        arabicLetters.find((item) => item.id === arabicLettersState.selectedId) || arabicLetters[0];
+    const mode = arabicLettersState.mode || "student";
+
+    const tips =
+        mode === "teacher"
+            ? [
+                "Start with sound + example word out loud.",
+                "Show isolated form, then connect it in a short word.",
+                "Highlight if it connects to the left or not.",
+                "Use one quick exercise before moving on.",
+            ]
+            : [
+                "Tap a letter card to open details.",
+                "Say the sound, then read the example word.",
+                "Notice how the shape changes in a word.",
+                "Try one exercise for practice.",
+            ];
+
+    const flow =
+        mode === "teacher"
+            ? ["Model", "Repeat", "Connect", "Check"]
+            : ["See", "Say", "Trace", "Practice"];
+
+    const noteLower = (letter?.note || "").toLowerCase();
+    const connectsLeft = noteLower.includes("does not connect")
+        ? "Does not connect left"
+        : "Connects left";
+
+    side.innerHTML = `
+        <div class="letters-panel">
+            <div class="letters-panel__title">Mode</div>
+            <div class="letters-mode">
+                <button class="letters-mode__btn ${mode === "student" ? "is-active" : ""}" data-letters-mode="student">Student</button>
+                <button class="letters-mode__btn ${mode === "teacher" ? "is-active" : ""}" data-letters-mode="teacher">Teacher</button>
+            </div>
+            <div class="letters-panel__meta">Switch tips and flow to match who is using the screen.</div>
+        </div>
+
+        <div class="letters-panel letters-focus">
+            <div class="letters-panel__title">Current Letter</div>
+            <div class="letters-focus__glyph" lang="ar">${letter?.letter || ""}</div>
+            <div class="letters-focus__name">${letter?.nameEn || ""} (${letter?.nameAr || ""})</div>
+            <div class="letters-focus__chips">
+                <span class="letters-chip">${letter?.sunMoon === "sun" ? "Sun letter" : "Moon letter"}</span>
+                <span class="letters-chip">${connectsLeft}</span>
+            </div>
+            <div class="letters-focus__note">${letter?.note || ""}</div>
+        </div>
+
+        <div class="letters-panel">
+            <div class="letters-panel__title">${mode === "teacher" ? "Teaching Tips" : "Learning Tips"}</div>
+            <ul class="letters-tiplist">
+                ${tips.map((tip) => `<li>${tip}</li>`).join("")}
+            </ul>
+        </div>
+
+        <div class="letters-panel">
+            <div class="letters-panel__title">Quick Flow</div>
+            <div class="letters-flow">
+                ${flow.map((step, i) => `<span class="letters-flow__step">${i + 1}. ${step}</span>`).join("")}
+            </div>
+        </div>
+    `;
 }
 
 function renderArabicLettersGrid() {
@@ -1546,6 +1634,7 @@ function renderArabicLetterDetail() {
     renderLetterFormExample(letter);
     renderLetterFormButtons();
     renderLetterWritingSteps(letter, writingSteps);
+    renderArabicLettersSide();
 }
 
 function selectAdjacentArabicLetter(direction) {
