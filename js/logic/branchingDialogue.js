@@ -96,6 +96,16 @@ function makeDialogueLine({ speaker, text, isArabic }) {
 }
 
 function renderBranching(dialogueId, level, unit) {
+  const isGuest = !!(window.appState && window.appState.currentUser && window.appState.currentUser.role === 'guest');
+  if (isGuest && (level !== 'Beginner' || (unit !== 'Greetings' && unit !== 'Family'))) {
+    if (typeof window.toast === 'function') {
+      window.toast('Guest access is limited to the first two units.');
+    }
+    if (typeof window.showScreen === 'function') {
+      window.showScreen('levels-screen');
+    }
+    return;
+  }
   const student = getCurrentStudent();
   if (!student) {
     showScreen('levels-screen');
@@ -352,35 +362,52 @@ export function renderDialogueOnlyLevels() {
       customUnits[lvl.level].forEach((u) => { if (!allUnits.includes(u)) allUnits.push(u); });
     }
 
-    allUnits.forEach((unitName) => {
-      const pill = document.createElement('div');
-      pill.className = 'unit-pill unit-pill--clickable';
+  const isGuest = !!(window.appState && window.appState.currentUser && window.appState.currentUser.role === 'guest');
+  const guestAllowed = new Set(['Greetings', 'Family']);
 
-      const nameSpan = document.createElement('span');
-      nameSpan.className = 'unit-pill__name';
-      nameSpan.textContent = unitName;
+  allUnits.forEach((unitName) => {
+    const pill = document.createElement('div');
+    pill.className = 'unit-pill';
+
+    const nameSpan = document.createElement('span');
+    nameSpan.className = 'unit-pill__name';
+    nameSpan.textContent = unitName;
 
       const statusSpan = document.createElement('span');
       statusSpan.className = 'unit-pill__status';
 
       // Always visible (Option 1). If no script, we still allow open.
-      const branchingId = findBranchingIdFor(lvl.level, unitName) || `BD::CUSTOM::${lvl.level}::${unitName}`;
+    const branchingId = findBranchingIdFor(lvl.level, unitName) || `BD::CUSTOM::${lvl.level}::${unitName}`;
+    const isLocked = isGuest && (lvl.level !== 'Beginner' || !guestAllowed.has(unitName));
 
-      // progress (lightweight): count steps in history
-      if (student) {
-        const saved = loadBranchState(student.id, branchingId);
-        const steps = saved && Array.isArray(saved.history) ? saved.history.length : 0;
+    // progress (lightweight): count steps in history
+    if (student) {
+      const saved = loadBranchState(student.id, branchingId);
+      const steps = saved && Array.isArray(saved.history) ? saved.history.length : 0;
+      if (isLocked) {
+        statusSpan.textContent = 'Locked (Guest)';
+        pill.classList.add('unit-pill--locked');
+      } else {
         statusSpan.textContent = steps ? `Progress: ${steps} choice(s)` : 'Start dialogue';
         pill.classList.add(steps ? 'unit-pill--mid' : 'unit-pill--low');
+      }
+    } else {
+      if (isLocked) {
+        statusSpan.textContent = 'Locked (Guest)';
+        pill.classList.add('unit-pill--locked');
       } else {
         statusSpan.textContent = 'Start dialogue';
         pill.classList.add('unit-pill--low');
       }
+    }
 
+    if (!isLocked) {
+      pill.classList.add('unit-pill--clickable');
       pill.addEventListener('click', () => {
         const id = findBranchingIdFor(lvl.level, unitName) || branchingId;
         renderBranching(id, lvl.level, unitName);
       });
+    }
 
       pill.appendChild(nameSpan);
       pill.appendChild(statusSpan);

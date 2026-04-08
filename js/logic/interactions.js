@@ -67,6 +67,8 @@ const appState = {
     currentTab: "overview",
     lessonFontSize: 1,
     vocabCoreVisited: {},
+    guestMode: false,
+    guestStudent: null,
 };
 window.appState = appState;
 let backupSettings = {
@@ -127,14 +129,35 @@ function updateAuthUI() {
         if (navTeacher) navTeacher.style.display = "none";
         // لو حابة تخلي Profiles ظاهر قبل تسجيل الدخول، خليه هيك:
         if (navProfiles) navProfiles.style.display = "inline-flex";
+        if (typeof window.setDrawingLayerForRole === "function") {
+            window.setDrawingLayerForRole(null);
+        }
         return;
     }
 
     const { email, role } = appState.currentUser;
 
+    if (role === "guest") {
+        if (authStatus) authStatus.textContent = "GUEST – Limited access";
+        if (btnLogin) btnLogin.style.display = "inline-flex";
+        if (btnLogout) {
+            btnLogout.style.display = "inline-flex";
+            btnLogout.textContent = "Exit Guest";
+        }
+        if (navTeacher) navTeacher.style.display = "none";
+        if (navProfiles) navProfiles.style.display = "none";
+        if (typeof window.setDrawingLayerForRole === "function") {
+            window.setDrawingLayerForRole("guest");
+        }
+        return;
+    }
+
     if (authStatus) authStatus.textContent = `${role.toUpperCase()} – ${email}`;
     if (btnLogin) btnLogin.style.display = "none";
-    if (btnLogout) btnLogout.style.display = "inline-flex";
+    if (btnLogout) {
+        btnLogout.style.display = "inline-flex";
+        btnLogout.textContent = "Logout";
+    }
 
     if (role === "teacher") {
         if (navTeacher) navTeacher.style.display = "inline-flex";
@@ -144,6 +167,9 @@ function updateAuthUI() {
         if (navTeacher) navTeacher.style.display = "none";
         // الطالب ما يشوف صفحة البروفايلات
         if (navProfiles) navProfiles.style.display = "none";
+    }
+    if (typeof window.setDrawingLayerForRole === "function") {
+        window.setDrawingLayerForRole(role);
     }
 }
 
@@ -2141,6 +2167,9 @@ function ensureStudentProgress(student, lessonId) {
 }
 
 function getCurrentStudent() {
+    if (appState.currentUser && appState.currentUser.role === "guest") {
+        return appState.guestStudent || null;
+    }
     return appState.students.find((s) => s.id === appState.currentStudentId) || null;
 }
 
@@ -2314,6 +2343,10 @@ function goToLevels() {
     }
     showScreen("levels-screen");
     $("#currentStudentNameLevels").textContent = getCurrentStudent().name;
+    const btnSwitchProfile = $("#btnSwitchProfile");
+    const btnGoTeacherDashboard = $("#btnGoTeacherDashboard");
+    if (btnSwitchProfile) btnSwitchProfile.style.display = isGuestUser() ? "none" : "inline-flex";
+    if (btnGoTeacherDashboard) btnGoTeacherDashboard.style.display = isGuestUser() ? "none" : "inline-flex";
     renderLevels();
     updateContinueButton();
 }
@@ -2328,6 +2361,11 @@ function goToLessonView(opts = {}) {
     const { teacherMode = null } = opts;
     if (!getCurrentStudent()) {
         goToStudents();
+        return;
+    }
+    if (isGuestUser() && !isGuestAllowedLesson(appState.currentLessonId)) {
+        toast("Guest access is limited to the first two units.");
+        goToLevels();
         return;
     }
     showScreen("lesson-screen");
@@ -2911,13 +2949,20 @@ function renderLevels() {
             const lessonId = findLessonIdFor(lvl.level, unitName);
 
             if (lessonId) {
-                pill.classList.add("unit-pill--clickable");
+                if (isGuestUser() && !isGuestAllowedLesson(lessonId)) {
+                    pill.classList.add("unit-pill--locked");
+                    statusSpan.textContent = "Locked (Guest)";
+                } else {
+                    pill.classList.add("unit-pill--clickable");
+                }
                 if (student) {
                     const progress = getStudentProgress(student, lessonId);
                     const total = Object.keys(progress).length || 1;
                     const completed = Object.values(progress).filter(Boolean).length;
                     const percent = Math.round((completed / total) * 100);
-                    statusSpan.textContent = `Progress: ${completed}/${total} sections`;
+                    if (!statusSpan.textContent) {
+                        statusSpan.textContent = `Progress: ${completed}/${total} sections`;
+                    }
 
                     if (percent >= 80) {
                         pill.classList.add("unit-pill--done");
@@ -2931,11 +2976,13 @@ function renderLevels() {
                     pill.classList.add("unit-pill--low");
                 }
 
-                pill.addEventListener("click", () => {
-                    appState.currentLessonId = lessonId;
-                    appState.currentTab = "overview";
-                    goToLessonView();
-                });
+                if (!pill.classList.contains("unit-pill--locked")) {
+                    pill.addEventListener("click", () => {
+                        appState.currentLessonId = lessonId;
+                        appState.currentTab = "overview";
+                        goToLessonView();
+                    });
+                }
             } else {
                 pill.classList.add("unit-pill--nolesson");
                 statusSpan.textContent = "No lesson template yet";
@@ -3009,6 +3056,19 @@ function updateSectionStatusBadge(sectionKey) {
     badge.className =
         "section-status " + (done ? "section-status--done" : "section-status--todo");
     badge.textContent = done ? "✓ Section completed" : "Section not completed yet";
+}
+
+function isGuestUser() {
+    return !!(appState.currentUser && appState.currentUser.role === "guest");
+}
+
+function isGuestAllowedLesson(lessonId) {
+    if (!lessonId) return false;
+    const lesson = lessons[lessonId];
+    if (!lesson || !lesson.meta) return false;
+    if (lesson.meta.level !== "Beginner") return false;
+    const allowed = new Set(["Greetings", "Family"]);
+    return allowed.has(lesson.meta.unit);
 }
 
 function isGrammarTabEnabled(lesson) {
@@ -5607,6 +5667,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ===== HERO BUTTONS (أنا طالب / أنا مدرس) =====
     const btnHeroStudent = document.getElementById("btnHeroStudent");
     const btnHeroTeacher = document.getElementById("btnHeroTeacher");
+    const btnHeroGuest = document.getElementById("btnHeroGuest");
 
     if (btnHeroStudent) {
         btnHeroStudent.addEventListener("click", () => {
@@ -5621,6 +5682,24 @@ document.addEventListener("DOMContentLoaded", () => {
             // المدرّس → نفتح مودال تسجيل الدخول كـ TEACHER
             console.log("Teacher hero clicked");
             openAuthModal("teacher");
+        });
+    }
+    if (btnHeroGuest) {
+        btnHeroGuest.addEventListener("click", () => {
+            appState.currentUser = { uid: "guest", email: "Guest", role: "guest" };
+            appState.guestMode = true;
+            appState.guestStudent = {
+                id: "guest",
+                name: "Guest",
+                level: "Beginner",
+                progress: {},
+                homeworkNotes: {},
+            };
+            appState.currentStudentId = "guest";
+            appState.currentLessonId = LESSON_ID_GREETING;
+            appState.currentTab = "overview";
+            updateAuthUI();
+            goToLevels();
         });
     }
 
@@ -5973,6 +6052,15 @@ document.addEventListener("DOMContentLoaded", () => {
         .forEach((el) => el.addEventListener("click", closeAuthModal));
 
     document.getElementById("btnLogout").addEventListener("click", () => {
+        if (isGuestUser()) {
+            appState.currentUser = null;
+            appState.guestMode = false;
+            appState.guestStudent = null;
+            appState.currentStudentId = null;
+            updateAuthUI();
+            showScreen("home-screen");
+            return;
+        }
         auth.signOut();
     });
 

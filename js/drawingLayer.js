@@ -8,6 +8,9 @@ let lastPoint = null;
 let activePointerId = null;
 let activePointerType = null;
 let drawingEnabled = false;
+let drawingInitialized = false;
+let drawingUI = null;
+let drawingCtx = null;
 
 function createDrawingUI() {
     const canvas = document.createElement("canvas");
@@ -176,6 +179,7 @@ function attachDrawHandlers(canvas, ctx) {
 }
 
 function initDrawingLayer() {
+    if (drawingInitialized) return;
     const {
         canvas,
         penBtn,
@@ -187,6 +191,8 @@ function initDrawingLayer() {
         toggleBtn,
     } = createDrawingUI();
     const ctx = getCanvasContext(canvas);
+    drawingUI = { canvas, toolbar: document.getElementById("drawing-toolbar"), penBtn, eraserBtn, clearBtn, colorInput, sizeInput, sizeValue, toggleBtn };
+    drawingCtx = ctx;
 
     function syncButtonState() {
         penBtn.classList.toggle("is-active", currentTool === TOOL_PEN);
@@ -237,10 +243,39 @@ function initDrawingLayer() {
     window.addEventListener("resize", () => resizeCanvas(canvas, ctx));
 
     attachDrawHandlers(canvas, ctx);
+    drawingInitialized = true;
 }
 
+function setDrawingLayerVisible(show) {
+    if (!drawingInitialized) {
+        if (!show) return;
+        initDrawingLayer();
+    }
+    if (!drawingUI) return;
+    const { canvas, toolbar } = drawingUI;
+    canvas.style.display = show ? "block" : "none";
+    toolbar.style.display = show ? "flex" : "none";
+    if (!show) {
+        drawingEnabled = false;
+        document.body.classList.remove("drawing-enabled");
+        document.body.classList.remove("drawing-active");
+        document.body.classList.add("drawing-toolbar-collapsed");
+    }
+}
+
+// Expose so auth/UI can toggle by role
+try {
+    window.setDrawingLayerForRole = (role) => {
+        setDrawingLayerVisible(role === "teacher");
+    };
+} catch { }
+
 if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initDrawingLayer);
+    document.addEventListener("DOMContentLoaded", () => {
+        const role = window.appState && window.appState.currentUser && window.appState.currentUser.role;
+        setDrawingLayerVisible(role === "teacher");
+    });
 } else {
-    initDrawingLayer();
+    const role = window.appState && window.appState.currentUser && window.appState.currentUser.role;
+    setDrawingLayerVisible(role === "teacher");
 }
