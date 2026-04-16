@@ -189,8 +189,12 @@ async function ensureGoogleCalendarAccess({ interactive = false } = {}) {
 window.addEventListener('DOMContentLoaded', async () => {
     console.log("Initializing Google Calendar API...");
     try {
-        await initializeGoogleCalendar();
-        console.log("Google Calendar API initialized successfully");
+        const ok = await initializeGoogleCalendar();
+        if (ok) {
+            console.log("Google Calendar API initialized successfully");
+        } else {
+            console.warn("Google Calendar API initialization did not complete.");
+        }
     } catch (error) {
         console.error("Error initializing Google Calendar API:", error);
     }
@@ -225,6 +229,7 @@ async function initializeGoogleCalendar() {
         console.log('Google Calendar API initialized successfully');
         return true;
     } catch (error) {
+        gapiInited = false;
         console.error('Error initializing Google Calendar:', error);
         return false;
     }
@@ -271,7 +276,7 @@ async function connectToGoogleCalendar(callback) {
         console.error('Google Calendar API not initialized');
         console.log("Attempting to initialize Google Calendar API...");
         try {
-            await errorHandler.withTimeout(
+            const ok = await errorHandler.withTimeout(
                 () => initializeGoogleCalendar(),
                 10000,
                 'فشل تهيئة Google Calendar API - انتهت المهلة'
