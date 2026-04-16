@@ -255,7 +255,7 @@ function gisLoaded() {
             client_id: googleCalendarConfig.clientId,
             scope: googleCalendarConfig.scopes,
             callback: '', // defined later
-            redirect_uri: window.location.origin + '/'
+            redirect_uri: googleCalendarConfig.redirectUri || (window.location.origin + window.location.pathname)
         });
         gisInited = true;
         resolve();
