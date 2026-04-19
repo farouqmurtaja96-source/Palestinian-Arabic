@@ -615,6 +615,15 @@ function updateAuthUI() {
     if (typeof window.setDrawingLayerForRole === "function") {
         window.setDrawingLayerForRole(role);
     }
+    updateFloatingChatVisibility();
+}
+
+function updateFloatingChatVisibility() {
+    const floatingChatBtn = document.getElementById("floatingChatBtn");
+    if (!floatingChatBtn) return;
+    const isGuest = appState.currentUser?.role === "guest";
+    const isLevelsScreen = document.getElementById("levels-screen")?.classList.contains("screen--active");
+    floatingChatBtn.style.display = isGuest && isLevelsScreen ? "inline-flex" : "none";
 }
 
 // =============== AUTH STATE LISTENER =================
@@ -2778,6 +2787,7 @@ function showScreen(id) {
     $all(".screen").forEach((sec) =>
         sec.classList.toggle("screen--active", sec.id === id)
     );
+    updateFloatingChatVisibility();
 }
 
 function goToHome() {
