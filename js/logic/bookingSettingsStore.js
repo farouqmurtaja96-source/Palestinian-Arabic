@@ -10,6 +10,18 @@ function defaultDays() {
     };
 }
 
+function getCurrentTeacherUid() {
+    try {
+        return window.firebase?.auth?.()?.currentUser?.uid || "";
+    } catch {
+        return "";
+    }
+}
+
+function getTeacherDocRef(db, uid) {
+    return db.collection("teachers").doc(uid);
+}
+
 export function createInitialBookingSettings() {
     return {
         timezone: "",
@@ -66,6 +78,16 @@ export function saveBookingSettings(storageKey, settings) {
 
 export async function loadBookingSettingsFromCloud(db, currentSettings) {
     try {
+        const uid = getCurrentTeacherUid();
+        if (uid) {
+            const teacherSnap = await getTeacherDocRef(db, uid).get();
+            if (teacherSnap.exists) {
+                const teacherData = teacherSnap.data() || {};
+                if (teacherData.bookingSettings && typeof teacherData.bookingSettings === "object") {
+                    return ensureBookingSettingsShape({ ...currentSettings, ...teacherData.bookingSettings });
+                }
+            }
+        }
         const ref = db.collection("bookingSettings").doc("primary");
         const snap = await ref.get();
         if (snap.exists) {
@@ -77,6 +99,17 @@ export async function loadBookingSettingsFromCloud(db, currentSettings) {
 
 export async function saveBookingSettingsToCloud(db, settings) {
     try {
+        const uid = getCurrentTeacherUid();
+        if (uid) {
+            const ref = getTeacherDocRef(db, uid);
+            await ref.set(
+                {
+                    bookingSettings: settings,
+                },
+                { merge: true }
+            );
+            return;
+        }
         const ref = db.collection("bookingSettings").doc("primary");
         await ref.set(settings, { merge: true });
     } catch {}

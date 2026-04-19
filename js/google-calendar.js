@@ -403,10 +403,20 @@ async function getGoogleCalendarEvents(startDate, endDate) {
         if (!window.bookingSettings || !window.bookingSettings.timezone) {
             console.log("Booking settings not loaded, loading from Firebase...");
             try {
-                const ref = window.db.collection("bookingSettings").doc("primary");
-                const snap = await ref.get();
-                if (snap.exists) {
-                    window.bookingSettings = { ...window.bookingSettings, ...snap.data() };
+                const user = firebase.auth().currentUser;
+                if (user) {
+                    const teacherRef = window.db.collection("teachers").doc(user.uid);
+                    const teacherSnap = await teacherRef.get();
+                    const teacherData = teacherSnap.exists ? (teacherSnap.data() || {}) : {};
+                    if (teacherData.bookingSettings) {
+                        window.bookingSettings = { ...window.bookingSettings, ...teacherData.bookingSettings };
+                    } else {
+                        const ref = window.db.collection("bookingSettings").doc("primary");
+                        const snap = await ref.get();
+                        if (snap.exists) {
+                            window.bookingSettings = { ...window.bookingSettings, ...snap.data() };
+                        }
+                    }
                     console.log("Booking settings loaded from Firebase:", window.bookingSettings);
                 }
             } catch (e) {
@@ -516,10 +526,11 @@ window.importGoogleCalendarEventsToBusyBlocks = async function importGoogleCalen
             return { success: true, message: window.preplyCalendarId ? "No events found in Google or Preply calendars." : "No events found. Add your Preply calendar ID if needed." };
         }
         
-        const bookingRef = firebase.firestore().collection("bookingSettings").doc("primary");
+        const bookingRef = firebase.firestore().collection("teachers").doc(user.uid);
         const bookingSnap = await bookingRef.get();
-        const bookingData = bookingSnap.exists ? bookingSnap.data() : {};
-        const exceptions = Array.isArray(bookingData.exceptions) ? bookingData.exceptions : [];
+        const bookingData = bookingSnap.exists ? (bookingSnap.data() || {}) : {};
+        const teacherBookingSettings = bookingData.bookingSettings || {};
+        const exceptions = Array.isArray(teacherBookingSettings.exceptions) ? teacherBookingSettings.exceptions : [];
         
         let addedCount = 0;
         let skippedCount = 0;
@@ -556,7 +567,7 @@ window.importGoogleCalendarEventsToBusyBlocks = async function importGoogleCalen
             }
         }
         
-        await bookingRef.set({ exceptions }, { merge: true });
+        await bookingRef.set({ bookingSettings: { ...teacherBookingSettings, exceptions } }, { merge: true });
         window.bookingSettings = { ...window.bookingSettings, exceptions };
         
         console.log(`Imported ${addedCount} events, skipped ${skippedCount} existing events`);
@@ -581,10 +592,20 @@ async function createGoogleCalendarEvent(eventData) {
         if (!window.bookingSettings || !window.bookingSettings.timezone) {
             console.log("Booking settings not loaded, loading from Firebase...");
             try {
-                const ref = window.db.collection("bookingSettings").doc("primary");
-                const snap = await ref.get();
-                if (snap.exists) {
-                    window.bookingSettings = { ...window.bookingSettings, ...snap.data() };
+                const user = firebase.auth().currentUser;
+                if (user) {
+                    const teacherRef = window.db.collection("teachers").doc(user.uid);
+                    const teacherSnap = await teacherRef.get();
+                    const teacherData = teacherSnap.exists ? (teacherSnap.data() || {}) : {};
+                    if (teacherData.bookingSettings) {
+                        window.bookingSettings = { ...window.bookingSettings, ...teacherData.bookingSettings };
+                    } else {
+                        const ref = window.db.collection("bookingSettings").doc("primary");
+                        const snap = await ref.get();
+                        if (snap.exists) {
+                            window.bookingSettings = { ...window.bookingSettings, ...snap.data() };
+                        }
+                    }
                     console.log("Booking settings loaded from Firebase:", window.bookingSettings);
                 }
             } catch (e) {

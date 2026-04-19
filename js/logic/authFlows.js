@@ -9,8 +9,7 @@ export async function resolveUserRole({ db, uid, email, savedRole, fallbackRole 
         console.warn("Could not read user profile, using role fallback.", readErr);
     }
 
-    const inferredTeacherRole = canUseTeacherRole(email) ? "teacher" : null;
-    const role = data.role || savedRole || fallbackRole || inferredTeacherRole || "student";
+    const role = data.role || savedRole || fallbackRole || "student";
     return { role, data };
 }
 

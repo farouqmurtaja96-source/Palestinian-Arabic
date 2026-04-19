@@ -23,17 +23,9 @@ service cloud.firestore {
         : "";
     }
 
-    function isAllowedTeacherEmail() {
-      return authEmail() in [
-        "farouqmoh@hotmail.com",
-        "farouqmurtaja96@gmail.com"
-      ];
-    }
-
     function isTeacher() {
       return signedIn() &&
-        requestUserDoc().data.role == "teacher" &&
-        isAllowedTeacherEmail();
+        requestUserDoc().data.role == "teacher";
     }
 
     function isValidEmail(email) {
@@ -63,7 +55,7 @@ service cloud.firestore {
         request.resource.data.email == authEmail() &&
         (
           request.resource.data.role == "student" ||
-          (request.resource.data.role == "teacher" && isAllowedTeacherEmail())
+          request.resource.data.role == "teacher"
         );
 
       allow update: if ownsDoc(uid) &&
@@ -81,14 +73,16 @@ service cloud.firestore {
         isTeacher() &&
         request.resource.data.keys().hasOnly([
           'email', 'name', 'settings', 'googleCalendar',
-          'preplyCalendarId', 'appsScript', 'updatedAt', 'createdAt'
+          'preplyCalendarId', 'appsScript', 'bookingSettings',
+          'contactSettings', 'updatedAt', 'createdAt'
         ]);
 
       allow update: if ownsDoc(uid) &&
         isTeacher() &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'email', 'name', 'settings', 'googleCalendar',
-          'preplyCalendarId', 'appsScript', 'updatedAt'
+          'preplyCalendarId', 'appsScript', 'bookingSettings',
+          'contactSettings', 'updatedAt'
         ]);
 
       allow delete: if false;

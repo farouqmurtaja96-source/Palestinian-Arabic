@@ -6,6 +6,18 @@ export function createInitialContactSettings() {
     };
 }
 
+function getCurrentTeacherUid() {
+    try {
+        return window.firebase?.auth?.()?.currentUser?.uid || "";
+    } catch {
+        return "";
+    }
+}
+
+function getTeacherDocRef(db, uid) {
+    return db.collection("teachers").doc(uid);
+}
+
 export function loadContactSettings(storageKey, currentSettings) {
     try {
         const raw = localStorage.getItem(storageKey);
@@ -24,6 +36,20 @@ export function saveContactSettings(storageKey, settings) {
 
 export async function loadContactSettingsFromCloud(db, currentSettings) {
     try {
+        const uid = getCurrentTeacherUid();
+        if (uid) {
+            const teacherSnap = await getTeacherDocRef(db, uid).get();
+            if (teacherSnap.exists) {
+                const teacherData = teacherSnap.data() || {};
+                const data = teacherData.contactSettings || {};
+                return {
+                    ...currentSettings,
+                    whatsapp: typeof data.whatsapp === "string" ? data.whatsapp : currentSettings.whatsapp,
+                    email: typeof data.email === "string" ? data.email : currentSettings.email,
+                    sitePrice: typeof data.sitePrice === "string" ? data.sitePrice : currentSettings.sitePrice,
+                };
+            }
+        }
         const ref = db.collection("bookingSettings").doc("primary");
         const snap = await ref.get();
         if (snap.exists) {
@@ -41,6 +67,22 @@ export async function loadContactSettingsFromCloud(db, currentSettings) {
 
 export async function saveContactSettingsToCloud(db, firebase, settings) {
     try {
+        const uid = getCurrentTeacherUid();
+        if (uid) {
+            const ref = getTeacherDocRef(db, uid);
+            await ref.set(
+                {
+                    contactSettings: {
+                        whatsapp: settings?.whatsapp || "",
+                        email: settings?.email || "",
+                        sitePrice: settings?.sitePrice || "",
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    },
+                },
+                { merge: true }
+            );
+            return;
+        }
         const ref = db.collection("bookingSettings").doc("primary");
         await ref.set(
             {

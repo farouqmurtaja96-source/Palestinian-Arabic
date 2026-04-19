@@ -1,8 +1,6 @@
-export const ALLOWED_TEACHER_EMAILS = ["farouqmoh@hotmail.com", "farouqmurtaja96@gmail.com"];
-
 export function canUseTeacherRole(email) {
     const normalized = (email || "").trim().toLowerCase();
-    return !!normalized && ALLOWED_TEACHER_EMAILS.includes(normalized);
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized);
 }
 
 export async function ensureTeacherDoc({ db, firebase, uid, email }) {
@@ -39,7 +37,16 @@ export async function ensureTeacherUserDoc({ db, firebase, uid, email }) {
         const ref = db.collection("users").doc(uid);
         const snap = await ref.get();
         if (snap.exists) {
-            return (snap.data() || {}).role === "teacher";
+            const currentData = snap.data() || {};
+            if (currentData.role === "teacher") return true;
+            await ref.set(
+                {
+                    email: email || "",
+                    role: "teacher",
+                },
+                { merge: true }
+            );
+            return true;
         }
         await ref.set({
             email: email || "",

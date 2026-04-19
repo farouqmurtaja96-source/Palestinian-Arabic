@@ -7577,9 +7577,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                     if (err.code === "auth/user-not-found") {
                         // أول مرة → ننشئ حساب مدرس
                         if (errorBox) {
-                            errorBox.textContent = "Teacher account must be created securely in advance. Automatic teacher sign-up is disabled.";
-                        }
-                        return;
+	                            errorBox.textContent = "";
+	                        }
+	                        cred = await auth.createUserWithEmailAndPassword(email, password);
                     } else {
                         throw err;
                     }
