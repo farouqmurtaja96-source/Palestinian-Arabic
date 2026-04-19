@@ -153,6 +153,7 @@ export async function submitGuestBooking({
         const bookingRef = db.collection("bookings").doc();
         let calendarSynced = false;
         let googleCalendarEventId = null;
+        let studentEmailSent = false;
         const appsScriptSync = await createBookingViaAppsScript?.({
             bookingId: bookingRef.id,
             slot: selectedSlot,
@@ -169,6 +170,7 @@ export async function submitGuestBooking({
         if (appsScriptSync?.success) {
             calendarSynced = true;
             googleCalendarEventId = appsScriptSync.eventId || null;
+            studentEmailSent = !!appsScriptSync.studentConfirmationSent;
         }
 
         await bookingRef.set({
@@ -244,10 +246,16 @@ export async function submitGuestBooking({
             console.error("Error sending booking email:", err);
         });
 
-        if (bookingMsg) bookingMsg.textContent = "Booked! You will receive a confirmation email.";
+        if (bookingMsg) {
+            bookingMsg.textContent = studentEmailSent
+                ? "Booked! A confirmation email has been sent."
+                : "Booked successfully.";
+        }
         if (bookingSuccessModal && bookingSuccessText) {
             const tz = bookingSettings.timezone || getLocalTimezone() || "Local time";
-            bookingSuccessText.textContent = `Your lesson is confirmed for ${slot}. Timezone: ${tz}.`;
+            bookingSuccessText.textContent = studentEmailSent
+                ? `Your lesson is confirmed for ${slot}. Timezone: ${tz}. A confirmation email was sent to your inbox.`
+                : `Your lesson is confirmed for ${slot}. Timezone: ${tz}.`;
             bookingSuccessModal.classList.add("modal--open");
         }
         localStorage.setItem("pal_arabic_last_booking_ts", String(Date.now()));

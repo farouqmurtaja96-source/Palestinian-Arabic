@@ -198,6 +198,19 @@ function buildWhatsAppUrl(message) {
     return buildWhatsAppUrlFromSettings(contactSettings, message);
 }
 
+function mergeBusyBlocksLists(existingList, incomingList) {
+    const merged = [];
+    const seen = new Set();
+    [...(Array.isArray(existingList) ? existingList : []), ...(Array.isArray(incomingList) ? incomingList : [])].forEach((block) => {
+        if (!block || !block.date || !block.start || !block.end) return;
+        const key = `${block.date}|${block.start}|${block.end}|${block.sourceEventId || ""}|${block.note || ""}`;
+        if (seen.has(key)) return;
+        seen.add(key);
+        merged.push(block);
+    });
+    return merged.sort((a, b) => `${a.date} ${a.start}`.localeCompare(`${b.date} ${b.start}`));
+}
+
 function isTikTokInAppBrowser() {
     const ua = navigator.userAgent || "";
     return /TikTok|BytedanceWebview|musical_ly/i.test(ua);
@@ -6386,13 +6399,13 @@ document.addEventListener("DOMContentLoaded", async () => {
                 timeZone: bookingSettings.timezone || getLocalTimezone() || "Africa/Cairo",
             });
             if (result?.success && Array.isArray(result.busyBlocks)) {
-                bookingSettings.exceptions = result.busyBlocks;
+                bookingSettings.exceptions = mergeBusyBlocksLists(bookingSettings.exceptions, result.busyBlocks);
                 saveBookingSettings();
                 await saveBookingSettingsToCloud();
                 runtimeBusyBlocks = result.busyBlocks;
                 renderExceptions();
                 await buildBookingSelects();
-                if (appsScriptMsg) appsScriptMsg.textContent = `Imported ${result.busyBlocks.length} busy blocks from Apps Script.`;
+                if (appsScriptMsg) appsScriptMsg.textContent = `Imported ${result.busyBlocks.length} busy blocks from Apps Script and merged them with existing busy times.`;
             } else if (appsScriptMsg) {
                 appsScriptMsg.textContent = result?.message || "Apps Script import failed.";
             }
@@ -7057,6 +7070,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         subscribeWhatsAppBtn.addEventListener("click", () => {
             closeSubscribeModal();
             openWhatsAppWithMessage("Hello, I'm interested in Full Site Access. Can you please provide more information?");
+        });
+    }
+    const floatingChatBtn = document.getElementById("floatingChatBtn");
+    if (floatingChatBtn) {
+        floatingChatBtn.addEventListener("click", () => {
+            openWhatsAppWithMessage("Hello, I want to ask about Palestinian Arabic lessons.");
         });
     }
 

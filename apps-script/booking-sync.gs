@@ -19,9 +19,14 @@ function normalizeEmail_(value) {
   return String(value || '').trim().toLowerCase();
 }
 
-function sendBookingNotificationEmail_(recipient, details) {
+function sendPlainEmail_(recipient, subject, body) {
   const email = normalizeEmail_(recipient);
   if (!email) return false;
+  MailApp.sendEmail(email, subject, body);
+  return true;
+}
+
+function sendBookingNotificationEmail_(recipient, details) {
   const subject = 'New lesson booking: ' + (details.name || 'Student');
   const body = [
     'A new lesson booking was created.',
@@ -36,8 +41,25 @@ function sendBookingNotificationEmail_(recipient, details) {
     'Notes:',
     details.notes || 'None'
   ].join('\n');
-  MailApp.sendEmail(email, subject, body);
-  return true;
+  return sendPlainEmail_(recipient, subject, body);
+}
+
+function sendStudentConfirmationEmail_(recipient, details) {
+  const subject = 'Your lesson booking is confirmed';
+  const body = [
+    'Hello ' + (details.name || 'Student') + ',',
+    '',
+    'Your lesson has been booked successfully.',
+    '',
+    'Date & time: ' + (details.slotLabel || ''),
+    'Teacher timezone: ' + (details.timeZone || ''),
+    'Booking ID: ' + (details.bookingId || ''),
+    '',
+    'If you need to change the booking, please reply to this email or contact us on WhatsApp.',
+    '',
+    'Thank you.'
+  ].join('\n');
+  return sendPlainEmail_(recipient, subject, body);
 }
 
 function normalizeCalendarId_(value) {
@@ -160,6 +182,8 @@ function handleRequest_(e) {
       ].join('\n');
       const event = cal.createEvent('Lesson with ' + name, start, end, { description: description });
       var notificationSent = false;
+      var studentConfirmationSent = false;
+      var slotLabel = Utilities.formatDate(start, timeZone, 'yyyy-MM-dd HH:mm');
       try {
         notificationSent = sendBookingNotificationEmail_(teacherEmail, {
           name: name,
@@ -168,7 +192,15 @@ function handleRequest_(e) {
           notes: notes,
           bookingId: bookingId,
           timeZone: timeZone,
-          slotLabel: Utilities.formatDate(start, timeZone, 'yyyy-MM-dd HH:mm')
+          slotLabel: slotLabel
+        });
+      } catch (mailErr) {}
+      try {
+        studentConfirmationSent = sendStudentConfirmationEmail_(email, {
+          name: name,
+          bookingId: bookingId,
+          timeZone: timeZone,
+          slotLabel: slotLabel
         });
       } catch (mailErr) {}
       return jsonOut({
@@ -176,6 +208,7 @@ function handleRequest_(e) {
         message: 'Booking added to Google Calendar.',
         eventId: event.getId(),
         notificationSent: notificationSent,
+        studentConfirmationSent: studentConfirmationSent,
       });
     }
 

@@ -2468,6 +2468,33 @@ select:focus {
     background-color: var(--danger);
 }
 
+.floating-chat-btn {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 1200;
+    border: 0;
+    border-radius: 999px;
+    padding: 14px 18px;
+    background: linear-gradient(135deg, #25d366, #128c7e);
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 14px 30px rgba(18, 140, 126, 0.28);
+    cursor: pointer;
+}
+
+.floating-chat-btn:hover {
+    transform: translateY(-1px);
+}
+
+@media (max-width: 600px) {
+    .floating-chat-btn {
+        right: 12px;
+        bottom: 12px;
+        padding: 12px 16px;
+    }
+}
+
 /* =========================
    Teacher Dashboard (Light UI)
    ========================= */
