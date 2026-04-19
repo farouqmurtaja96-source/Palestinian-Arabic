@@ -1,6 +1,7 @@
 export function createInitialContactSettings() {
     return {
         whatsapp: "",
+        email: "",
         sitePrice: "",
     };
 }
@@ -30,6 +31,7 @@ export async function loadContactSettingsFromCloud(db, currentSettings) {
             return {
                 ...currentSettings,
                 whatsapp: typeof data.whatsapp === "string" ? data.whatsapp : currentSettings.whatsapp,
+                email: typeof data.contactEmail === "string" ? data.contactEmail : currentSettings.email,
                 sitePrice: typeof data.sitePrice === "string" ? data.sitePrice : currentSettings.sitePrice,
             };
         }
@@ -43,6 +45,7 @@ export async function saveContactSettingsToCloud(db, firebase, settings) {
         await ref.set(
             {
                 whatsapp: settings?.whatsapp || "",
+                contactEmail: settings?.email || "",
                 sitePrice: settings?.sitePrice || "",
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
             },
@@ -74,5 +77,5 @@ export function buildWhatsAppUrl(settings, message) {
     }
     const number = extractWhatsAppNumber(settings);
     if (!number) return null;
-    return `https://api.whatsapp.com/send?phone=${number}&text=${encodeURIComponent(message)}`;
+    return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
 }

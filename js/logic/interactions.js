@@ -217,36 +217,43 @@ function openWhatsAppWithMessage(message) {
     }
 
     const appUrl = `whatsapp://send?phone=${number}&text=${encodeURIComponent(message)}`;
+    const fallbackToWeb = () => {
+        try {
+            window.location.assign(webUrl);
+        } catch {
+            window.open(webUrl, "_blank", "noopener,noreferrer");
+        }
+    };
 
     if (isTikTokInAppBrowser()) {
         try {
             navigator.clipboard?.writeText(webUrl);
         } catch {}
         toast("If TikTok blocks WhatsApp, open in browser or paste the copied link.");
-        window.location.href = webUrl;
+        fallbackToWeb();
         return;
     }
 
-    if (isMobileDevice()) {
-        const fallbackTimer = setTimeout(() => {
-            window.location.href = webUrl;
-        }, 900);
+    const fallbackTimer = setTimeout(() => {
+        fallbackToWeb();
+    }, isMobileDevice() ? 900 : 1200);
 
-        const clearFallback = () => {
-            clearTimeout(fallbackTimer);
-            document.removeEventListener("visibilitychange", clearFallback);
-            window.removeEventListener("pagehide", clearFallback);
-            window.removeEventListener("blur", clearFallback);
-        };
+    const clearFallback = () => {
+        clearTimeout(fallbackTimer);
+        document.removeEventListener("visibilitychange", clearFallback);
+        window.removeEventListener("pagehide", clearFallback);
+        window.removeEventListener("blur", clearFallback);
+    };
 
-        document.addEventListener("visibilitychange", clearFallback, { once: true });
-        window.addEventListener("pagehide", clearFallback, { once: true });
-        window.addEventListener("blur", clearFallback, { once: true });
-        window.location.href = appUrl;
-        return;
+    document.addEventListener("visibilitychange", clearFallback, { once: true });
+    window.addEventListener("pagehide", clearFallback, { once: true });
+    window.addEventListener("blur", clearFallback, { once: true });
+
+    try {
+        window.location.assign(appUrl);
+    } catch {
+        fallbackToWeb();
     }
-
-    window.open(webUrl, "_blank", "noopener,noreferrer");
 }
 
 function ensureEmailJsInit() {
@@ -261,7 +268,7 @@ async function sendBookingEmail(payload) {
     try {
         if (!window.emailjs || typeof window.emailjs.send !== "function") return;
         const params = {
-            to_email: "farouqmurtaja96@gmail.com",
+            to_email: (contactSettings.email || "farouqmurtaja96@gmail.com").trim(),
             student_name: payload.name,
             student_email: payload.email,
             student_phone: payload.phone,
@@ -6030,15 +6037,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     const btnSaveContact = document.getElementById("btnSaveContact");
     const contactSaveMsg = document.getElementById("contactSaveMsg");
     const inputWhatsApp = document.getElementById("contactWhatsApp");
+    const inputContactEmail = document.getElementById("contactEmail");
     const inputSitePrice = document.getElementById("contactSitePrice");
+    const contactEmailValue = document.getElementById("contactEmailValue");
+    const contactWhatsAppValue = document.getElementById("contactWhatsAppValue");
+    function renderContactInfo() {
+        if (contactEmailValue) {
+            contactEmailValue.textContent = contactSettings.email || "Email not set yet";
+        }
+        if (contactWhatsAppValue) {
+            contactWhatsAppValue.textContent = contactSettings.whatsapp || "WhatsApp not set yet";
+        }
+    }
     if (inputWhatsApp) inputWhatsApp.value = contactSettings.whatsapp || "";
+    if (inputContactEmail) inputContactEmail.value = contactSettings.email || "";
     if (inputSitePrice) inputSitePrice.value = contactSettings.sitePrice || "";
+    renderContactInfo();
     if (btnSaveContact) {
         btnSaveContact.addEventListener("click", async () => {
             contactSettings.whatsapp = inputWhatsApp ? inputWhatsApp.value.trim() : "";
+            contactSettings.email = inputContactEmail ? inputContactEmail.value.trim() : "";
             contactSettings.sitePrice = inputSitePrice ? inputSitePrice.value.trim() : "";
             saveContactSettings();
             await saveContactSettingsToCloud();
+            renderContactInfo();
             if (contactSaveMsg) contactSaveMsg.textContent = "Saved.";
             setTimeout(() => {
                 if (contactSaveMsg) contactSaveMsg.textContent = "";
@@ -6796,6 +6818,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             await submitGuestBooking({
                 db,
                 bookingSettings,
+                contactSettings,
                 getLocalTimezone,
                 selectedDate,
                 selectedTime,
@@ -6963,6 +6986,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (trialContactBtn) {
         trialContactBtn.addEventListener("click", () => {
             openWhatsAppWithMessage("Hi! I want to ask about the free 50-minute trial lesson.");
+        });
+    }
+    const trialEmailBtn = document.getElementById("trialEmailBtn");
+    if (trialEmailBtn) {
+        trialEmailBtn.addEventListener("click", () => {
+            const email = (contactSettings.email || "").trim();
+            if (!email) {
+                toast("Contact email not set.");
+                return;
+            }
+            const subject = encodeURIComponent("Question about Palestinian Arabic lessons");
+            const body = encodeURIComponent("Hello,\n\nI want to ask about Palestinian Arabic lessons.");
+            window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
         });
     }
     initArabicLettersScreen();

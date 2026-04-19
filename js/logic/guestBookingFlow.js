@@ -48,6 +48,7 @@ export async function loadBookingStatusByEmail({
 export async function submitGuestBooking({
     db,
     bookingSettings,
+    contactSettings,
     getLocalTimezone,
     selectedDate,
     selectedTime,
@@ -157,6 +158,7 @@ export async function submitGuestBooking({
             slot: selectedSlot,
             durationMinutes: bookingSettings.slotMinutes || 50,
             timeZone: bookingSettings.timezone || getLocalTimezone() || "Africa/Cairo",
+            teacherEmail: (contactSettings?.email || "").trim(),
             name,
             email,
             phone,

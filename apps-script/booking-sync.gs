@@ -11,7 +11,33 @@ function getConfig_() {
     primaryCalendarId: props.getProperty('PRIMARY_CALENDAR_ID') || 'primary',
     preplyCalendarId: normalizeCalendarId_(preplyRaw),
     defaultTimeZone: props.getProperty('DEFAULT_TIMEZONE') || Session.getScriptTimeZone() || 'Africa/Cairo',
+    notificationEmail: props.getProperty('NOTIFICATION_EMAIL') || '',
   };
+}
+
+function normalizeEmail_(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function sendBookingNotificationEmail_(recipient, details) {
+  const email = normalizeEmail_(recipient);
+  if (!email) return false;
+  const subject = 'New lesson booking: ' + (details.name || 'Student');
+  const body = [
+    'A new lesson booking was created.',
+    '',
+    'Student: ' + (details.name || ''),
+    'Email: ' + (details.email || ''),
+    'Phone: ' + (details.phone || ''),
+    'Slot: ' + (details.slotLabel || ''),
+    'Timezone: ' + (details.timeZone || ''),
+    'Booking ID: ' + (details.bookingId || ''),
+    '',
+    'Notes:',
+    details.notes || 'None'
+  ].join('\n');
+  MailApp.sendEmail(email, subject, body);
+  return true;
 }
 
 function normalizeCalendarId_(value) {
@@ -113,6 +139,7 @@ function handleRequest_(e) {
       const phone = req.phone || '';
       const notes = req.notes || '';
       const bookingId = req.bookingId || '';
+      const teacherEmail = normalizeEmail_(req.teacherEmail || config.notificationEmail);
       if (!slot) {
         return jsonOut({ success: false, message: 'Missing slot timestamp.' });
       }
@@ -132,10 +159,23 @@ function handleRequest_(e) {
         'Timezone: ' + timeZone
       ].join('\n');
       const event = cal.createEvent('Lesson with ' + name, start, end, { description: description });
+      var notificationSent = false;
+      try {
+        notificationSent = sendBookingNotificationEmail_(teacherEmail, {
+          name: name,
+          email: email,
+          phone: phone,
+          notes: notes,
+          bookingId: bookingId,
+          timeZone: timeZone,
+          slotLabel: Utilities.formatDate(start, timeZone, 'yyyy-MM-dd HH:mm')
+        });
+      } catch (mailErr) {}
       return jsonOut({
         success: true,
         message: 'Booking added to Google Calendar.',
         eventId: event.getId(),
+        notificationSent: notificationSent,
       });
     }
 

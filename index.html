@@ -532,6 +532,10 @@
                     <input type="text" id="contactWhatsApp" placeholder="+9705xxxxxxx or https://wa.me/..." />
                 </div>
                 <div class="form-field">
+                    <label>Contact / Notification Email</label>
+                    <input type="email" id="contactEmail" placeholder="you@example.com" />
+                </div>
+                <div class="form-field">
                     <label>Full Site Access Price (Optional)</label>
                     <input type="text" id="contactSitePrice" placeholder="e.g. 49" />
                 </div>
@@ -1013,6 +1017,19 @@
                     </div>
                     <div class="upgrade-actions" style="margin-top:8px;">
                         <button id="trialContactBtn" class="btn btn--ghost btn--sm">Contact on WhatsApp</button>
+                        <button id="trialEmailBtn" class="btn btn--outline btn--sm">Contact by Email</button>
+                    </div>
+                    <div class="subscribe-card booking-status-card" style="margin-top:12px;">
+                        <h4>Contact Details</h4>
+                        <p class="small-note">Use WhatsApp or email if you want to ask before booking.</p>
+                        <div class="booking-status-item">
+                            <div><strong>WhatsApp</strong></div>
+                            <div id="contactWhatsAppValue">WhatsApp not set yet</div>
+                        </div>
+                        <div class="booking-status-item">
+                            <div><strong>Email</strong></div>
+                            <div id="contactEmailValue">Email not set yet</div>
+                        </div>
                     </div>
                     <p class="small-note" style="margin-top:8px;">You will receive a confirmation email after booking.</p>
                 </div>
