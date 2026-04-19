@@ -87,6 +87,7 @@ export async function loadBookingSettingsFromCloud(db, currentSettings) {
                     return ensureBookingSettingsShape({ ...currentSettings, ...teacherData.bookingSettings });
                 }
             }
+            return ensureBookingSettingsShape(currentSettings);
         }
         const ref = db.collection("bookingSettings").doc("primary");
         const snap = await ref.get();

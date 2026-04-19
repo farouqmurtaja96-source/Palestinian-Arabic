@@ -146,17 +146,22 @@ function getDefaultBookingSettings() {
     return createDefaultBookingSettings(bookingSettings.timezone || getLocalTimezone() || "Africa/Cairo");
 }
 
+function getScopedStorageKey(baseKey) {
+    const uid = appState.currentUser?.uid || "anonymous";
+    return `${baseKey}:${uid}`;
+}
+
 function ensureBookingSettingsShape() {
     bookingSettings = normalizeBookingSettings(bookingSettings);
 }
 
 function loadBookingSettings() {
-    bookingSettings = loadStoredBookingSettings(LS_BOOKING_SETTINGS_KEY, bookingSettings);
+    bookingSettings = loadStoredBookingSettings(getScopedStorageKey(LS_BOOKING_SETTINGS_KEY), bookingSettings);
     return bookingSettings;
 }
 
 function saveBookingSettings() {
-    saveStoredBookingSettings(LS_BOOKING_SETTINGS_KEY, bookingSettings);
+    saveStoredBookingSettings(getScopedStorageKey(LS_BOOKING_SETTINGS_KEY), bookingSettings);
 }
 
 async function loadBookingSettingsFromCloud() {
@@ -168,12 +173,12 @@ async function saveBookingSettingsToCloud() {
 }
 
 function loadContactSettings() {
-    contactSettings = loadStoredContactSettings(LS_CONTACT_SETTINGS_KEY, contactSettings);
+    contactSettings = loadStoredContactSettings(getScopedStorageKey(LS_CONTACT_SETTINGS_KEY), contactSettings);
     return contactSettings;
 }
 
 function saveContactSettings() {
-    saveStoredContactSettings(LS_CONTACT_SETTINGS_KEY, contactSettings);
+    saveStoredContactSettings(getScopedStorageKey(LS_CONTACT_SETTINGS_KEY), contactSettings);
 }
 
 async function loadContactSettingsFromCloud() {
@@ -652,6 +657,10 @@ function updateAuthUI() {
 	            appState.students = [];
 	            appState.currentStudentId = null;
 	            try { window.preplyCalendarId = null; } catch {}
+	            bookingSettings = getDefaultBookingSettings();
+	            contactSettings = createInitialContactSettings();
+	            loadBookingSettings();
+	            loadContactSettings();
 	        }
 
         // نحدّث الـ localStorage بالدور النهائي
@@ -664,12 +673,14 @@ function updateAuthUI() {
         try { window.refreshGoogleCalendarStatus?.(); } catch { }
         updateAuthUI();
 
-        if (role === "teacher") {
-            await bootstrapTeacherAccess({ db, firebase, uid: user.uid, email: user.email });
-            await syncTeacherStudentsFromCloud?.();
-            renderStudents();
-            renderTeacherPicker();
-            goToTeacherDashboard();
+	        if (role === "teacher") {
+	            await bootstrapTeacherAccess({ db, firebase, uid: user.uid, email: user.email });
+	            await loadContactSettingsFromCloud();
+	            await loadBookingSettingsFromCloud();
+	            await syncTeacherStudentsFromCloud?.();
+	            renderStudents();
+	            renderTeacherPicker();
+	            goToTeacherDashboard();
         } else {
             appState.students = [
                 {
