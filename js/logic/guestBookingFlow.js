@@ -250,26 +250,10 @@ export async function submitGuestBooking({
             notes ? `Notes: ${notes}` : "",
         ].filter(Boolean).join("\n");
 
-        if (!teacherEmailSent) {
-            teacherEmailSent = await sendBookingEmail({
-                recipientEmail: (contactSettings?.email || "").trim(),
-                name,
-                email,
-                phone,
-                notes: combinedNotes,
-                slot,
-                studentTimeZone,
-                studentLocale,
-                teacherTimeZone: bookingSettings.timezone || getLocalTimezone() || "",
-                reasons: reason,
-                level,
-                lessonsPerMonth,
-                countryHint,
-                summary: emailSummary,
-            });
-            if (!teacherEmailSent && !teacherEmailError) {
-                teacherEmailError = "Fallback teacher email via EmailJS failed.";
-            }
+        if (!teacherEmailSent && !teacherEmailError) {
+            teacherEmailError = appsScriptSucceeded
+                ? "Teacher email was not sent by Apps Script."
+                : "Teacher email could not be sent.";
         }
         if (!studentEmailSent) {
             studentEmailSent = await sendBookingEmail({
