@@ -67,6 +67,12 @@ export async function submitGuestBooking({
     loadBookingStatus,
     isLocalDevHost,
 }) {
+    function withDefinedValues(obj) {
+        return Object.fromEntries(
+            Object.entries(obj).filter(([, value]) => value !== undefined)
+        );
+    }
+
     const {
         name,
         email,
@@ -189,7 +195,7 @@ export async function submitGuestBooking({
             appsScriptMessage = appsScriptSync?.message || "";
         }
 
-        await bookingRef.set({
+        await bookingRef.set(withDefinedValues({
             name,
             email,
             phone,
@@ -216,7 +222,7 @@ export async function submitGuestBooking({
                     by: "student",
                 },
             ],
-        });
+        }));
 
         const emailHash = await hashEmail(email);
         await db.collection("publicBookings").doc(bookingRef.id).set({
