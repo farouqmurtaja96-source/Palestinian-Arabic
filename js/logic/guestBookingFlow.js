@@ -250,7 +250,7 @@ export async function submitGuestBooking({
             notes ? `Notes: ${notes}` : "",
         ].filter(Boolean).join("\n");
 
-        if (!teacherEmailSent && !appsScriptSucceeded) {
+        if (!teacherEmailSent) {
             teacherEmailSent = await sendBookingEmail({
                 recipientEmail: (contactSettings?.email || "").trim(),
                 name,
@@ -271,7 +271,7 @@ export async function submitGuestBooking({
                 teacherEmailError = "Fallback teacher email via EmailJS failed.";
             }
         }
-        if (!studentEmailSent && !appsScriptSucceeded) {
+        if (!studentEmailSent) {
             studentEmailSent = await sendBookingEmail({
                 recipientEmail: email,
                 name,
