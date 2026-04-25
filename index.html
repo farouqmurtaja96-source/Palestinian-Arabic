@@ -577,32 +577,37 @@
                 <p id="availabilitySaveMsg" style="font-size:0.8rem; margin-top:4px;"></p>
             </section>
 
-            <section class="teacher-editor__section">
-                <h4>Busy Blocks (Specific Dates)</h4>
-                <p class="teacher-edit-note">
-                    Add one-off busy times for a specific date (appointments, meetings, etc.).
-                </p>
-                <div class="availability-exception">
-                    <div class="form-field form-field--inline">
-                        <label>Date</label>
-                        <input type="date" id="exceptionDate" />
+            <section class="teacher-editor__section teacher-editor__section--collapsible" id="busyBlocksSection">
+                <button class="section-toggle" id="busyBlocksToggle" type="button" aria-expanded="false" aria-controls="busyBlocksBody">
+                    <span>Busy Blocks (Specific Dates)</span>
+                    <span class="section-toggle__icon" aria-hidden="true">⌄</span>
+                </button>
+                <div id="busyBlocksBody" class="collapsible-body" hidden>
+                    <p class="teacher-edit-note">
+                        Add one-off busy times for a specific date (appointments, meetings, etc.).
+                    </p>
+                    <div class="availability-exception">
+                        <div class="form-field form-field--inline">
+                            <label>Date</label>
+                            <input type="date" id="exceptionDate" />
+                        </div>
+                        <div class="form-field form-field--inline">
+                            <label>Start</label>
+                            <input type="time" id="exceptionStart" />
+                        </div>
+                        <div class="form-field form-field--inline">
+                            <label>End</label>
+                            <input type="time" id="exceptionEnd" />
+                        </div>
+                        <div class="form-field form-field--inline">
+                            <label>Note (optional)</label>
+                            <input type="text" id="exceptionNote" placeholder="Meeting, travel, etc." />
+                        </div>
+                        <button id="btnAddException" class="btn btn--outline btn--sm">Add Busy Block</button>
                     </div>
-                    <div class="form-field form-field--inline">
-                        <label>Start</label>
-                        <input type="time" id="exceptionStart" />
-                    </div>
-                    <div class="form-field form-field--inline">
-                        <label>End</label>
-                        <input type="time" id="exceptionEnd" />
-                    </div>
-                    <div class="form-field form-field--inline">
-                        <label>Note (optional)</label>
-                        <input type="text" id="exceptionNote" placeholder="Meeting, travel, etc." />
-                    </div>
-                    <button id="btnAddException" class="btn btn--outline btn--sm">Add Busy Block</button>
+                    <div id="exceptionsList" class="exceptions-list"></div>
+                    <p id="exceptionsMsg" style="font-size:0.8rem; margin-top:4px;"></p>
                 </div>
-                <div id="exceptionsList" class="exceptions-list"></div>
-                <p id="exceptionsMsg" style="font-size:0.8rem; margin-top:4px;"></p>
             </section>
 
             <section class="teacher-editor__section">
@@ -661,6 +666,13 @@
                 <p class="teacher-edit-note">
                     Review, cancel, or reschedule upcoming bookings.
                 </p>
+                <div id="emailUsageStats" class="email-usage-stats">
+                    <div>
+                        <span class="email-usage-stats__label">Emails used</span>
+                        <strong id="emailUsageTotal">0</strong>
+                    </div>
+                    <div id="emailUsageBreakdown" class="small-note">Teacher: 0 · Student: 0 · Cancellations: 0</div>
+                </div>
                 <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
                     <button id="btnClearAllBookings" class="btn btn--outline btn--sm">Clear All Bookings</button>
                     <button id="btnClearBusyBlocks" class="btn btn--ghost btn--sm">Clear Busy Blocks</button>

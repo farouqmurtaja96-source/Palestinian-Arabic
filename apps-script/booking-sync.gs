@@ -69,9 +69,10 @@ function sendStudentConfirmationEmail_(recipient, details) {
 }
 
 function sendCancellationNotificationEmail_(recipient, details) {
-  const subject = 'Lesson booking canceled: ' + (details.bookingId || '');
+  const isReschedule = details.reason === 'reschedule';
+  const subject = (isReschedule ? 'Lesson booking rescheduled: ' : 'Lesson booking canceled: ') + (details.bookingId || '');
   const body = [
-    'A lesson booking was canceled.',
+    isReschedule ? 'A student started a reschedule. The old lesson booking was canceled.' : 'A lesson booking was canceled.',
     '',
     'Booking ID: ' + (details.bookingId || ''),
     'Student: ' + (details.name || ''),
@@ -197,6 +198,7 @@ function handleRequest_(e) {
       const bookingId = req.bookingId || '';
       const timeZone = req.timeZone || config.defaultTimeZone;
       const teacherEmail = normalizeEmail_(req.teacherEmail || config.notificationEmail);
+      const cancelReason = req.cancelReason || '';
       const slot = Number(req.slot || 0);
       const slotLabel = slot ? Utilities.formatDate(new Date(slot), timeZone, 'yyyy-MM-dd HH:mm') : '';
       var calendarDeleted = false;
@@ -232,7 +234,8 @@ function handleRequest_(e) {
           phone: req.phone || '',
           timeZone: timeZone,
           slotLabel: slotLabel,
-          calendarDeleted: calendarDeleted
+          calendarDeleted: calendarDeleted,
+          reason: cancelReason
         });
         if (!cancellationNotificationSent) {
           cancellationNotificationError = teacherEmail ? 'Teacher cancellation email was not accepted.' : 'Teacher email is missing.';

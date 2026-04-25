@@ -6214,6 +6214,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const btnAddException = document.getElementById("btnAddException");
     const exceptionsList = document.getElementById("exceptionsList");
     const exceptionsMsg = document.getElementById("exceptionsMsg");
+    const busyBlocksToggle = document.getElementById("busyBlocksToggle");
+    const busyBlocksBody = document.getElementById("busyBlocksBody");
     const btnConnectGoogleCalendar = document.getElementById("btnConnectGoogleCalendar");
     const btnDisconnectGoogleCalendar = document.getElementById("btnDisconnectGoogleCalendar");
     const btnImportGoogleCalendar = document.getElementById("btnImportGoogleCalendar");
@@ -6231,6 +6233,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     const btnTestPreplyCalendar = document.getElementById("btnTestPreplyCalendar");
     let calendarSyncTimer = null;
     let calendarBusyImportDone = false;
+
+    if (busyBlocksToggle && busyBlocksBody) {
+        busyBlocksToggle.addEventListener("click", () => {
+            const nextOpen = busyBlocksToggle.getAttribute("aria-expanded") !== "true";
+            busyBlocksToggle.setAttribute("aria-expanded", String(nextOpen));
+            busyBlocksBody.hidden = !nextOpen;
+        });
+    }
 
     async function updateGoogleCalendarStatus() {
         if (!calendarStatusIndicator || !calendarStatusText) return;
@@ -6889,6 +6899,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     firebase,
                     bookingId,
                     cancellationTokenHash,
+                    teacherEmail: (contactSettings?.email || "").trim(),
                     bookingCancelMsg,
                     hashEmail,
                     cancelBookingViaAppsScript: window.cancelBookingViaAppsScript,
@@ -6990,7 +7001,31 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Teacher booking list
     const teacherBookingList = document.getElementById("teacherBookingList");
     const teacherBookingMsg = document.getElementById("teacherBookingMsg");
+    const emailUsageTotal = document.getElementById("emailUsageTotal");
+    const emailUsageBreakdown = document.getElementById("emailUsageBreakdown");
     let bookingCache = new Map();
+
+    async function renderEmailUsageStats() {
+        if (!emailUsageTotal || !emailUsageBreakdown || appState.currentUser?.role !== "teacher") return;
+        try {
+            const snap = await db.collection("bookings").limit(500).get();
+            let teacher = 0;
+            let student = 0;
+            let cancellations = 0;
+            snap.forEach((doc) => {
+                const booking = doc.data() || {};
+                if (booking.notificationSent) teacher += 1;
+                if (booking.studentConfirmationSent) student += 1;
+                if (booking.cancellationNotificationSent) cancellations += 1;
+            });
+            const total = teacher + student + cancellations;
+            emailUsageTotal.textContent = String(total);
+            emailUsageBreakdown.textContent = `Teacher: ${teacher} · Student: ${student} · Cancellations: ${cancellations}`;
+        } catch (err) {
+            console.error("Could not load email usage stats:", err);
+            emailUsageBreakdown.textContent = "Unable to load email usage.";
+        }
+    }
 
     async function renderTeacherBookings() {
         bookingCache = await renderTeacherBookingsView({
@@ -7000,6 +7035,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             escapeHtml,
             formatSlotTime,
         });
+        await renderEmailUsageStats();
     }
 
     async function openReschedule(itemEl, booking) {

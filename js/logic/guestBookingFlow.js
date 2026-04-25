@@ -375,6 +375,9 @@ export async function submitGuestBooking({
         await bookingRef.set({
             calendarSynced,
             googleCalendarEventId,
+            notificationSent: teacherEmailSent,
+            studentConfirmationSent: studentEmailSent,
+            calendarInviteSent: studentCalendarInviteSent,
             updatedAt: Date.now(),
         }, { merge: true });
 
@@ -387,6 +390,9 @@ export async function submitGuestBooking({
             updatedAt: Date.now(),
             calendarSynced,
             googleCalendarEventId,
+            notificationSent: teacherEmailSent,
+            studentConfirmationSent: studentEmailSent,
+            calendarInviteSent: studentCalendarInviteSent,
             lockIds,
             cancelTokenHash,
             source: "guest",
@@ -447,6 +453,8 @@ export async function submitGuestBooking({
                     firebase,
                     bookingId: rescheduleTarget.bookingId,
                     cancellationTokenHash: rescheduleTarget.cancellationTokenHash,
+                    teacherEmail: (contactSettings?.email || "").trim(),
+                    cancelReason: "reschedule",
                     bookingCancelMsg: null,
                     hashEmail,
                     cancelBookingViaAppsScript,
@@ -488,6 +496,8 @@ export async function cancelGuestBooking({
     bookingId,
     cancellationToken,
     cancellationTokenHash,
+    teacherEmail,
+    cancelReason,
     bookingCancelMsg,
     hashEmail,
     cancelBookingViaAppsScript,
@@ -525,7 +535,8 @@ export async function cancelGuestBooking({
     const appsScriptResult = await cancelBookingViaAppsScript?.({
         bookingId: cleanId,
         eventId: booking.googleCalendarEventId || "",
-        teacherEmail: "",
+        teacherEmail: (teacherEmail || "").trim(),
+        cancelReason: cancelReason || "",
         name: "Guest",
         email: (bookingStatusEmail?.value || "").trim(),
         phone: "",
