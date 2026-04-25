@@ -11,7 +11,7 @@ function getConfig_() {
     primaryCalendarId: props.getProperty('PRIMARY_CALENDAR_ID') || 'primary',
     preplyCalendarId: normalizeCalendarId_(preplyRaw),
     defaultTimeZone: props.getProperty('DEFAULT_TIMEZONE') || Session.getScriptTimeZone() || 'Africa/Cairo',
-    notificationEmail: props.getProperty('NOTIFICATION_EMAIL') || '',
+    notificationEmail: props.getProperty('NOTIFICATION_EMAIL') || 'farouqmurtaja96@gmail.com',
   };
 }
 

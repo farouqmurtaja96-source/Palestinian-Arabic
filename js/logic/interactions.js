@@ -6608,6 +6608,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let scheduleByDate = new Map();
     let bookingWeekOffset = 0;
     let bookingBuildSeq = 0;
+    let bookingAutoRefreshTimer = null;
     let pendingGuestReschedule = null;
 
     function updateBookingInfo() {
@@ -6848,6 +6849,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     buildBookingSelects();
+    bookingAutoRefreshTimer = setInterval(() => {
+        const subscribeScreen = document.getElementById("subscribe-screen");
+        if (!subscribeScreen?.classList.contains("screen--active")) return;
+        buildBookingSelects({ forceRefresh: true });
+    }, 60000);
     setupBookingPhoneField();
     enableBookingGridDrag();
     try { window.buildBookingSelects = buildBookingSelects; } catch { }
@@ -6901,7 +6907,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     firebase,
                     bookingId,
                     cancellationTokenHash,
-                    teacherEmail: (contactSettings?.email || "").trim(),
+                    teacherEmail: (contactSettings?.email || bookingSettings?.contactEmail || "farouqmurtaja96@gmail.com").trim(),
                     bookingCancelMsg,
                     hashEmail,
                     cancelBookingViaAppsScript: window.cancelBookingViaAppsScript,
@@ -7022,17 +7028,38 @@ document.addEventListener("DOMContentLoaded", async () => {
             privateSnap.forEach((doc) => {
                 seen.set(doc.id, { ...(seen.get(doc.id) || {}), ...(doc.data() || {}) });
             });
-            let teacher = 0;
-            let student = 0;
-            let cancellations = 0;
+            const startOfToday = new Date();
+            startOfToday.setHours(0, 0, 0, 0);
+            const todayStartMs = startOfToday.getTime();
+            const toMillis = (value) => {
+                if (!value) return 0;
+                if (typeof value === "number") return value;
+                if (typeof value.toMillis === "function") return value.toMillis();
+                return Number(value) || 0;
+            };
+            let teacherToday = 0;
+            let studentToday = 0;
+            let cancellationsToday = 0;
+            let totalSaved = 0;
             seen.forEach((booking) => {
-                if (booking.notificationSent) teacher += 1;
-                if (booking.studentConfirmationSent || booking.calendarInviteSent) student += 1;
-                if (booking.cancellationNotificationSent) cancellations += 1;
+                const createdAt = toMillis(booking.createdAt || booking.updatedAt);
+                const canceledAt = toMillis(booking.canceledAt);
+                if (booking.notificationSent) {
+                    totalSaved += 1;
+                    if (createdAt >= todayStartMs) teacherToday += 1;
+                }
+                if (booking.studentConfirmationSent || booking.calendarInviteSent) {
+                    totalSaved += 1;
+                    if (createdAt >= todayStartMs) studentToday += 1;
+                }
+                if (booking.cancellationNotificationSent) {
+                    totalSaved += 1;
+                    if ((canceledAt || createdAt) >= todayStartMs) cancellationsToday += 1;
+                }
             });
-            const total = teacher + student + cancellations;
-            emailUsageTotal.textContent = String(total);
-            emailUsageBreakdown.textContent = `Teacher: ${teacher} · Student: ${student} · Cancellations: ${cancellations}`;
+            const totalToday = teacherToday + studentToday + cancellationsToday;
+            emailUsageTotal.textContent = String(totalToday);
+            emailUsageBreakdown.textContent = `Today: Teacher ${teacherToday} · Student ${studentToday} · Cancellations ${cancellationsToday} · Saved total ${totalSaved}`;
         } catch (err) {
             console.error("Could not load email usage stats:", err);
             emailUsageBreakdown.textContent = "Unable to load email usage.";

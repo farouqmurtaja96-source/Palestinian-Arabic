@@ -66,6 +66,12 @@ export async function loadBookingStatusByEmail({
     }
 }
 
+const DEFAULT_TEACHER_EMAIL = "farouqmurtaja96@gmail.com";
+
+function resolveTeacherEmail(contactSettings, bookingSettings) {
+    return (contactSettings?.email || bookingSettings?.contactEmail || DEFAULT_TEACHER_EMAIL).trim();
+}
+
 function buildBookingLockSegments(slotMs, occupiedMinutes) {
     const stepMs = 30 * 60 * 1000;
     const totalMs = Math.max(30, Number(occupiedMinutes) || 50) * 60 * 1000;
@@ -325,12 +331,13 @@ export async function submitGuestBooking({
             throw reserveErr;
         }
 
+        const teacherEmail = resolveTeacherEmail(contactSettings, bookingSettings);
         const appsScriptSync = await createBookingViaAppsScript?.({
             bookingId: bookingRef.id,
             slot: selectedSlot,
             durationMinutes: bookingSettings.slotMinutes || 50,
             timeZone: bookingSettings.timezone || getLocalTimezone() || "Africa/Cairo",
-            teacherEmail: (contactSettings?.email || bookingSettings.contactEmail || "").trim(),
+            teacherEmail,
             name,
             email,
             phone,
@@ -459,7 +466,7 @@ export async function submitGuestBooking({
                     firebase,
                     bookingId: rescheduleTarget.bookingId,
                     cancellationTokenHash: rescheduleTarget.cancellationTokenHash,
-                    teacherEmail: (contactSettings?.email || "").trim(),
+                    teacherEmail: resolveTeacherEmail(contactSettings, bookingSettings),
                     cancelReason: "reschedule",
                     bookingCancelMsg: null,
                     hashEmail,
@@ -541,7 +548,7 @@ export async function cancelGuestBooking({
     const appsScriptResult = await cancelBookingViaAppsScript?.({
         bookingId: cleanId,
         eventId: booking.googleCalendarEventId || "",
-        teacherEmail: (teacherEmail || "").trim(),
+        teacherEmail: (teacherEmail || DEFAULT_TEACHER_EMAIL).trim(),
         cancelReason: cancelReason || "",
         name: "Guest",
         email: (bookingStatusEmail?.value || "").trim(),
