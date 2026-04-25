@@ -652,9 +652,10 @@ function updateFloatingChatVisibility() {
 
 	        if (role === "teacher") {
 	            await bootstrapTeacherAccess({ db, firebase, uid: user.uid, email: user.email });
-	            await loadContactSettingsFromCloud();
-	            await loadBookingSettingsFromCloud();
-	            await syncTeacherStudentsFromCloud?.();
+            await loadContactSettingsFromCloud();
+            await loadBookingSettingsFromCloud();
+            try { window.refreshGoogleCalendarStatus?.(); } catch { }
+            await syncTeacherStudentsFromCloud?.();
 	            renderStudents();
 	            renderTeacherPicker();
 	            goToTeacherDashboard();

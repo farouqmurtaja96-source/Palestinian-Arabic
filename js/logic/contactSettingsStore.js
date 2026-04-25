@@ -82,6 +82,15 @@ export async function saveContactSettingsToCloud(db, firebase, settings) {
                 },
                 { merge: true }
             );
+            await db.collection("bookingSettings").doc("primary").set(
+                {
+                    whatsapp: settings?.whatsapp || "",
+                    contactEmail: settings?.email || "",
+                    sitePrice: settings?.sitePrice || "",
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                },
+                { merge: true }
+            );
             return;
         }
         const ref = db.collection("bookingSettings").doc("primary");

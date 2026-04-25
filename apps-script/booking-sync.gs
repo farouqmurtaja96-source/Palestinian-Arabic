@@ -148,12 +148,13 @@ function handleRequest_(e) {
 
     if (action === 'test') {
       const primary = CalendarApp.getCalendarById(config.primaryCalendarId);
-      return jsonOut({
-        success: !!primary,
-        message: primary ? 'Apps Script backend is reachable.' : 'Primary calendar not found.',
-        timeZone: config.defaultTimeZone,
-        preplyCalendarId: config.preplyCalendarId || '',
-      });
+        return jsonOut({
+          success: !!primary,
+          message: primary ? 'Apps Script backend is reachable.' : 'Primary calendar not found.',
+          timeZone: config.defaultTimeZone,
+          preplyCalendarId: config.preplyCalendarId || '',
+          notificationEmailConfigured: !!config.notificationEmail,
+        });
     }
 
     if (action === 'getBusy') {
