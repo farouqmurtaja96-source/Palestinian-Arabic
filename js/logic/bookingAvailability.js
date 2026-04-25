@@ -73,29 +73,36 @@ export function isSlotBlockedByException(slotStartMs, slotMinutes, { bookingSett
     });
 }
 
-export async function getBookedSlotsMap(startMs, endMs, { db, bookingSettings }) {
+const bookedSlotsCache = new Map();
+const bookedSlotsCacheTtlMs = 15 * 1000;
+
+export async function getBookedSlotsMap(startMs, endMs, { db, bookingSettings }, { forceRefresh = false } = {}) {
     const booked = new Map();
     const occupiedMinutes = bookingSettings.totalSlotMinutes || bookingSettings.slotMinutes || 50;
-    try {
-        const snap = await db
-            .collection("publicBookings")
-            .where("slot", ">=", startMs - occupiedMinutes * 60000)
-            .where("slot", "<", endMs)
-            .get();
-        snap.forEach((doc) => {
-            const data = doc.data();
-            if (!data || !data.slot) return;
-            const status = (data.status || "booked").toLowerCase();
-            if (status === "canceled") return;
-            booked.set(doc.id, {
-                id: doc.id,
-                start: Number(data.slot),
-                end: Number(data.slot) + occupiedMinutes * 60000,
-                status,
-                ...data,
-            });
+    const cacheKey = `${Math.floor(startMs)}:${Math.floor(endMs)}:${occupiedMinutes}`;
+    const cached = bookedSlotsCache.get(cacheKey);
+    if (!forceRefresh && cached && Date.now() - cached.at < bookedSlotsCacheTtlMs) {
+        return new Map(cached.value);
+    }
+    const snap = await db
+        .collection("publicBookings")
+        .where("slot", ">=", startMs - occupiedMinutes * 60000)
+        .where("slot", "<", endMs)
+        .get();
+    snap.forEach((doc) => {
+        const data = doc.data();
+        if (!data || !data.slot) return;
+        const status = (data.status || "booked").toLowerCase();
+        if (status === "canceled") return;
+        booked.set(doc.id, {
+            id: doc.id,
+            start: Number(data.slot),
+            end: Number(data.slot) + occupiedMinutes * 60000,
+            status,
+            ...data,
         });
-    } catch {}
+    });
+    bookedSlotsCache.set(cacheKey, { at: Date.now(), value: Array.from(booked.entries()) });
     return booked;
 }
 
@@ -111,7 +118,7 @@ export function doesSlotOverlap(slotStartMs, slotMinutes, bookedMap, excludeBook
 export async function findBookingConflict(slotStartMs, deps, { excludeBookingId = null } = {}) {
     const occupiedMinutes = deps.bookingSettings.totalSlotMinutes || deps.bookingSettings.slotMinutes || 50;
     const slotEndMs = slotStartMs + occupiedMinutes * 60000;
-    const booked = await getBookedSlotsMap(slotStartMs, slotEndMs, deps);
+    const booked = await getBookedSlotsMap(slotStartMs, slotEndMs, deps, { forceRefresh: true });
     const match = Array.from(booked.values()).find((booking) => {
         if (!booking || !booking.start || !booking.end) return false;
         if (excludeBookingId && booking.id === excludeBookingId) return false;
@@ -130,7 +137,8 @@ export async function getSchedulableSlots(daysToShow = 14, deps, options = {}) {
     const todayParts = getZonedParts(new Date(now), teacherTimezone);
     const teacherToday = `${todayParts.year}-${String(todayParts.month).padStart(2, "0")}-${String(todayParts.day).padStart(2, "0")}`;
     const teacherDateKeys = [];
-    for (let i = 0; i < daysToShow + 3; i++) {
+    const startOffsetDays = Math.max(0, Number(options.startOffsetDays || 0));
+    for (let i = startOffsetDays; i < startOffsetDays + daysToShow + 3; i++) {
         teacherDateKeys.push(addDaysToDateKey(teacherToday, i));
     }
 
@@ -168,7 +176,7 @@ export async function getSchedulableSlots(daysToShow = 14, deps, options = {}) {
 
     const searchStart = Math.min(...candidateStarts);
     const searchEnd = Math.max(...candidateStarts) + occupiedMinutes * 60000;
-    const booked = await getBookedSlotsMap(searchStart, searchEnd, deps);
+    const booked = await getBookedSlotsMap(searchStart, searchEnd, deps, { forceRefresh: !!options.forceRefresh });
     return candidateStarts
         .map((ts) => {
             const blockedByException = isSlotBlockedByException(ts, occupiedMinutes, { bookingSettings, runtimeBusyBlocks, getLocalTimezone });

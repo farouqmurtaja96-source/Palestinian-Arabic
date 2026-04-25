@@ -15,7 +15,17 @@ export async function loadBookingStatusByEmail({
     }
     try {
         const emailHash = await hashEmail(email);
-        const snap = await db.collection("publicBookings").where("emailHash", "==", emailHash).get();
+        let snap;
+        try {
+            snap = await db
+                .collection("publicBookings")
+                .where("emailHash", "==", emailHash)
+                .orderBy("slot", "desc")
+                .limit(10)
+                .get();
+        } catch {
+            snap = await db.collection("publicBookings").where("emailHash", "==", emailHash).get();
+        }
         const rows = [];
         snap.forEach((doc) => {
             const data = doc.data();
@@ -34,6 +44,7 @@ export async function loadBookingStatusByEmail({
                 const label = status === "canceled" ? "Canceled" : status === "rescheduled" ? "Rescheduled" : status === "pending" ? "Pending" : "Booked";
                 return `
                     <div class="booking-status-item">
+                        <div>Booking ID: <code>${escapeHtml(b.id)}</code></div>
                         <div><strong>${escapeHtml(formatSlotTime(b.slot))}</strong></div>
                         <div>Status: ${escapeHtml(label)}</div>
                     </div>
@@ -43,6 +54,88 @@ export async function loadBookingStatusByEmail({
     } catch {
         if (bookingStatusMsg) bookingStatusMsg.textContent = "Unable to load booking status right now.";
     }
+}
+
+function buildBookingLockSegments(slotMs, occupiedMinutes) {
+    const stepMs = 30 * 60 * 1000;
+    const totalMs = Math.max(30, Number(occupiedMinutes) || 50) * 60 * 1000;
+    const segments = [];
+    for (let segment = slotMs; segment < slotMs + totalMs; segment += stepMs) {
+        segments.push(segment);
+    }
+    return segments;
+}
+
+async function reserveGuestBooking({
+    db,
+    bookingRef,
+    bookingData,
+    occupiedMinutes,
+}) {
+    const segments = buildBookingLockSegments(bookingData.slot, occupiedMinutes);
+    const lockRefs = segments.map((segment) => ({
+        segment,
+        ref: db.collection("bookingLocks").doc(String(segment)),
+    }));
+    const lockIds = lockRefs.map((item) => item.ref.id);
+
+    await db.runTransaction(async (tx) => {
+        for (const item of lockRefs) {
+            const snap = await tx.get(item.ref);
+            const lockData = snap.exists ? (snap.data() || {}) : {};
+            if (snap.exists && lockData.status !== "canceled") {
+                throw new Error("booking-slot-taken");
+            }
+        }
+
+        const dataWithLocks = {
+            ...bookingData,
+            lockIds,
+        };
+
+        tx.set(bookingRef, dataWithLocks);
+        lockRefs.forEach((item) => {
+            tx.set(item.ref, {
+                bookingId: bookingRef.id,
+                slot: bookingData.slot,
+                segment: item.segment,
+                status: "booked",
+                source: "guest",
+                createdAt: bookingData.createdAt,
+                cancelTokenHash: bookingData.cancelTokenHash,
+            });
+        });
+    });
+
+    return { lockIds };
+}
+
+function generateCancellationToken() {
+    const bytes = new Uint8Array(18);
+    crypto.getRandomValues(bytes);
+    return Array.from(bytes)
+        .map((b) => b.toString(36).padStart(2, "0"))
+        .join("")
+        .slice(0, 24)
+        .toUpperCase();
+}
+
+async function releaseReservedLocks({ db, lockIds, cancelTokenHash }) {
+    if (!Array.isArray(lockIds) || !lockIds.length) return;
+    const batch = db.batch();
+    lockIds.forEach((lockId) => {
+        if (!lockId) return;
+        batch.set(
+            db.collection("bookingLocks").doc(String(lockId)),
+            {
+                status: "canceled",
+                canceledAt: Date.now(),
+                cancelTokenHash,
+            },
+            { merge: true }
+        );
+    });
+    await batch.commit();
 }
 
 export async function submitGuestBooking({
@@ -64,6 +157,7 @@ export async function submitGuestBooking({
     hashEmail,
     sendBookingEmail,
     createBookingViaAppsScript,
+    deleteBookingViaAppsScript,
     loadBookingStatus,
     isLocalDevHost,
 }) {
@@ -138,10 +232,11 @@ export async function submitGuestBooking({
         if (bookingMsg) bookingMsg.textContent = "Booking your lesson...";
 
         const slot = slotDate.toLocaleString();
+        await buildBookingSelects({ forceRefresh: true });
         const conflict = await findBookingConflict(selectedSlot);
         if (conflict) {
             if (bookingMsg) bookingMsg.textContent = "That time was just taken. Please choose another slot.";
-            await buildBookingSelects();
+            await buildBookingSelects({ forceRefresh: true });
             return;
         }
 
@@ -167,35 +262,11 @@ export async function submitGuestBooking({
         let teacherEmailError = "";
         let studentEmailError = "";
         let studentCalendarInviteError = "";
-        const appsScriptSync = await createBookingViaAppsScript?.({
-            bookingId: bookingRef.id,
-            slot: selectedSlot,
-            durationMinutes: bookingSettings.slotMinutes || 50,
-            timeZone: bookingSettings.timezone || getLocalTimezone() || "Africa/Cairo",
-            teacherEmail: (contactSettings?.email || "").trim(),
-            name,
-            email,
-            phone,
-            notes: combinedNotes,
-            studentTimeZone,
-            studentLocale,
-        });
-        if (appsScriptSync?.success) {
-            appsScriptSucceeded = true;
-            calendarSynced = true;
-            googleCalendarEventId = appsScriptSync.eventId || null;
-            teacherEmailSent = !!appsScriptSync.notificationSent;
-            studentEmailSent = !!appsScriptSync.studentConfirmationSent;
-            studentCalendarInviteSent = !!appsScriptSync.calendarInviteSent;
-            teacherEmailError = appsScriptSync.notificationError || "";
-            studentEmailError = appsScriptSync.studentConfirmationError || "";
-            studentCalendarInviteError = appsScriptSync.calendarInviteError || "";
-            appsScriptMessage = appsScriptSync.message || "";
-        } else {
-            appsScriptMessage = appsScriptSync?.message || "";
-        }
-
-        await bookingRef.set(withDefinedValues({
+        const now = Date.now();
+        const occupiedMinutes = bookingSettings.totalSlotMinutes || bookingSettings.slotMinutes || 50;
+        const cancellationToken = generateCancellationToken();
+        const cancelTokenHash = await hashEmail(cancellationToken);
+        const bookingData = withDefinedValues({
             name,
             email,
             phone,
@@ -210,28 +281,103 @@ export async function submitGuestBooking({
             countryHint,
             slot: selectedSlot,
             status: "booked",
-            calendarSynced,
-            googleCalendarEventId,
+            calendarSynced: false,
+            googleCalendarEventId: null,
+            cancelTokenHash,
             timezone: bookingSettings.timezone || getLocalTimezone(),
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
+            createdAt: now,
+            updatedAt: now,
             history: [
                 {
-                    at: Date.now(),
+                    at: now,
                     action: "created",
                     by: "student",
                 },
             ],
-        }));
+        });
+        let lockIds = [];
+
+        try {
+            const reservation = await reserveGuestBooking({
+                db,
+                bookingRef,
+                bookingData,
+                occupiedMinutes,
+            });
+            lockIds = reservation.lockIds || [];
+        } catch (reserveErr) {
+            if (reserveErr?.message === "booking-slot-taken") {
+                if (bookingMsg) bookingMsg.textContent = "That time was just taken. Please choose another slot.";
+                await buildBookingSelects({ forceRefresh: true });
+                return;
+            }
+            throw reserveErr;
+        }
+
+        const appsScriptSync = await createBookingViaAppsScript?.({
+            bookingId: bookingRef.id,
+            slot: selectedSlot,
+            durationMinutes: bookingSettings.slotMinutes || 50,
+            timeZone: bookingSettings.timezone || getLocalTimezone() || "Africa/Cairo",
+            teacherEmail: (contactSettings?.email || "").trim(),
+            name,
+            email,
+            phone,
+            notes: combinedNotes,
+            studentTimeZone,
+            studentLocale,
+            cancellationToken,
+        });
+        if (appsScriptSync?.success) {
+            appsScriptSucceeded = true;
+            calendarSynced = true;
+            googleCalendarEventId = appsScriptSync.eventId || null;
+            teacherEmailSent = !!appsScriptSync.notificationSent;
+            studentEmailSent = !!appsScriptSync.studentConfirmationSent;
+            studentCalendarInviteSent = !!appsScriptSync.calendarInviteSent;
+            teacherEmailError = appsScriptSync.notificationError || "";
+            studentEmailError = appsScriptSync.studentConfirmationError || "";
+            studentCalendarInviteError = appsScriptSync.calendarInviteError || "";
+            appsScriptMessage = appsScriptSync.message || "";
+        } else if (appsScriptSync?.code === "calendar-conflict") {
+            await releaseReservedLocks({ db, lockIds, cancelTokenHash });
+            await bookingRef.set({
+                status: "canceled",
+                canceledAt: Date.now(),
+                updatedAt: Date.now(),
+                history: [
+                    ...bookingData.history,
+                    {
+                        at: Date.now(),
+                        action: "calendar_conflict_after_reservation",
+                        by: "system",
+                    },
+                ],
+            }, { merge: true });
+            if (bookingMsg) bookingMsg.textContent = "That time was just taken. Please choose another slot.";
+            await buildBookingSelects({ forceRefresh: true });
+            return;
+        } else {
+            appsScriptMessage = appsScriptSync?.message || "";
+        }
+
+        await bookingRef.set({
+            calendarSynced,
+            googleCalendarEventId,
+            updatedAt: Date.now(),
+        }, { merge: true });
 
         const emailHash = await hashEmail(email);
         await db.collection("publicBookings").doc(bookingRef.id).set({
             slot: selectedSlot,
             status: "booked",
             emailHash,
-            createdAt: Date.now(),
+            createdAt: now,
             updatedAt: Date.now(),
             calendarSynced,
+            googleCalendarEventId,
+            lockIds,
+            cancelTokenHash,
             source: "guest",
         });
 
@@ -308,7 +454,7 @@ export async function submitGuestBooking({
                         : appsScriptMessage
                             ? ` Email sending did not complete: ${[teacherEmailError, studentEmailError, studentCalendarInviteError, appsScriptMessage].filter(Boolean).join(" | ")}`
                             : " No email was sent.";
-            bookingSuccessText.textContent = `Your lesson is confirmed for ${slot}. Timezone: ${tz}.${emailStatus}`;
+            bookingSuccessText.textContent = `Your lesson is confirmed for ${slot}. Timezone: ${tz}. Booking ID: ${bookingRef.id}. Cancellation code: ${cancellationToken}.${emailStatus}`;
             bookingSuccessModal.classList.add("modal--open");
         }
         localStorage.setItem("pal_arabic_last_booking_ts", String(Date.now()));
@@ -318,13 +464,119 @@ export async function submitGuestBooking({
         if (!isLocalDevHost() && window.grecaptcha && typeof window.grecaptcha.reset === "function") {
             window.grecaptcha.reset();
         }
-        await buildBookingSelects();
+        await buildBookingSelects({ forceRefresh: true });
     } catch (err) {
         console.error("Booking failed with error:", err);
-        if (bookingMsg) bookingMsg.textContent = "Booking failed. Please try again.";
+        const isPermissionError = err?.code === "permission-denied" ||
+            String(err?.message || "").toLowerCase().includes("missing or insufficient permissions");
+        if (bookingMsg) {
+            bookingMsg.textContent = isPermissionError
+                ? "Booking failed because Firestore permissions are not updated yet. Please publish the latest Firestore rules and try again."
+                : "Booking failed. Please try again.";
+        }
     } finally {
         if (bookingSubmit) bookingSubmit.classList.remove("is-loading");
         if (bookingSubmitLabel) bookingSubmitLabel.textContent = "Book Now";
         if (bookingSubmit && window.selectedDate && window.selectedTime) bookingSubmit.disabled = false;
     }
+}
+
+export async function cancelGuestBooking({
+    db,
+    firebase,
+    bookingId,
+    cancellationToken,
+    bookingCancelMsg,
+    hashEmail,
+    cancelBookingViaAppsScript,
+    buildBookingSelects,
+    loadBookingStatus,
+    bookingStatusEmail,
+}) {
+    const cleanId = (bookingId || "").trim();
+    const cleanToken = (cancellationToken || "").trim();
+    if (!cleanId || !cleanToken) {
+        if (bookingCancelMsg) bookingCancelMsg.textContent = "Enter booking ID and cancellation code.";
+        return;
+    }
+
+    if (bookingCancelMsg) bookingCancelMsg.textContent = "Canceling booking...";
+    const cancelTokenHash = await hashEmail(cleanToken);
+    const bookingRef = db.collection("bookings").doc(cleanId);
+    const publicRef = db.collection("publicBookings").doc(cleanId);
+    const publicSnap = await publicRef.get();
+    if (!publicSnap.exists) {
+        if (bookingCancelMsg) bookingCancelMsg.textContent = "Booking not found.";
+        return;
+    }
+    const booking = publicSnap.data() || {};
+    if (booking.cancelTokenHash !== cancelTokenHash) {
+        if (bookingCancelMsg) bookingCancelMsg.textContent = "Cancellation code does not match.";
+        return;
+    }
+    if ((booking.status || "").toLowerCase() === "canceled") {
+        if (bookingCancelMsg) bookingCancelMsg.textContent = "This booking is already canceled.";
+        return;
+    }
+
+    const appsScriptResult = await cancelBookingViaAppsScript?.({
+        bookingId: cleanId,
+        eventId: booking.googleCalendarEventId || "",
+        teacherEmail: "",
+        name: "Guest",
+        email: (bookingStatusEmail?.value || "").trim(),
+        phone: "",
+        slot: booking.slot,
+        timeZone: booking.timezone || "",
+    });
+    const calendarDeleted = !!appsScriptResult?.calendarDeleted;
+    const cancellationNotificationSent = !!appsScriptResult?.cancellationNotificationSent;
+    const cancellationNotificationError = appsScriptResult?.cancellationNotificationError || appsScriptResult?.message || "";
+    const now = Date.now();
+
+    const lockIds = Array.isArray(booking.lockIds) ? booking.lockIds : [];
+    await db.runTransaction(async (tx) => {
+        const latestPublicSnap = await tx.get(publicRef);
+        const latestPublic = latestPublicSnap.exists ? (latestPublicSnap.data() || {}) : {};
+        if (latestPublic.cancelTokenHash !== cancelTokenHash) {
+            throw new Error("cancel-token-mismatch");
+        }
+        tx.set(bookingRef, {
+            status: "canceled",
+            canceledAt: now,
+            updatedAt: now,
+            cancelTokenHash,
+            calendarDeleted,
+            cancellationNotificationSent,
+            cancellationNotificationError,
+            history: firebase.firestore.FieldValue.arrayUnion({
+                at: now,
+                action: "canceled",
+                by: "guest",
+            }),
+        }, { merge: true });
+        tx.set(publicRef, {
+            status: "canceled",
+            updatedAt: now,
+            canceledAt: now,
+            cancelTokenHash,
+        }, { merge: true });
+        lockIds.forEach((lockId) => {
+            if (!lockId) return;
+            tx.set(db.collection("bookingLocks").doc(String(lockId)), {
+                status: "canceled",
+                canceledAt: now,
+                cancelTokenHash,
+            }, { merge: true });
+        });
+    });
+
+    if (bookingCancelMsg) {
+        bookingCancelMsg.textContent = cancellationNotificationSent
+            ? "Booking canceled. The teacher was notified."
+            : "Booking canceled. Teacher notification may need manual follow-up.";
+    }
+    await buildBookingSelects?.({ forceRefresh: true });
+    const email = (bookingStatusEmail?.value || booking.email || "").trim();
+    if (email) await loadBookingStatus?.(email);
 }

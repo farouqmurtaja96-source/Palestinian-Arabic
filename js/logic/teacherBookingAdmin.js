@@ -10,11 +10,21 @@ export async function renderTeacherBookings({
     bookingCache.clear();
     try {
         const now = Date.now() - 3600000;
-        const snap = await db
-            .collection("bookings")
-            .orderBy("slot")
-            .limit(200)
-            .get();
+        let snap;
+        try {
+            snap = await db
+                .collection("bookings")
+                .where("slot", ">=", now)
+                .orderBy("slot")
+                .limit(100)
+                .get();
+        } catch {
+            snap = await db
+                .collection("bookings")
+                .orderBy("slot")
+                .limit(200)
+                .get();
+        }
         const items = [];
         snap.forEach((doc) => {
             const data = doc.data();
@@ -107,6 +117,8 @@ export async function openReschedulePanel({
 }
 
 export async function cancelBooking({ db, firebase, bookingId }) {
+    const bookingSnap = await db.collection("bookings").doc(bookingId).get();
+    const bookingData = bookingSnap.exists ? (bookingSnap.data() || {}) : {};
     await db.collection("bookings").doc(bookingId).set(
         {
             status: "canceled",
@@ -126,6 +138,7 @@ export async function cancelBooking({ db, firebase, bookingId }) {
         },
         { merge: true }
     );
+    await releaseBookingLocks({ db, lockIds: bookingData.lockIds });
 }
 
 export async function rescheduleBooking({
@@ -134,33 +147,48 @@ export async function rescheduleBooking({
     bookingId,
     booking,
     newSlot,
+    occupiedMinutes = 60,
 }) {
-    await db.collection("bookings").doc(bookingId).set(
-        {
-            slot: newSlot,
-            status: "rescheduled",
-            rescheduledFrom: booking.slot,
-            rescheduledAt: Date.now(),
-            calendarSynced: false,
-            history: firebase.firestore.FieldValue.arrayUnion({
-                at: Date.now(),
-                action: "rescheduled",
-                by: "teacher",
-                from: booking.slot,
-                to: newSlot,
-            }),
-        },
-        { merge: true }
-    );
-    await db.collection("publicBookings").doc(bookingId).set(
-        {
-            slot: newSlot,
-            status: "rescheduled",
-            updatedAt: Date.now(),
-            calendarSynced: false,
-        },
-        { merge: true }
-    );
+    const newLockIds = await reserveBookingLocks({
+        db,
+        bookingId,
+        slot: newSlot,
+        occupiedMinutes,
+    });
+    try {
+        await db.collection("bookings").doc(bookingId).set(
+            {
+                slot: newSlot,
+                status: "rescheduled",
+                rescheduledFrom: booking.slot,
+                rescheduledAt: Date.now(),
+                updatedAt: Date.now(),
+                calendarSynced: false,
+                lockIds: newLockIds,
+                history: firebase.firestore.FieldValue.arrayUnion({
+                    at: Date.now(),
+                    action: "rescheduled",
+                    by: "teacher",
+                    from: booking.slot,
+                    to: newSlot,
+                }),
+            },
+            { merge: true }
+        );
+        await db.collection("publicBookings").doc(bookingId).set(
+            {
+                slot: newSlot,
+                status: "rescheduled",
+                updatedAt: Date.now(),
+                calendarSynced: false,
+            },
+            { merge: true }
+        );
+        await releaseBookingLocks({ db, lockIds: booking.lockIds });
+    } catch (err) {
+        await releaseBookingLocks({ db, lockIds: newLockIds });
+        throw err;
+    }
 }
 
 export async function clearAllBookings({ db }) {
@@ -179,4 +207,60 @@ export async function clearAllBookings({ db }) {
             await db.collection("publicBookings").doc(doc.id).delete();
         }
     } while (!publicSnap.empty);
+
+    let lockSnap;
+    do {
+        lockSnap = await db.collection("bookingLocks").limit(300).get();
+        for (const doc of lockSnap.docs) {
+            await db.collection("bookingLocks").doc(doc.id).delete();
+        }
+    } while (!lockSnap.empty);
+}
+
+function buildBookingLockSegments(slotMs, occupiedMinutes) {
+    const stepMs = 30 * 60 * 1000;
+    const totalMs = Math.max(30, Number(occupiedMinutes) || 60) * 60 * 1000;
+    const segments = [];
+    for (let segment = slotMs; segment < slotMs + totalMs; segment += stepMs) {
+        segments.push(segment);
+    }
+    return segments;
+}
+
+async function reserveBookingLocks({ db, bookingId, slot, occupiedMinutes }) {
+    const segments = buildBookingLockSegments(slot, occupiedMinutes);
+    const lockRefs = segments.map((segment) => ({
+        segment,
+        ref: db.collection("bookingLocks").doc(String(segment)),
+    }));
+    const lockIds = lockRefs.map((item) => item.ref.id);
+    await db.runTransaction(async (tx) => {
+        for (const item of lockRefs) {
+            const snap = await tx.get(item.ref);
+            if (snap.exists) {
+                throw new Error("booking-slot-taken");
+            }
+        }
+        lockRefs.forEach((item) => {
+            tx.set(item.ref, {
+                bookingId,
+                slot,
+                segment: item.segment,
+                status: "booked",
+                source: "guest",
+                createdAt: Date.now(),
+            });
+        });
+    });
+    return lockIds;
+}
+
+async function releaseBookingLocks({ db, lockIds }) {
+    if (!Array.isArray(lockIds) || !lockIds.length) return;
+    const batch = db.batch();
+    lockIds.forEach((lockId) => {
+        if (!lockId) return;
+        batch.delete(db.collection("bookingLocks").doc(String(lockId)));
+    });
+    await batch.commit();
 }

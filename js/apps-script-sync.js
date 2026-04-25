@@ -23,11 +23,24 @@ function normalizeWebAppUrl(url) {
     return (url || "").trim();
 }
 
+let cachedAppsScriptWebAppUrl = "";
+let cachedAppsScriptWebAppUrlAt = 0;
+const appsScriptWebAppUrlTtlMs = 5 * 60 * 1000;
+
 async function getAppsScriptWebAppUrl() {
+    if (cachedAppsScriptWebAppUrlAt && Date.now() - cachedAppsScriptWebAppUrlAt < appsScriptWebAppUrlTtlMs) {
+        return cachedAppsScriptWebAppUrl;
+    }
     const teacherSettings = await readTeacherAppsScriptSettings();
-    if (teacherSettings.webAppUrl) return normalizeWebAppUrl(teacherSettings.webAppUrl);
+    if (teacherSettings.webAppUrl) {
+        cachedAppsScriptWebAppUrl = normalizeWebAppUrl(teacherSettings.webAppUrl);
+        cachedAppsScriptWebAppUrlAt = Date.now();
+        return cachedAppsScriptWebAppUrl;
+    }
     const bookingData = await readBookingSettingsDoc();
-    return normalizeWebAppUrl(bookingData.appsScript?.webAppUrl || "");
+    cachedAppsScriptWebAppUrl = normalizeWebAppUrl(bookingData.appsScript?.webAppUrl || "");
+    cachedAppsScriptWebAppUrlAt = Date.now();
+    return cachedAppsScriptWebAppUrl;
 }
 
 async function callAppsScript(action, payload = {}, { allowGet = false } = {}) {
@@ -65,6 +78,8 @@ async function saveAppsScriptSettings({ webAppUrl }) {
     const user = window.firebase?.auth()?.currentUser;
     if (!user) return { success: false, message: "Teacher is not logged in." };
     const normalizedUrl = normalizeWebAppUrl(webAppUrl);
+    cachedAppsScriptWebAppUrl = normalizedUrl;
+    cachedAppsScriptWebAppUrlAt = Date.now();
     let teacherWriteOk = false;
     let bookingWriteOk = false;
     let lastError = null;
@@ -115,6 +130,14 @@ async function fetchBusyBlocksFromAppsScript({ days = 30, timeZone = "Africa/Cai
 
 async function createBookingViaAppsScript(payload) {
     return callAppsScript("createBooking", payload);
+}
+
+async function deleteBookingViaAppsScript({ eventId }) {
+    return callAppsScript("deleteEvent", { eventId });
+}
+
+async function cancelBookingViaAppsScript(payload) {
+    return callAppsScript("cancelBooking", payload);
 }
 
 async function syncPendingBookingsViaAppsScript({ limit = 10 } = {}) {
@@ -178,4 +201,6 @@ window.saveAppsScriptSettings = saveAppsScriptSettings;
 window.testAppsScriptConnection = testAppsScriptConnection;
 window.fetchBusyBlocksFromAppsScript = fetchBusyBlocksFromAppsScript;
 window.createBookingViaAppsScript = createBookingViaAppsScript;
+window.deleteBookingViaAppsScript = deleteBookingViaAppsScript;
+window.cancelBookingViaAppsScript = cancelBookingViaAppsScript;
 window.syncPendingBookingsViaAppsScript = syncPendingBookingsViaAppsScript;

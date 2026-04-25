@@ -996,6 +996,10 @@
                             </div>
                         </div>
                         <div class="form-field">
+                            <label>Notes</label>
+                            <textarea id="bookingNotes" rows="3" placeholder="Goals, questions, or scheduling notes"></textarea>
+                        </div>
+                        <div class="form-field">
                             <div class="g-recaptcha" data-sitekey="6LcLRrcsAAAAALQlPoVFVTbOuGPoqvKaCiniUMfV"></div>
                         </div>
                         <button type="submit" class="btn btn--primary btn--sm" id="bookingSubmit" disabled>
@@ -1004,22 +1008,36 @@
                         </button>
                         <p id="bookingMsg" style="font-size:0.85rem; margin-top:6px;"></p>
                     </form>
-                    <div class="subscribe-card booking-status-card">
-                        <h4>Your Booking Status</h4>
-                        <p class="small-note">Enter your email to view booked, pending, or canceled lessons.</p>
-                        <div class="form-field">
-                            <label>Email</label>
-                            <input type="email" id="bookingStatusEmail" placeholder="Enter your email" />
-                        </div>
-                        <button id="bookingStatusBtn" class="btn btn--outline btn--sm">Check Status</button>
-                        <div id="bookingStatusList" class="booking-status-list"></div>
-                        <p id="bookingStatusMsg" style="font-size:0.85rem; margin-top:6px;"></p>
-                    </div>
                     <div class="upgrade-actions" style="margin-top:8px;">
                         <button id="trialContactBtn" class="btn btn--ghost btn--sm">Contact on WhatsApp</button>
                         <button id="trialEmailBtn" class="btn btn--outline btn--sm">Contact by Email</button>
                     </div>
                     <p class="small-note" style="margin-top:8px;">After booking, the teacher gets an email notification and you may receive a confirmation email too.</p>
+                </div>
+                <div class="subscribe-card booking-status-card">
+                    <h4>Your Booking Status</h4>
+                    <p class="small-note">Enter your email to view booked, pending, or canceled lessons.</p>
+                    <div class="form-field">
+                        <label>Email</label>
+                        <input type="email" id="bookingStatusEmail" placeholder="Enter your email" />
+                    </div>
+                    <button id="bookingStatusBtn" class="btn btn--outline btn--sm">Check Status</button>
+                    <div id="bookingStatusList" class="booking-status-list"></div>
+                    <p id="bookingStatusMsg" style="font-size:0.85rem; margin-top:6px;"></p>
+                    <div class="booking-cancel-box">
+                        <h4>Cancel a Booking</h4>
+                        <p class="small-note">Use the booking ID and cancellation code from your confirmation email.</p>
+                        <div class="form-field">
+                            <label>Booking ID</label>
+                            <input type="text" id="bookingCancelId" placeholder="Booking ID" />
+                        </div>
+                        <div class="form-field">
+                            <label>Cancellation Code</label>
+                            <input type="text" id="bookingCancelToken" placeholder="Cancellation code" />
+                        </div>
+                        <button id="bookingCancelBtn" class="btn btn--ghost btn--sm" type="button">Cancel Booking</button>
+                        <p id="bookingCancelMsg" style="font-size:0.85rem; margin-top:6px;"></p>
+                    </div>
                 </div>
             </div>
         </div>

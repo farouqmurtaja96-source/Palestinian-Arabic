@@ -58,10 +58,29 @@ function sendStudentConfirmationEmail_(recipient, details) {
     'Date & time: ' + (details.slotLabel || ''),
     'Teacher timezone: ' + (details.timeZone || ''),
     'Booking ID: ' + (details.bookingId || ''),
+    'Cancellation code: ' + (details.cancellationToken || ''),
     '',
+    'If you need to cancel, use the booking ID and cancellation code on the booking page.',
     'If you need to change the booking, please reply to this email or contact us on WhatsApp.',
     '',
     'Thank you.'
+  ].join('\n');
+  return sendPlainEmail_(recipient, subject, body);
+}
+
+function sendCancellationNotificationEmail_(recipient, details) {
+  const subject = 'Lesson booking canceled: ' + (details.bookingId || '');
+  const body = [
+    'A lesson booking was canceled.',
+    '',
+    'Booking ID: ' + (details.bookingId || ''),
+    'Student: ' + (details.name || ''),
+    'Email: ' + (details.email || ''),
+    'Phone: ' + (details.phone || ''),
+    'Slot: ' + (details.slotLabel || ''),
+    'Timezone: ' + (details.timeZone || ''),
+    '',
+    'Calendar event deleted: ' + (details.calendarDeleted ? 'yes' : 'no')
   ].join('\n');
   return sendPlainEmail_(recipient, subject, body);
 }
@@ -156,6 +175,82 @@ function handleRequest_(e) {
       });
     }
 
+    if (action === 'deleteEvent') {
+      const eventId = req.eventId || '';
+      if (!eventId) {
+        return jsonOut({ success: false, message: 'Missing event ID.' });
+      }
+      const cal = CalendarApp.getCalendarById(config.primaryCalendarId);
+      if (!cal) {
+        return jsonOut({ success: false, message: 'Primary calendar not found.' });
+      }
+      const event = cal.getEventById(eventId);
+      if (!event) {
+        return jsonOut({ success: true, message: 'Calendar event was already gone.' });
+      }
+      event.deleteEvent();
+      return jsonOut({ success: true, message: 'Calendar event deleted.' });
+    }
+
+    if (action === 'cancelBooking') {
+      const eventId = req.eventId || '';
+      const bookingId = req.bookingId || '';
+      const timeZone = req.timeZone || config.defaultTimeZone;
+      const teacherEmail = normalizeEmail_(req.teacherEmail || config.notificationEmail);
+      const slot = Number(req.slot || 0);
+      const slotLabel = slot ? Utilities.formatDate(new Date(slot), timeZone, 'yyyy-MM-dd HH:mm') : '';
+      var calendarDeleted = false;
+      var calendarDeleteError = '';
+      if (eventId) {
+        try {
+          const cal = CalendarApp.getCalendarById(config.primaryCalendarId);
+          if (!cal) {
+            calendarDeleteError = 'Primary calendar not found.';
+          } else {
+            const event = cal.getEventById(eventId);
+            if (event) {
+              event.deleteEvent();
+              calendarDeleted = true;
+            } else {
+              calendarDeleted = true;
+            }
+          }
+        } catch (deleteErr) {
+          calendarDeleteError = deleteErr && deleteErr.message ? deleteErr.message : String(deleteErr);
+        }
+      } else {
+        calendarDeleted = true;
+      }
+
+      var cancellationNotificationSent = false;
+      var cancellationNotificationError = '';
+      try {
+        cancellationNotificationSent = sendCancellationNotificationEmail_(teacherEmail, {
+          bookingId: bookingId,
+          name: req.name || 'Guest',
+          email: req.email || '',
+          phone: req.phone || '',
+          timeZone: timeZone,
+          slotLabel: slotLabel,
+          calendarDeleted: calendarDeleted
+        });
+        if (!cancellationNotificationSent) {
+          cancellationNotificationError = teacherEmail ? 'Teacher cancellation email was not accepted.' : 'Teacher email is missing.';
+        }
+      } catch (mailErr) {
+        cancellationNotificationError = mailErr && mailErr.message ? mailErr.message : String(mailErr);
+      }
+
+      return jsonOut({
+        success: true,
+        message: 'Cancellation processed.',
+        calendarDeleted: calendarDeleted,
+        calendarDeleteError: calendarDeleteError,
+        cancellationNotificationSent: cancellationNotificationSent,
+        cancellationNotificationError: cancellationNotificationError
+      });
+    }
+
     if (action === 'createBooking') {
       const slot = Number(req.slot || 0);
       const durationMinutes = Math.max(30, Math.min(180, Number(req.durationMinutes || 50)));
@@ -165,6 +260,7 @@ function handleRequest_(e) {
       const phone = req.phone || '';
       const notes = req.notes || '';
       const bookingId = req.bookingId || '';
+      const cancellationToken = req.cancellationToken || '';
       const teacherEmail = normalizeEmail_(req.teacherEmail || config.notificationEmail);
       if (!slot) {
         return jsonOut({ success: false, message: 'Missing slot timestamp.' });
@@ -175,27 +271,48 @@ function handleRequest_(e) {
       if (!cal) {
         return jsonOut({ success: false, message: 'Primary calendar not found.' });
       }
-      const description = [
-        'Booked from Palestinian Arabic Lab',
-        'Booking ID: ' + bookingId,
-        'Student: ' + name,
-        'Email: ' + email,
-        'Phone: ' + phone,
-        'Notes: ' + notes,
-        'Timezone: ' + timeZone
-      ].join('\n');
-      const event = cal.createEvent('Lesson with ' + name, start, end, { description: description });
+      const lock = LockService.getScriptLock();
+      try {
+        lock.waitLock(10000);
+      } catch (lockErr) {
+        return jsonOut({ success: false, message: 'Booking system is busy. Please try again.' });
+      }
+      var event = null;
       var calendarInviteSent = false;
       var calendarInviteError = '';
       try {
-        if (isValidEmail_(email)) {
-          event.addGuest(normalizeEmail_(email));
-          calendarInviteSent = true;
-        } else {
-          calendarInviteError = 'Student email is invalid for calendar invite.';
+        var conflicts = cal.getEvents(start, end);
+        if (config.preplyCalendarId) {
+          var preplyCal = CalendarApp.getCalendarById(config.preplyCalendarId);
+          if (preplyCal) {
+            conflicts = conflicts.concat(preplyCal.getEvents(start, end));
+          }
         }
-      } catch (guestErr) {
-        calendarInviteError = guestErr && guestErr.message ? guestErr.message : String(guestErr);
+        if (conflicts.length) {
+          return jsonOut({ success: false, code: 'calendar-conflict', message: 'This time is no longer available.' });
+        }
+        const description = [
+          'Booked from Palestinian Arabic Lab',
+          'Booking ID: ' + bookingId,
+          'Student: ' + name,
+          'Email: ' + email,
+          'Phone: ' + phone,
+          'Notes: ' + notes,
+          'Timezone: ' + timeZone
+        ].join('\n');
+        event = cal.createEvent('Lesson with ' + name, start, end, { description: description });
+        try {
+          if (isValidEmail_(email)) {
+            event.addGuest(normalizeEmail_(email));
+            calendarInviteSent = true;
+          } else {
+            calendarInviteError = 'Student email is invalid for calendar invite.';
+          }
+        } catch (guestErr) {
+          calendarInviteError = guestErr && guestErr.message ? guestErr.message : String(guestErr);
+        }
+      } finally {
+        lock.releaseLock();
       }
       var notificationSent = false;
       var studentConfirmationSent = false;
@@ -223,7 +340,8 @@ function handleRequest_(e) {
           name: name,
           bookingId: bookingId,
           timeZone: timeZone,
-          slotLabel: slotLabel
+          slotLabel: slotLabel,
+          cancellationToken: cancellationToken
         });
         if (!studentConfirmationSent) {
           studentConfirmationError = email ? 'Student confirmation email was not accepted.' : 'Student email is missing.';

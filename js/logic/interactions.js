@@ -43,6 +43,7 @@ import {
 import {
     loadBookingStatusByEmail,
     submitGuestBooking,
+    cancelGuestBooking,
 } from './guestBookingFlow.js';
 import {
     wireDialogueEditor,
@@ -140,6 +141,9 @@ let backupSettings = {
 
 let contactSettings = createInitialContactSettings();
 let runtimeBusyBlocks = [];
+let runtimeBusyBlocksLoadedAt = 0;
+let runtimeBusyBlocksLoadedDays = 0;
+const runtimeBusyBlocksTtlMs = 60 * 1000;
 let bookingSettings = createInitialBookingSettings();
 
 function getDefaultBookingSettings() {
@@ -3582,7 +3586,7 @@ function openSubscribeModal() {
                 priceText.textContent = contactSettings.sitePrice;
             } else {
                 priceWrap.style.display = "none";
-                priceText.textContent = "â€“";
+                priceText.textContent = "-";
             }
         }
         modal.classList.add("modal--open");
@@ -6309,15 +6313,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     try { window.refreshGoogleCalendarStatus = updateGoogleCalendarStatus; } catch { }
     try { window.updateGoogleCalendarStatusMessage = updateGoogleCalendarStatusMessage; } catch { }
 
-    async function refreshRuntimeBusyBlocks() {
+    async function refreshRuntimeBusyBlocks({ forceRefresh = false } = {}) {
+        const daysNeeded = Math.max(10, bookingWeekOffset * 7 + 10);
+        if (
+            !forceRefresh &&
+            runtimeBusyBlocks.length &&
+            runtimeBusyBlocksLoadedDays >= daysNeeded &&
+            Date.now() - runtimeBusyBlocksLoadedAt < runtimeBusyBlocksTtlMs
+        ) {
+            return;
+        }
         runtimeBusyBlocks = [];
         try {
             const result = await window.fetchBusyBlocksFromAppsScript?.({
-                days: 35,
+                days: daysNeeded,
                 timeZone: bookingSettings.timezone || getLocalTimezone() || "Africa/Cairo",
             });
             if (result?.success && Array.isArray(result.busyBlocks)) {
                 runtimeBusyBlocks = result.busyBlocks;
+                runtimeBusyBlocksLoadedAt = Date.now();
+                runtimeBusyBlocksLoadedDays = daysNeeded;
             }
         } catch {}
     }
@@ -6610,6 +6625,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     const bookingStatusBtn = document.getElementById("bookingStatusBtn");
     const bookingStatusList = document.getElementById("bookingStatusList");
     const bookingStatusMsg = document.getElementById("bookingStatusMsg");
+    const bookingCancelId = document.getElementById("bookingCancelId");
+    const bookingCancelToken = document.getElementById("bookingCancelToken");
+    const bookingCancelBtn = document.getElementById("bookingCancelBtn");
+    const bookingCancelMsg = document.getElementById("bookingCancelMsg");
     const bookingSuccessModal = document.getElementById("bookingSuccessModal");
     const bookingSuccessText = document.getElementById("bookingSuccessText");
     const btnClearAllBookings = document.getElementById("btnClearAllBookings");
@@ -6617,6 +6636,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let slotsByDate = new Map();
     let scheduleByDate = new Map();
     let bookingWeekOffset = 0;
+    let bookingBuildSeq = 0;
 
     function updateBookingInfo() {
         if (!bookingInfo || !selectedTimeDisplay) return;
@@ -6645,7 +6665,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             btn.addEventListener("click", () => {
                 const slots = (scheduleByDate.get(key) || []).filter((slot) => slot.available).sort((a, b) => a.startMs - b.startMs);
                 if (slots.length) setSelectedSlot(new Date(slots[0].startMs));
-                buildBookingSelects();
+                renderWeeklyCalendar();
             });
             bookingDateChips.appendChild(btn);
         });
@@ -6721,7 +6741,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     if (slot.available) {
                         btn.addEventListener("click", () => {
                             setSelectedSlot(slotDate);
-                            buildBookingSelects();
+                            renderWeeklyCalendar();
                         });
                     }
                     body.appendChild(btn);
@@ -6776,14 +6796,34 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    async function buildBookingSelects() {
+    async function buildBookingSelects({ forceRefresh = false } = {}) {
+        const seq = ++bookingBuildSeq;
         if (bookingTimezoneLabel) {
             const tz = getLocalTimezone() || "your local timezone";
             bookingTimezoneLabel.textContent = `Showing times in ${tz}`;
         }
+        if (bookingEmptyState) {
+            bookingEmptyState.textContent = "No available times in this week.";
+        }
 
-        await refreshRuntimeBusyBlocks();
-        const schedule = await getSchedulableSlots(35);
+        await refreshRuntimeBusyBlocks({ forceRefresh });
+        if (seq !== bookingBuildSeq) return;
+        let schedule = [];
+        try {
+            schedule = await getSchedulableSlots(10, {
+                forceRefresh,
+                startOffsetDays: bookingWeekOffset * 7,
+            });
+        } catch (err) {
+            console.error("Could not load booking schedule:", err);
+            if (bookingEmptyState) {
+                bookingEmptyState.style.display = "block";
+                bookingEmptyState.textContent = "Unable to load available times right now.";
+            }
+            if (bookingSubmit) bookingSubmit.disabled = true;
+            return;
+        }
+        if (seq !== bookingBuildSeq) return;
         slotsByDate = new Map();
         scheduleByDate = new Map();
         schedule.forEach((slot) => {
@@ -6815,20 +6855,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 window.selectedTime = null;
                 if (bookingSubmit) bookingSubmit.disabled = true;
             }
-        }
-
-        const currentWeekStart = getWeekStart(new Date(), bookingWeekOffset);
-        const visibleHasSlots = Array.from({ length: 7 }, (_, idx) => {
-            const d = new Date(currentWeekStart.getFullYear(), currentWeekStart.getMonth(), currentWeekStart.getDate() + idx);
-            return (scheduleByDate.get(getDateKey(d)) || []).length > 0;
-        }).some(Boolean);
-        if (!visibleHasSlots && dateKeys.length) {
-            const firstAvailable = new Date(`${dateKeys[0]}T12:00:00`);
-            const today = new Date();
-            const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-            const firstStart = new Date(firstAvailable.getFullYear(), firstAvailable.getMonth(), firstAvailable.getDate());
-            const dayDiff = Math.max(0, Math.floor((firstStart.getTime() - todayStart.getTime()) / 86400000));
-            bookingWeekOffset = Math.floor(dayDiff / 7);
         }
 
         renderWeeklyCalendar(dateKeys);
@@ -6870,6 +6896,27 @@ document.addEventListener("DOMContentLoaded", async () => {
         bookingStatusBtn.addEventListener("click", () => {
             const email = (bookingStatusEmail?.value || "").trim();
             loadBookingStatus(email);
+        });
+    }
+    if (bookingCancelBtn) {
+        bookingCancelBtn.addEventListener("click", async () => {
+            try {
+                await cancelGuestBooking({
+                    db,
+                    firebase,
+                    bookingId: bookingCancelId?.value || "",
+                    cancellationToken: bookingCancelToken?.value || "",
+                    bookingCancelMsg,
+                    hashEmail,
+                    cancelBookingViaAppsScript: window.cancelBookingViaAppsScript,
+                    buildBookingSelects,
+                    loadBookingStatus,
+                    bookingStatusEmail,
+                });
+            } catch (err) {
+                console.error("Guest cancellation failed:", err);
+                if (bookingCancelMsg) bookingCancelMsg.textContent = "Cancellation failed. Check your booking ID and code.";
+            }
         });
     }
     const lastEmail = (localStorage.getItem("pal_arabic_last_booking_email") || "").trim();
@@ -6946,6 +6993,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 hashEmail,
                 sendBookingEmail,
                 createBookingViaAppsScript: window.createBookingViaAppsScript,
+                deleteBookingViaAppsScript: window.deleteBookingViaAppsScript,
                 loadBookingStatus,
                 isLocalDevHost,
             });
@@ -7033,12 +7081,17 @@ document.addEventListener("DOMContentLoaded", async () => {
                         bookingId,
                         booking,
                         newSlot,
+                        occupiedMinutes: bookingSettings.totalSlotMinutes || bookingSettings.slotMinutes || 50,
                     });
                     if (teacherBookingMsg) teacherBookingMsg.textContent = "Booking rescheduled.";
                     await renderTeacherBookings();
                     await buildBookingSelects();
-                } catch {
-                    if (teacherBookingMsg) teacherBookingMsg.textContent = "Reschedule failed.";
+                } catch (err) {
+                    if (teacherBookingMsg) {
+                        teacherBookingMsg.textContent = err?.message === "booking-slot-taken"
+                            ? "That slot is already reserved."
+                            : "Reschedule failed.";
+                    }
                 }
             }
         });
