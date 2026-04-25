@@ -124,6 +124,10 @@ async function testAppsScriptConnection() {
     return callAppsScript("test", {}, { allowGet: true });
 }
 
+async function getAppsScriptQuota() {
+    return callAppsScript("getQuota", {}, { allowGet: true });
+}
+
 async function fetchBusyBlocksFromAppsScript({ days = 30, timeZone = "Africa/Cairo" } = {}) {
     return callAppsScript("getBusy", { days, timeZone }, { allowGet: true });
 }
@@ -199,6 +203,7 @@ async function syncPendingBookingsViaAppsScript({ limit = 10 } = {}) {
 
 window.saveAppsScriptSettings = saveAppsScriptSettings;
 window.testAppsScriptConnection = testAppsScriptConnection;
+window.getAppsScriptQuota = getAppsScriptQuota;
 window.fetchBusyBlocksFromAppsScript = fetchBusyBlocksFromAppsScript;
 window.createBookingViaAppsScript = createBookingViaAppsScript;
 window.deleteBookingViaAppsScript = deleteBookingViaAppsScript;

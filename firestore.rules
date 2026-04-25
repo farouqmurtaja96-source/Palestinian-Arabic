@@ -258,7 +258,8 @@ service cloud.firestore {
           'calendarDeleted', 'cancellationNotificationSent',
           'cancellationNotificationError', 'notificationSent',
           'studentConfirmationSent', 'calendarInviteSent',
-          'notificationError', 'studentConfirmationError', 'calendarInviteError'
+          'notificationError', 'studentConfirmationError', 'calendarInviteError',
+          'studentCancellationSent', 'studentCancellationError'
         ]) &&
         isSafeStatus(request.resource.data.status)
       ) || (
@@ -277,6 +278,7 @@ service cloud.firestore {
         request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'status', 'updatedAt', 'canceledAt', 'calendarDeleted',
           'cancellationNotificationSent', 'cancellationNotificationError',
+          'studentCancellationSent', 'studentCancellationError',
           'history', 'cancelTokenHash'
         ]) &&
         resource.data.status in ["booked", "rescheduled"] &&

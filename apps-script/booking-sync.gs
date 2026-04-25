@@ -68,6 +68,24 @@ function sendStudentConfirmationEmail_(recipient, details) {
   return sendPlainEmail_(recipient, subject, body);
 }
 
+function sendStudentCancellationEmail_(recipient, details) {
+  const subject = 'Your lesson booking was canceled';
+  const body = [
+    'Hello ' + (details.name || 'Student') + ',',
+    '',
+    'Your lesson booking was canceled.',
+    '',
+    'Date & time: ' + (details.slotLabel || ''),
+    'Teacher timezone: ' + (details.timeZone || ''),
+    'Booking ID: ' + (details.bookingId || ''),
+    '',
+    'If this was a mistake, please book a new time or contact us.',
+    '',
+    'Thank you.'
+  ].join('\n');
+  return sendPlainEmail_(recipient, subject, body);
+}
+
 function sendCancellationNotificationEmail_(recipient, details) {
   const isReschedule = details.reason === 'reschedule';
   const subject = (isReschedule ? 'Lesson booking rescheduled: ' : 'Lesson booking canceled: ') + (details.bookingId || '');
@@ -153,8 +171,18 @@ function handleRequest_(e) {
           message: primary ? 'Apps Script backend is reachable.' : 'Primary calendar not found.',
           timeZone: config.defaultTimeZone,
           preplyCalendarId: config.preplyCalendarId || '',
-          notificationEmailConfigured: !!config.notificationEmail,
-        });
+        notificationEmailConfigured: !!config.notificationEmail,
+        remainingEmailQuota: MailApp.getRemainingDailyQuota(),
+      });
+    }
+
+    if (action === 'getQuota') {
+      return jsonOut({
+        success: true,
+        remainingEmailQuota: MailApp.getRemainingDailyQuota(),
+        notificationEmailConfigured: !!config.notificationEmail,
+        timeZone: config.defaultTimeZone
+      });
     }
 
     if (action === 'getBusy') {
@@ -226,7 +254,9 @@ function handleRequest_(e) {
       }
 
       var cancellationNotificationSent = false;
+      var studentCancellationSent = false;
       var cancellationNotificationError = '';
+      var studentCancellationError = '';
       try {
         cancellationNotificationSent = sendCancellationNotificationEmail_(teacherEmail, {
           bookingId: bookingId,
@@ -244,6 +274,19 @@ function handleRequest_(e) {
       } catch (mailErr) {
         cancellationNotificationError = mailErr && mailErr.message ? mailErr.message : String(mailErr);
       }
+      try {
+        studentCancellationSent = sendStudentCancellationEmail_(req.email || '', {
+          bookingId: bookingId,
+          name: req.name || 'Student',
+          timeZone: timeZone,
+          slotLabel: slotLabel
+        });
+        if (!studentCancellationSent) {
+          studentCancellationError = req.email ? 'Student cancellation email was not accepted.' : 'Student email is missing.';
+        }
+      } catch (mailErr) {
+        studentCancellationError = mailErr && mailErr.message ? mailErr.message : String(mailErr);
+      }
 
       return jsonOut({
         success: true,
@@ -251,7 +294,10 @@ function handleRequest_(e) {
         calendarDeleted: calendarDeleted,
         calendarDeleteError: calendarDeleteError,
         cancellationNotificationSent: cancellationNotificationSent,
-        cancellationNotificationError: cancellationNotificationError
+        cancellationNotificationError: cancellationNotificationError,
+        studentCancellationSent: studentCancellationSent,
+        studentCancellationError: studentCancellationError,
+        remainingEmailQuota: MailApp.getRemainingDailyQuota()
       });
     }
 
@@ -363,6 +409,7 @@ function handleRequest_(e) {
         studentConfirmationSent: studentConfirmationSent,
         notificationError: notificationError,
         studentConfirmationError: studentConfirmationError,
+        remainingEmailQuota: MailApp.getRemainingDailyQuota(),
       });
     }
 

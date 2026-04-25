@@ -559,6 +559,8 @@ export async function cancelGuestBooking({
     const calendarDeleted = !!appsScriptResult?.calendarDeleted;
     const cancellationNotificationSent = !!appsScriptResult?.cancellationNotificationSent;
     const cancellationNotificationError = appsScriptResult?.cancellationNotificationError || appsScriptResult?.message || "";
+    const studentCancellationSent = !!appsScriptResult?.studentCancellationSent;
+    const studentCancellationError = appsScriptResult?.studentCancellationError || "";
     const now = Date.now();
 
     const lockIds = Array.isArray(booking.lockIds) ? booking.lockIds : [];
@@ -576,6 +578,8 @@ export async function cancelGuestBooking({
             calendarDeleted,
             cancellationNotificationSent,
             cancellationNotificationError,
+            studentCancellationSent,
+            studentCancellationError,
             history: firebase.firestore.FieldValue.arrayUnion({
                 at: now,
                 action: "canceled",

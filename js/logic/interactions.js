@@ -7041,9 +7041,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             let studentToday = 0;
             let cancellationsToday = 0;
             let totalSaved = 0;
+            let calendarEventsToday = 0;
             seen.forEach((booking) => {
                 const createdAt = toMillis(booking.createdAt || booking.updatedAt);
                 const canceledAt = toMillis(booking.canceledAt);
+                if (booking.calendarSynced && createdAt >= todayStartMs) calendarEventsToday += 1;
                 if (booking.notificationSent) {
                     totalSaved += 1;
                     if (createdAt >= todayStartMs) teacherToday += 1;
@@ -7056,10 +7058,18 @@ document.addEventListener("DOMContentLoaded", async () => {
                     totalSaved += 1;
                     if ((canceledAt || createdAt) >= todayStartMs) cancellationsToday += 1;
                 }
+                if (booking.studentCancellationSent) {
+                    totalSaved += 1;
+                    if ((canceledAt || createdAt) >= todayStartMs) cancellationsToday += 1;
+                }
             });
             const totalToday = teacherToday + studentToday + cancellationsToday;
+            const quota = await window.getAppsScriptQuota?.();
+            const remaining = Number.isFinite(Number(quota?.remainingEmailQuota))
+                ? ` · Google remaining ${Number(quota.remainingEmailQuota)}`
+                : "";
             emailUsageTotal.textContent = String(totalToday);
-            emailUsageBreakdown.textContent = `Today: Teacher ${teacherToday} · Student ${studentToday} · Cancellations ${cancellationsToday} · Saved total ${totalSaved}`;
+            emailUsageBreakdown.textContent = `Today: Teacher ${teacherToday} · Student ${studentToday} · Cancellations ${cancellationsToday} · Calendar events ${calendarEventsToday}${remaining} · Saved total ${totalSaved}`;
         } catch (err) {
             console.error("Could not load email usage stats:", err);
             emailUsageBreakdown.textContent = "Unable to load email usage.";
