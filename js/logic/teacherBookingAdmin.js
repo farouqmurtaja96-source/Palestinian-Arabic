@@ -60,12 +60,18 @@ export async function renderTeacherBookings({
                 const rescheduledFrom = b.rescheduledFrom
                     ? `<div class="booking-item__meta">From: ${escapeHtml(formatSlotTime(b.rescheduledFrom))}</div>`
                     : "";
+                const emailStatus = [
+                    b.notificationSent ? "teacher email sent" : (b.notificationError ? `teacher email failed: ${b.notificationError}` : ""),
+                    b.studentConfirmationSent ? "student email sent" : "",
+                    b.calendarInviteSent ? "calendar invite sent" : "",
+                ].filter(Boolean).join(" | ");
                 return `
                     <div class="booking-item" data-booking-id="${b.id}">
                         <div class="booking-item__main">
                             <div class="booking-item__title">${escapeHtml(b.name || "Student")}</div>
                             <div class="booking-item__meta">${b.email || ""} ${b.phone ? " | " + b.phone : ""}</div>
                             <div class="booking-item__time">${escapeHtml(formatSlotTime(b.slot))}</div>
+                            ${emailStatus ? `<div class="booking-item__meta">${escapeHtml(emailStatus)}</div>` : ""}
                             ${rescheduledFrom}
                             <div class="${statusClass}">${escapeHtml(statusLabel)}</div>
                         </div>

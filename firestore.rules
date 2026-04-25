@@ -185,7 +185,8 @@ service cloud.firestore {
           'slot', 'status', 'emailHash', 'createdAt',
           'updatedAt', 'calendarSynced', 'source',
           'googleCalendarEventId', 'lockIds', 'cancelTokenHash',
-          'notificationSent', 'studentConfirmationSent', 'calendarInviteSent'
+          'notificationSent', 'studentConfirmationSent', 'calendarInviteSent',
+          'notificationError', 'studentConfirmationError', 'calendarInviteError'
         ]) &&
         isTimestampNumber(request.resource.data.slot) &&
         request.resource.data.emailHash is string &&
@@ -200,7 +201,8 @@ service cloud.firestore {
           'slot', 'status', 'updatedAt', 'calendarSynced',
           'rescheduledFrom', 'rescheduledAt', 'googleCalendarEventId',
           'lockIds', 'cancelTokenHash', 'canceledAt',
-          'notificationSent', 'studentConfirmationSent', 'calendarInviteSent'
+          'notificationSent', 'studentConfirmationSent', 'calendarInviteSent',
+          'notificationError', 'studentConfirmationError', 'calendarInviteError'
         ]) &&
         isSafeStatus(request.resource.data.status)
       ) || (
@@ -208,7 +210,8 @@ service cloud.firestore {
         isValidCancelTokenHash(request.resource.data.cancelTokenHash) &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'calendarSynced', 'googleCalendarEventId', 'updatedAt',
-          'notificationSent', 'studentConfirmationSent', 'calendarInviteSent'
+          'notificationSent', 'studentConfirmationSent', 'calendarInviteSent',
+          'notificationError', 'studentConfirmationError', 'calendarInviteError'
         ]) &&
         resource.data.status == "booked" &&
         request.resource.data.status == resource.data.status
@@ -232,7 +235,8 @@ service cloud.firestore {
           'source', 'reason', 'reasonLabels', 'level', 'lessonsPerMonth',
           'studentTimeZone', 'studentLocale', 'countryHint', 'timezone', 'history',
           'lockIds', 'cancelTokenHash', 'notificationSent',
-          'studentConfirmationSent', 'calendarInviteSent'
+          'studentConfirmationSent', 'calendarInviteSent',
+          'notificationError', 'studentConfirmationError', 'calendarInviteError'
         ]) &&
         request.resource.data.name is string &&
         request.resource.data.name.size() > 0 &&
@@ -253,7 +257,8 @@ service cloud.firestore {
           'rescheduledFrom', 'rescheduledAt', 'lockIds',
           'calendarDeleted', 'cancellationNotificationSent',
           'cancellationNotificationError', 'notificationSent',
-          'studentConfirmationSent', 'calendarInviteSent'
+          'studentConfirmationSent', 'calendarInviteSent',
+          'notificationError', 'studentConfirmationError', 'calendarInviteError'
         ]) &&
         isSafeStatus(request.resource.data.status)
       ) || (
@@ -261,7 +266,8 @@ service cloud.firestore {
         isValidCancelTokenHash(request.resource.data.cancelTokenHash) &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'calendarSynced', 'googleCalendarEventId', 'updatedAt',
-          'notificationSent', 'studentConfirmationSent', 'calendarInviteSent'
+          'notificationSent', 'studentConfirmationSent', 'calendarInviteSent',
+          'notificationError', 'studentConfirmationError', 'calendarInviteError'
         ]) &&
         resource.data.status == "booked" &&
         request.resource.data.status == resource.data.status

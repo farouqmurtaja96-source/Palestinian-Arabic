@@ -330,7 +330,7 @@ export async function submitGuestBooking({
             slot: selectedSlot,
             durationMinutes: bookingSettings.slotMinutes || 50,
             timeZone: bookingSettings.timezone || getLocalTimezone() || "Africa/Cairo",
-            teacherEmail: (contactSettings?.email || "").trim(),
+            teacherEmail: (contactSettings?.email || bookingSettings.contactEmail || "").trim(),
             name,
             email,
             phone,
@@ -378,6 +378,9 @@ export async function submitGuestBooking({
             notificationSent: teacherEmailSent,
             studentConfirmationSent: studentEmailSent,
             calendarInviteSent: studentCalendarInviteSent,
+            notificationError: teacherEmailError,
+            studentConfirmationError: studentEmailError,
+            calendarInviteError: studentCalendarInviteError,
             updatedAt: Date.now(),
         }, { merge: true });
 
@@ -393,6 +396,9 @@ export async function submitGuestBooking({
             notificationSent: teacherEmailSent,
             studentConfirmationSent: studentEmailSent,
             calendarInviteSent: studentCalendarInviteSent,
+            notificationError: teacherEmailError,
+            studentConfirmationError: studentEmailError,
+            calendarInviteError: studentCalendarInviteError,
             lockIds,
             cancelTokenHash,
             source: "guest",
@@ -440,7 +446,7 @@ export async function submitGuestBooking({
                         : appsScriptMessage
                             ? ` Email sending did not complete: ${[teacherEmailError, studentEmailError, studentCalendarInviteError, appsScriptMessage].filter(Boolean).join(" | ")}`
                             : " No email was sent.";
-            bookingSuccessText.textContent = `Your lesson is confirmed for ${slot}. Timezone: ${tz}. Booking ID: ${bookingRef.id}. Cancellation code: ${cancellationToken}.${emailStatus}`;
+            bookingSuccessText.textContent = `Your lesson is confirmed for ${slot}. Timezone: ${tz}.${emailStatus}`;
             bookingSuccessModal.classList.add("modal--open");
         }
         localStorage.setItem("pal_arabic_last_booking_ts", String(Date.now()));

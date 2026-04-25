@@ -3532,9 +3532,10 @@ function isGuestAllowedLesson(lessonId) {
     return allowed.has(lesson.meta.unit);
 }
 
-function goToSubscribeScreen() {
+async function goToSubscribeScreen() {
     showScreen("subscribe-screen");
     try {
+        await loadContactSettingsFromCloud();
         if (typeof window.buildBookingSelects === "function") window.buildBookingSelects();
     } catch { }
 }
@@ -6954,6 +6955,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const recaptchaReady = isLocalDevHost() || !window.grecaptcha || typeof window.grecaptcha.getResponse !== "function"
                 ? true
                 : !!window.grecaptcha.getResponse();
+            await loadContactSettingsFromCloud();
 
             const booked = await submitGuestBooking({
                 db,
@@ -7009,14 +7011,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     async function renderEmailUsageStats() {
         if (!emailUsageTotal || !emailUsageBreakdown || appState.currentUser?.role !== "teacher") return;
         try {
-            const snap = await db.collection("bookings").limit(500).get();
+            const [privateSnap, publicSnap] = await Promise.all([
+                db.collection("bookings").limit(500).get(),
+                db.collection("publicBookings").limit(500).get(),
+            ]);
+            const seen = new Map();
+            publicSnap.forEach((doc) => {
+                seen.set(doc.id, doc.data() || {});
+            });
+            privateSnap.forEach((doc) => {
+                seen.set(doc.id, { ...(seen.get(doc.id) || {}), ...(doc.data() || {}) });
+            });
             let teacher = 0;
             let student = 0;
             let cancellations = 0;
-            snap.forEach((doc) => {
-                const booking = doc.data() || {};
+            seen.forEach((booking) => {
                 if (booking.notificationSent) teacher += 1;
-                if (booking.studentConfirmationSent) student += 1;
+                if (booking.studentConfirmationSent || booking.calendarInviteSent) student += 1;
                 if (booking.cancellationNotificationSent) cancellations += 1;
             });
             const total = teacher + student + cancellations;
