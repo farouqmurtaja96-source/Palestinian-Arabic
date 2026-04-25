@@ -42,11 +42,21 @@ export async function loadBookingStatusByEmail({
             .map((b) => {
                 const status = (b.status || "pending").toLowerCase();
                 const label = status === "canceled" ? "Canceled" : status === "rescheduled" ? "Rescheduled" : status === "pending" ? "Pending" : "Booked";
+                const isActive = status === "booked" || status === "rescheduled";
+                const canReschedule = isActive && Number(b.slot || 0) - Date.now() > 12 * 60 * 60 * 1000;
+                const rescheduleTitle = canReschedule ? "Choose a new time for this booking" : "Rescheduling closes 12 hours before the lesson";
                 return `
                     <div class="booking-status-item">
                         <div>Booking ID: <code>${escapeHtml(b.id)}</code></div>
                         <div><strong>${escapeHtml(formatSlotTime(b.slot))}</strong></div>
                         <div>Status: ${escapeHtml(label)}</div>
+                        ${isActive ? `
+                            <div class="booking-status-actions">
+                                <button class="btn btn--ghost btn--sm" type="button" data-booking-action="cancel" data-booking-id="${escapeHtml(b.id)}" data-cancel-token-hash="${escapeHtml(b.cancelTokenHash || "")}">Cancel Lesson</button>
+                                <button class="btn btn--outline btn--sm" type="button" data-booking-action="reschedule" data-booking-id="${escapeHtml(b.id)}" data-cancel-token-hash="${escapeHtml(b.cancelTokenHash || "")}" data-booking-slot="${escapeHtml(String(b.slot || ""))}" ${canReschedule ? "" : "disabled"} title="${escapeHtml(rescheduleTitle)}">Reschedule</button>
+                            </div>
+                            ${canReschedule ? "" : "<div class=\"small-note\">Rescheduling is available until 12 hours before the lesson.</div>"}
+                        ` : ""}
                     </div>
                 `;
             })
@@ -140,6 +150,7 @@ async function releaseReservedLocks({ db, lockIds, cancelTokenHash }) {
 
 export async function submitGuestBooking({
     db,
+    firebase,
     bookingSettings,
     contactSettings,
     getLocalTimezone,
@@ -155,11 +166,11 @@ export async function submitGuestBooking({
     findBookingConflict,
     buildBookingSelects,
     hashEmail,
-    sendBookingEmail,
     createBookingViaAppsScript,
-    deleteBookingViaAppsScript,
+    cancelBookingViaAppsScript,
     loadBookingStatus,
     isLocalDevHost,
+    rescheduleTarget,
 }) {
     function withDefinedValues(obj) {
         return Object.fromEntries(
@@ -218,8 +229,8 @@ export async function submitGuestBooking({
     const slotDate = new Date(selectedDate);
     slotDate.setHours(hours, minutes, 0, 0);
     const selectedSlot = slotDate.getTime();
-    if (!Number.isFinite(selectedSlot) || selectedSlot <= Date.now() + (30 * 60 * 1000)) {
-        if (bookingMsg) bookingMsg.textContent = "Please choose a future time at least 30 minutes from now.";
+    if (!Number.isFinite(selectedSlot) || selectedSlot <= Date.now() + (6 * 60 * 60 * 1000)) {
+        if (bookingMsg) bookingMsg.textContent = "Please choose a time at least 6 hours from now.";
         return;
     }
 
@@ -381,46 +392,15 @@ export async function submitGuestBooking({
             source: "guest",
         });
 
-        const emailSummary = [
-            `Student: ${name}`,
-            `Email: ${email}`,
-            `Phone: ${phone}`,
-            reason ? `Reasons: ${reason}` : "",
-            level ? `Level: ${level}` : "",
-            lessonsPerMonth ? `Lessons/month: ${lessonsPerMonth}` : "",
-            `Student timezone: ${studentTimeZone || "-"}`,
-            `Student locale: ${studentLocale || "-"}`,
-            `Country hint: ${countryHint || "-"}`,
-            `Teacher timezone: ${bookingSettings.timezone || getLocalTimezone() || "-"}`,
-            `Selected time: ${slot}`,
-            notes ? `Notes: ${notes}` : "",
-        ].filter(Boolean).join("\n");
-
         if (!teacherEmailSent && !teacherEmailError) {
             teacherEmailError = appsScriptSucceeded
                 ? "Teacher email was not sent by Apps Script."
                 : "Teacher email could not be sent.";
         }
-        if (!studentEmailSent) {
-            studentEmailSent = await sendBookingEmail({
-                recipientEmail: email,
-                name,
-                email,
-                phone,
-                notes: `Your lesson has been booked successfully.\nBooking time: ${slot}\nTeacher timezone: ${bookingSettings.timezone || getLocalTimezone() || ""}\nBooking ID: ${bookingRef.id}`,
-                slot,
-                studentTimeZone,
-                studentLocale,
-                teacherTimeZone: bookingSettings.timezone || getLocalTimezone() || "",
-                reasons: "",
-                level: "",
-                lessonsPerMonth: "",
-                countryHint,
-                summary: `Booking confirmed for ${name} at ${slot}.`,
-            });
-            if (!studentEmailSent && !studentEmailError) {
-                studentEmailError = "Fallback student email via EmailJS failed.";
-            }
+        if (!studentEmailSent && !studentEmailError && !studentCalendarInviteSent) {
+            studentEmailError = appsScriptSucceeded
+                ? "Student confirmation email was not sent by Apps Script."
+                : "Student confirmation email could not be sent.";
         }
 
         if (bookingMsg) {
@@ -460,11 +440,32 @@ export async function submitGuestBooking({
         localStorage.setItem("pal_arabic_last_booking_ts", String(Date.now()));
         localStorage.setItem("pal_arabic_last_booking_email", email);
         if (bookingStatusEmail) bookingStatusEmail.value = email;
+        if (rescheduleTarget?.bookingId && rescheduleTarget?.cancellationTokenHash) {
+            try {
+                await cancelGuestBooking({
+                    db,
+                    firebase,
+                    bookingId: rescheduleTarget.bookingId,
+                    cancellationTokenHash: rescheduleTarget.cancellationTokenHash,
+                    bookingCancelMsg: null,
+                    hashEmail,
+                    cancelBookingViaAppsScript,
+                    buildBookingSelects: null,
+                    loadBookingStatus: null,
+                    bookingStatusEmail,
+                });
+                if (bookingMsg) bookingMsg.textContent = "Rescheduled successfully. Your old lesson was canceled and the new lesson is booked.";
+            } catch (rescheduleErr) {
+                console.error("Old booking cancellation after reschedule failed:", rescheduleErr);
+                if (bookingMsg) bookingMsg.textContent = "The new lesson was booked, but the old lesson could not be canceled automatically. Please contact the teacher.";
+            }
+        }
         await loadBookingStatus(email);
         if (!isLocalDevHost() && window.grecaptcha && typeof window.grecaptcha.reset === "function") {
             window.grecaptcha.reset();
         }
         await buildBookingSelects({ forceRefresh: true });
+        return true;
     } catch (err) {
         console.error("Booking failed with error:", err);
         const isPermissionError = err?.code === "permission-denied" ||
@@ -486,6 +487,7 @@ export async function cancelGuestBooking({
     firebase,
     bookingId,
     cancellationToken,
+    cancellationTokenHash,
     bookingCancelMsg,
     hashEmail,
     cancelBookingViaAppsScript,
@@ -495,13 +497,14 @@ export async function cancelGuestBooking({
 }) {
     const cleanId = (bookingId || "").trim();
     const cleanToken = (cancellationToken || "").trim();
-    if (!cleanId || !cleanToken) {
-        if (bookingCancelMsg) bookingCancelMsg.textContent = "Enter booking ID and cancellation code.";
+    const providedTokenHash = (cancellationTokenHash || "").trim();
+    if (!cleanId || (!cleanToken && !providedTokenHash)) {
+        if (bookingCancelMsg) bookingCancelMsg.textContent = "Select a booking to cancel.";
         return;
     }
 
     if (bookingCancelMsg) bookingCancelMsg.textContent = "Canceling booking...";
-    const cancelTokenHash = await hashEmail(cleanToken);
+    const cancelTokenHash = providedTokenHash || await hashEmail(cleanToken);
     const bookingRef = db.collection("bookings").doc(cleanId);
     const publicRef = db.collection("publicBookings").doc(cleanId);
     const publicSnap = await publicRef.get();

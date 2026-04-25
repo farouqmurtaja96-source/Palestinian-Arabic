@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <title>Palestinian Arabic – Local LMS</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net; script-src-elem 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://apis.google.com https://accounts.google.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' https://www.google.com https://firestore.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://www.googleapis.com https://apis.google.com https://www.gstatic.com https://cdn.jsdelivr.net https://content.googleapis.com https://script.google.com https://script.googleusercontent.com https://api.emailjs.com; frame-src https://www.google.com https://www.gstatic.com https://content.googleapis.com https://palestinian-arabic-lab.firebaseapp.com; child-src https://www.google.com https://www.gstatic.com https://content.googleapis.com https://palestinian-arabic-lab.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://apis.google.com https://accounts.google.com; script-src-elem 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://apis.google.com https://accounts.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' https://www.google.com https://firestore.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://www.googleapis.com https://apis.google.com https://www.gstatic.com https://content.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://www.google.com https://www.gstatic.com https://content.googleapis.com https://palestinian-arabic-lab.firebaseapp.com; child-src https://www.google.com https://www.gstatic.com https://content.googleapis.com https://palestinian-arabic-lab.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests" />
     <link rel="stylesheet" href="styles.css" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23111827'/%3E%3Ctext x='32' y='42' font-size='28' text-anchor='middle' fill='%23f8fafc' font-family='Arial, sans-serif'%3EPA%3C/text%3E%3C/svg%3E" />
     
@@ -1024,20 +1024,7 @@
                     <button id="bookingStatusBtn" class="btn btn--outline btn--sm">Check Status</button>
                     <div id="bookingStatusList" class="booking-status-list"></div>
                     <p id="bookingStatusMsg" style="font-size:0.85rem; margin-top:6px;"></p>
-                    <div class="booking-cancel-box">
-                        <h4>Cancel a Booking</h4>
-                        <p class="small-note">Use the booking ID and cancellation code from your confirmation email.</p>
-                        <div class="form-field">
-                            <label>Booking ID</label>
-                            <input type="text" id="bookingCancelId" placeholder="Booking ID" />
-                        </div>
-                        <div class="form-field">
-                            <label>Cancellation Code</label>
-                            <input type="text" id="bookingCancelToken" placeholder="Cancellation code" />
-                        </div>
-                        <button id="bookingCancelBtn" class="btn btn--ghost btn--sm" type="button">Cancel Booking</button>
-                        <p id="bookingCancelMsg" style="font-size:0.85rem; margin-top:6px;"></p>
-                    </div>
+                    <p id="bookingCancelMsg" style="font-size:0.85rem; margin-top:6px;"></p>
                 </div>
             </div>
         </div>
@@ -1047,9 +1034,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-
-
     <script>
         // 🔹 Firebase config تبع مشروعك (نفس اللي جبتيه من الكونسول)
         // SECURITY NOTE: 

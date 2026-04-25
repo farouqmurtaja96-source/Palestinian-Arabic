@@ -788,10 +788,11 @@ body.home-only main {
     line-height: 1.45;
 }
 
-.booking-cancel-box {
-    border-top: 1px solid #e2e8f0;
-    margin-top: 14px;
-    padding-top: 14px;
+.booking-status-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
 }
 
 @media (max-width: 700px) {
@@ -1170,16 +1171,10 @@ body.home-only main {
     gap: 12px;
 }
 
-#subscribe-screen .booking-status-item,
-#subscribe-screen .booking-cancel-box {
+#subscribe-screen .booking-status-item {
     border-color: rgba(91, 100, 113, 0.16);
     border-radius: 18px;
     background: rgba(255, 255, 255, 0.8);
-}
-
-#subscribe-screen .booking-cancel-box {
-    padding: 16px;
-    border: 1px solid rgba(91, 100, 113, 0.16);
 }
 
 #subscribe-screen .btn {

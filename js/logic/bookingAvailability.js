@@ -134,6 +134,7 @@ export async function getSchedulableSlots(daysToShow = 14, deps, options = {}) {
     const occupiedMinutes = bookingSettings.totalSlotMinutes || slotMinutes;
     const teacherTimezone = bookingSettings.timezone || getLocalTimezone() || "UTC";
     const now = Date.now();
+    const minimumLeadMs = 6 * 60 * 60 * 1000;
     const todayParts = getZonedParts(new Date(now), teacherTimezone);
     const teacherToday = `${todayParts.year}-${String(todayParts.month).padStart(2, "0")}-${String(todayParts.day).padStart(2, "0")}`;
     const teacherDateKeys = [];
@@ -150,7 +151,7 @@ export async function getSchedulableSlots(daysToShow = 14, deps, options = {}) {
             const hour = Math.floor(minute / 60);
             const mins = minute % 60;
             const ts = zonedDateTimeToUtcMs(teacherTimezone, year, month, day, hour, mins);
-            if (ts >= now) candidateStarts.push(ts);
+            if (ts >= now + minimumLeadMs) candidateStarts.push(ts);
         }
     }
 

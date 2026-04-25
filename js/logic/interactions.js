@@ -289,42 +289,6 @@ function openWhatsAppWithMessage(message) {
     }
 }
 
-function ensureEmailJsInit() {
-    try {
-        if (window.emailjs && typeof window.emailjs.init === "function") {
-            window.emailjs.init("N5rGMrRJY7IbqGsuJ");
-        }
-    } catch { }
-}
-
-async function sendBookingEmail(payload) {
-    try {
-        if (!window.emailjs || typeof window.emailjs.send !== "function") return;
-        const params = {
-            to_email: (payload.recipientEmail || contactSettings.email || "farouqmurtaja96@gmail.com").trim(),
-            student_name: payload.name,
-            student_email: payload.email,
-            student_phone: payload.phone,
-            slot_time: payload.slot,
-            notes: payload.notes || "",
-            student_timezone: payload.studentTimeZone || "",
-            student_locale: payload.studentLocale || "",
-            teacher_timezone: payload.teacherTimeZone || "",
-            booking_reasons: payload.reasons || "",
-            booking_level: payload.level || "",
-            booking_lessons_per_month: payload.lessonsPerMonth || "",
-            booking_country_hint: payload.countryHint || "",
-            booking_summary: payload.summary || "",
-        };
-        await window.emailjs.send("service_977rmzv", "template_419nlgt", params);
-        console.log("Booking email sent successfully");
-        return true;
-    } catch (err) {
-        console.error("Error sending booking email:", err);
-        return false;
-    }
-}
-
 function getLocalTimezone() {
     try {
         return Intl.DateTimeFormat().resolvedOptions().timeZone || "";
@@ -6095,8 +6059,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     loadBookingSettings();
     await loadContactSettingsFromCloud();
     await loadBookingSettingsFromCloud();
-    ensureEmailJsInit();
-
     // top nav
     $all(".top-nav__link").forEach((btn) => {
         btn.addEventListener("click", () => {
@@ -6625,9 +6587,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const bookingStatusBtn = document.getElementById("bookingStatusBtn");
     const bookingStatusList = document.getElementById("bookingStatusList");
     const bookingStatusMsg = document.getElementById("bookingStatusMsg");
-    const bookingCancelId = document.getElementById("bookingCancelId");
-    const bookingCancelToken = document.getElementById("bookingCancelToken");
-    const bookingCancelBtn = document.getElementById("bookingCancelBtn");
     const bookingCancelMsg = document.getElementById("bookingCancelMsg");
     const bookingSuccessModal = document.getElementById("bookingSuccessModal");
     const bookingSuccessText = document.getElementById("bookingSuccessText");
@@ -6637,6 +6596,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let scheduleByDate = new Map();
     let bookingWeekOffset = 0;
     let bookingBuildSeq = 0;
+    let pendingGuestReschedule = null;
 
     function updateBookingInfo() {
         if (!bookingInfo || !selectedTimeDisplay) return;
@@ -6713,7 +6673,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (!slots.length) {
                 const empty = document.createElement("div");
                 empty.className = "booking-day-empty";
-                empty.textContent = "No working times set";
+                empty.textContent = "No available times";
                 body.appendChild(empty);
             } else {
                 slots.forEach((slot) => {
@@ -6810,7 +6770,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (seq !== bookingBuildSeq) return;
         let schedule = [];
         try {
-            schedule = await getSchedulableSlots(10, {
+            schedule = await getSchedulableSlots(7, {
                 forceRefresh,
                 startOffsetDays: bookingWeekOffset * 7,
             });
@@ -6828,9 +6788,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         scheduleByDate = new Map();
         schedule.forEach((slot) => {
             const key = slot.dateKey;
+            if (!slot.available) return;
             if (!scheduleByDate.has(key)) scheduleByDate.set(key, []);
             scheduleByDate.get(key).push(slot);
-            if (!slot.available) return;
             const dt = new Date(slot.startMs);
             if (!slotsByDate.has(key)) slotsByDate.set(key, []);
             slotsByDate.get(key).push(dt);
@@ -6898,14 +6858,37 @@ document.addEventListener("DOMContentLoaded", async () => {
             loadBookingStatus(email);
         });
     }
-    if (bookingCancelBtn) {
-        bookingCancelBtn.addEventListener("click", async () => {
+    if (bookingStatusList) {
+        bookingStatusList.addEventListener("click", async (e) => {
+            const actionBtn = e.target.closest("[data-booking-action]");
+            if (!actionBtn) return;
+            const action = actionBtn.dataset.bookingAction;
+            const bookingId = actionBtn.dataset.bookingId || "";
+            const cancellationTokenHash = actionBtn.dataset.cancelTokenHash || "";
+            if (!bookingId || !cancellationTokenHash) return;
+
+            if (action === "reschedule") {
+                const slot = Number(actionBtn.dataset.bookingSlot || 0);
+                if (!slot || slot - Date.now() <= 12 * 60 * 60 * 1000) {
+                    if (bookingCancelMsg) bookingCancelMsg.textContent = "Rescheduling is closed within 12 hours of the lesson.";
+                    return;
+                }
+                pendingGuestReschedule = { bookingId, cancellationTokenHash };
+                if (bookingMsg) bookingMsg.textContent = "Choose a new available time, then confirm the reschedule.";
+                const bookingSubmitLabel = bookingSubmit?.querySelector(".btn__label");
+                if (bookingSubmitLabel) bookingSubmitLabel.textContent = "Reschedule Now";
+                bookingWeeklyGrid?.scrollIntoView({ behavior: "smooth", block: "start" });
+                return;
+            }
+
+            if (action !== "cancel") return;
+            if (!window.confirm("Cancel this lesson?")) return;
             try {
                 await cancelGuestBooking({
                     db,
                     firebase,
-                    bookingId: bookingCancelId?.value || "",
-                    cancellationToken: bookingCancelToken?.value || "",
+                    bookingId,
+                    cancellationTokenHash,
                     bookingCancelMsg,
                     hashEmail,
                     cancelBookingViaAppsScript: window.cancelBookingViaAppsScript,
@@ -6960,8 +6943,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 ? true
                 : !!window.grecaptcha.getResponse();
 
-            await submitGuestBooking({
+            const booked = await submitGuestBooking({
                 db,
+                firebase,
                 bookingSettings,
                 contactSettings,
                 getLocalTimezone,
@@ -6991,12 +6975,15 @@ document.addEventListener("DOMContentLoaded", async () => {
                 findBookingConflict,
                 buildBookingSelects,
                 hashEmail,
-                sendBookingEmail,
                 createBookingViaAppsScript: window.createBookingViaAppsScript,
-                deleteBookingViaAppsScript: window.deleteBookingViaAppsScript,
+                cancelBookingViaAppsScript: window.cancelBookingViaAppsScript,
                 loadBookingStatus,
                 isLocalDevHost,
+                rescheduleTarget: pendingGuestReschedule,
             });
+            if (booked) {
+                pendingGuestReschedule = null;
+            }
         });
     }
 
