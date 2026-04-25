@@ -150,6 +150,30 @@ function buildBusyBlocks_(events, timeZone) {
   });
 }
 
+function findBookingEvent_(cal, eventId, bookingId, slot, durationMinutes) {
+  if (!cal) return null;
+  if (eventId) {
+    var byId = cal.getEventById(eventId);
+    if (byId) return byId;
+  }
+  if (!bookingId && !slot) return null;
+  var durationMs = Math.max(30, Math.min(180, Number(durationMinutes || 50))) * 60 * 1000;
+  var start = slot ? new Date(Number(slot) - 12 * 60 * 60 * 1000) : new Date(Date.now() - 180 * 24 * 60 * 60 * 1000);
+  var end = slot ? new Date(Number(slot) + durationMs + 12 * 60 * 60 * 1000) : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
+  var events = cal.getEvents(start, end);
+  for (var i = 0; i < events.length; i++) {
+    var event = events[i];
+    var description = event.getDescription() || '';
+    if (bookingId && description.indexOf('Booking ID: ' + bookingId) !== -1) {
+      return event;
+    }
+    if (slot && Math.abs(event.getStartTime().getTime() - Number(slot)) < 60000) {
+      return event;
+    }
+  }
+  return null;
+}
+
 function doGet(e) {
   return handleRequest_(e);
 }
@@ -229,28 +253,26 @@ function handleRequest_(e) {
       const teacherEmail = normalizeEmail_(req.teacherEmail || config.notificationEmail);
       const cancelReason = req.cancelReason || '';
       const slot = Number(req.slot || 0);
+      const durationMinutes = Number(req.durationMinutes || 50);
       const slotLabel = slot ? Utilities.formatDate(new Date(slot), timeZone, 'yyyy-MM-dd HH:mm') : '';
       var calendarDeleted = false;
       var calendarDeleteError = '';
-      if (eventId) {
-        try {
-          const cal = CalendarApp.getCalendarById(config.primaryCalendarId);
-          if (!cal) {
-            calendarDeleteError = 'Primary calendar not found.';
+      try {
+        const cal = CalendarApp.getCalendarById(config.primaryCalendarId);
+        if (!cal) {
+          calendarDeleteError = 'Primary calendar not found.';
+        } else {
+          const event = findBookingEvent_(cal, eventId, bookingId, slot, durationMinutes);
+          if (event) {
+            event.deleteEvent();
+            calendarDeleted = true;
           } else {
-            const event = cal.getEventById(eventId);
-            if (event) {
-              event.deleteEvent();
-              calendarDeleted = true;
-            } else {
-              calendarDeleted = true;
-            }
+            calendarDeleted = false;
+            calendarDeleteError = 'Calendar event not found for this booking.';
           }
-        } catch (deleteErr) {
-          calendarDeleteError = deleteErr && deleteErr.message ? deleteErr.message : String(deleteErr);
         }
-      } else {
-        calendarDeleted = true;
+      } catch (deleteErr) {
+        calendarDeleteError = deleteErr && deleteErr.message ? deleteErr.message : String(deleteErr);
       }
 
       var cancellationNotificationSent = false;

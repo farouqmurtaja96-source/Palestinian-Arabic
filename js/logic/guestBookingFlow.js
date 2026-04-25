@@ -548,6 +548,7 @@ export async function cancelGuestBooking({
     const appsScriptResult = await cancelBookingViaAppsScript?.({
         bookingId: cleanId,
         eventId: booking.googleCalendarEventId || "",
+        durationMinutes: 50,
         teacherEmail: (teacherEmail || DEFAULT_TEACHER_EMAIL).trim(),
         cancelReason: cancelReason || "",
         name: "Guest",
