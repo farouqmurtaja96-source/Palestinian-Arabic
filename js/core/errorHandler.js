@@ -81,7 +81,6 @@ class ErrorHandler {
             'auth/wrong-password': 'كلمة المرور غير صحيحة',
             'auth/email-already-in-use': 'البريد الإلكتروني مستخدم بالفعل',
             'auth/weak-password': 'كلمة المرور ضعيفة جداً',
-            'Google Calendar not connected': 'يرجى ربط تقويم Google أولاً',
             'No user logged in': 'يرجى تسجيل الدخول أولاً',
             'Teacher not found': 'لم يتم العثور على حساب المدرس'
         };

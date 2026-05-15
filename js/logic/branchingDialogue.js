@@ -102,7 +102,7 @@ function renderBranching(dialogueId, level, unit) {
       window.toast('Guest access is limited to the first two units.');
     }
     if (typeof window.showScreen === 'function') {
-      window.showScreen('subscribe-screen');
+      window.showScreen('levels-screen');
     }
     return;
   }

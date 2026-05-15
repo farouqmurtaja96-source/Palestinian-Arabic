@@ -80,14 +80,7 @@ class LazyLoader {
                 '../render/renderVocabulary.js'
             ],
             'teacher-dashboard-screen': [
-                '../logic/bookingManager.js',
-                '../logic/studentManager.js',
-                '../logic/contactManager.js'
-            ],
-            'booking-screen': [
-                '../booking-logic.js',
-                '../weekly-calendar.js',
-                '../weekly-calendar-render.js'
+                '../logic/studentManager.js'
             ]
         };
 
