@@ -5250,7 +5250,7 @@ function renderTeacherEditor(lessonId, anchorCard, preselectSection) {
     </div>
     <h3>Editing: ${escapeHtml(lesson.meta.level)} – ${escapeHtml(lesson.meta.unit)} – ${escapeHtml(lesson.meta.lessonTitle)}</h3>
     <p class="teacher-edit-note">
-      All changes here are saved locally and will apply to all students for this lesson.
+      All saved changes here are stored locally and synced to Firebase for all students.
     </p>
 
     <div class="td-sectionbar">
@@ -5435,6 +5435,7 @@ function renderTeacherEditor(lessonId, anchorCard, preselectSection) {
         lesson.meta.unit = $("#tdMetaUnit").value.trim() || "Unit";
         lesson.meta.lessonTitle = $("#tdMetaTitle").value.trim() || "Lesson";
         saveLessonToLS(lessonId);
+        saveLessonToCloud(lessonId);
         renderTeacherPicker();
         alert("Lesson meta saved.");
     });

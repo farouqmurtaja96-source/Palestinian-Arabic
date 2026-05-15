@@ -4,6 +4,7 @@
 // ========================= CLOUD SYNC (LESSON TEMPLATES) =========================
 const CLOUD_LESSONS_COLLECTION = "lessonTemplates"; // Firestore collection name
 const CLOUD_LESSONS_DOC_SHAPE_VERSION = 1;
+const CLOUD_ENCODED_ARRAY_KEY = "__lessonCloudArray";
 
 // Local buffer to avoid overwriting active teacher edits when a remote update arrives
 const remoteLessonBuffer = {}; // { [lessonId]: lessonObj }
@@ -12,17 +13,60 @@ function getServerTimestamp() {
     return firebase.firestore.FieldValue.serverTimestamp();
 }
 
+function encodeLessonForFirestore(value, parentIsArray = false) {
+    if (Array.isArray(value)) {
+        const encoded = value.map((item) => encodeLessonForFirestore(item, true));
+        return parentIsArray ? { [CLOUD_ENCODED_ARRAY_KEY]: encoded } : encoded;
+    }
+    if (value && typeof value === "object") {
+        return Object.fromEntries(
+            Object.entries(value).map(([key, item]) => [key, encodeLessonForFirestore(item, false)])
+        );
+    }
+    return value;
+}
+
+function decodeLessonFromFirestore(value) {
+    if (Array.isArray(value)) {
+        return value.map((item) => decodeLessonFromFirestore(item));
+    }
+    if (value && typeof value === "object") {
+        if (
+            Object.prototype.hasOwnProperty.call(value, CLOUD_ENCODED_ARRAY_KEY) &&
+            Array.isArray(value[CLOUD_ENCODED_ARRAY_KEY])
+        ) {
+            return value[CLOUD_ENCODED_ARRAY_KEY].map((item) => decodeLessonFromFirestore(item));
+        }
+        return Object.fromEntries(
+            Object.entries(value).map(([key, item]) => [key, decodeLessonFromFirestore(item)])
+        );
+    }
+    return value;
+}
+
+function saveLessonOfflineCopy(lessonId) {
+    if (typeof window.saveLessonToLS === "function") {
+        window.saveLessonToLS(lessonId);
+    }
+}
+
+function showLessonSyncToast(message) {
+    if (typeof window.toast === "function") {
+        window.toast(message);
+    }
+}
+
 async function loadLessonsFromCloudOnce() {
     if (!window.db) return;
     try {
         const snap = await window.db.collection(CLOUD_LESSONS_COLLECTION).get();
         snap.forEach((doc) => {
             const data = doc.data() || {};
-            const lesson = data.lesson || null;
+            const lesson = decodeLessonFromFirestore(data.lesson || null);
             if (lesson && typeof lesson === "object") {
                 window.lessons[doc.id] = lesson;
                 // keep a local offline copy too
-                window.saveLessonToLS(doc.id);
+                saveLessonOfflineCopy(doc.id);
             }
         });
     } catch (e) {
@@ -38,7 +82,7 @@ function subscribeLessonsFromCloud() {
                 snap.docChanges().forEach((ch) => {
                     const id = ch.doc.id;
                     const data = ch.doc.data() || {};
-                    const lesson = data.lesson || null;
+                    const lesson = decodeLessonFromFirestore(data.lesson || null);
                     if (!lesson || typeof lesson !== "object") return;
 
                     // If teacher is actively editing this lesson, don't overwrite their local editor state.
@@ -57,7 +101,7 @@ function subscribeLessonsFromCloud() {
                     }
 
                     window.lessons[id] = lesson;
-                    window.saveLessonToLS(id);
+                    saveLessonOfflineCopy(id);
 
                     // If user is viewing this lesson right now, refresh view
                     if (window.appState && window.appState.currentLessonId === id) {
@@ -85,9 +129,10 @@ function subscribeLessonsFromCloud() {
 async function saveLessonToCloud(lessonId) {
     if (!window.db) return;
     try {
+        const lesson = encodeLessonForFirestore(window.lessons[lessonId]);
         await window.db.collection(CLOUD_LESSONS_COLLECTION).doc(lessonId).set(
             {
-                lesson: window.lessons[lessonId],
+                lesson,
                 shapeVersion: CLOUD_LESSONS_DOC_SHAPE_VERSION,
                 updatedAt: getServerTimestamp(),
                 updatedBy: window.appState?.currentUser?.uid || null,
@@ -137,7 +182,7 @@ function stopLessonCloudSync() {
 
 async function syncLessonsNow({ showToast = true } = {}) {
     await loadLessonsFromCloudOnce();
-    if (showToast) window.toast("Synced window.lessons from cloud.");
+    if (showToast) showLessonSyncToast("Synced window.lessons from cloud.");
 }
 
 function setLessonSyncForScreen(screenId) {
