@@ -3,7 +3,7 @@
 
 import * as CONST from '../core/constants.js';
 import { defaultLessons as importedDefaultLessons } from '../lessons/index.js';
-import * as Cloud from '../cloud/lessonsCloud.js';
+import * as Cloud from '../cloud/lessonsCloud.js?v=20260515-lesson-sync';
 import { arabicLetters, arabicLettersExtras, arabicLettersExercises } from '../data/arabicLettersData.js';
 import {
     createInitialContactSettings,
@@ -7909,7 +7909,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     const tdSyncNowBtn = document.getElementById("tdSyncNowBtn");
     if (tdSyncNowBtn) {
         tdSyncNowBtn.addEventListener("click", async () => {
-            await syncLessonsNow();
+            tdSyncNowBtn.disabled = true;
+            try {
+                await syncLessonsNow();
+            } catch (e) {
+                console.warn("Manual lesson sync failed:", e);
+                toast("Could not sync lessons. Please try again.");
+            } finally {
+                tdSyncNowBtn.disabled = false;
+            }
         });
     }
     // initial
