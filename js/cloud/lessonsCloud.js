@@ -2,7 +2,7 @@
 // Cloud sync expects firebase + db on window (same as original).
 
 // ========================= CLOUD SYNC (LESSON TEMPLATES) =========================
-const CLOUD_LESSONS_COLLECTION = "lessonTemplates"; // Firestore collection name
+const CLOUD_LESSONS_COLLECTION = "content_lessons"; // Firestore collection name
 const CLOUD_LESSONS_DOC_SHAPE_VERSION = 1;
 const CLOUD_ENCODED_ARRAY_KEY = "__lessonCloudArray";
 
