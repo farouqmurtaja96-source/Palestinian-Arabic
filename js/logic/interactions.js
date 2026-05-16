@@ -2359,7 +2359,6 @@ function showScreen(id) {
     $all(".screen").forEach((sec) =>
         sec.classList.toggle("screen--active", sec.id === id)
     );
-    updateFloatingChatVisibility();
 }
 
 function goToHome() {
