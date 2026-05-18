@@ -2415,6 +2415,7 @@ function goToArabicLetters() {
     persistResumeBeforeNav();
     document.body.classList.remove("home-only");
     showScreen("arabic-letters-screen");
+    initArabicLettersScreen();
     renderArabicLettersScreen();
 }
 function goToLessonView(opts = {}) {
