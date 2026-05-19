@@ -164,7 +164,7 @@ export const lesson = {
             },
             {
                 id: "card",
-                ar: "كَرْت / كَرْد",
+                ar: "كَرْت ",
                 en: "bank card",
                 enArabeezy: "kart / card",
                 hint:
@@ -186,7 +186,7 @@ export const lesson = {
             },
             {
                 id: "wasl",
-                ar: "وَصْل / بَوْن",
+                ar: "وَصْل ",
                 en: "receipt",
                 enArabeezy: "waṣl / bawn",
                 hint:
@@ -317,9 +317,9 @@ export const lesson = {
                 enArabeezy: "mumkin tnazzel shway?",
                 hint:
                     "Common bargaining phrase in markets and some shops.",
-                exampleAr: "السِّعِر عالي، مُمْكِن تْنَزِّل شْوَيّ؟",
+                exampleAr: "السِّعِر غالي، مُمْكِن تْنَزِّل شْوَيّ؟",
                 exampleArabeezy: "els3r 3aly, mmkn tnzl shwy?",
-                exampleEn: "The price is high, can you lower it a bit?",
+                exampleEn: "It’s expensive. Can you lower the price a little?",
             },
             {
                 id: "akher_se3er",
@@ -328,7 +328,7 @@ export const lesson = {
                 enArabeezy: "ā5er se3er? / akher se3er?",
                 hint:
                     "Used in bargaining when you want the lowest price.",
-                exampleAr: "يَعْنِي هَادَا آخِر سِعِر وَلّا فِيه نْقَاص كْمَان؟",
+                exampleAr: "يعني هذا آخر سعر عندك ولا فيك تنزّل بالسعر؟",
                 exampleArabeezy: "y3ny hada aakhr s3r wla fyh nqas kman?",
                 exampleEn: "So is this your final price or can you go lower?",
             },
