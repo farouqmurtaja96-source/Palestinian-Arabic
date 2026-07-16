@@ -276,125 +276,215 @@ export const lesson = {
     // ====================================
     // DIALOGUE – LONG & NATURAL
     // ====================================
-    dialogue: {
-        lines: [
-            // Scene 1 – Talking about free time at the weekend
-            {
-                speaker: "Narrator",
-                ar: "بِالوِيكِينْد، رُوبَا وَصَاحْبْتَهَا نُور قَاعِدِين عَالبَحِر وَبِيِحْكُوا عَن الفَرَاغ وَالهَوَايَات.",
-                en: "On the weekend, Roba and her friend Noor are sitting by the sea talking about free time and hobbies.",
-            },
-            {
-                speaker: "Noor",
-                ar: "رُوبَا، عَادَةً كِيف بْتِقْضِي وفت فراغك؟",
-                en: "Roba, how do you usually spend your free time?",
-            },
-            {
-                speaker: "Roba",
-                ar: "صَرَاحَةً، هَالْفَتْرَة فِش وَقْت كْتِير، بَسّ لَمَّا يِكُون فِي فَرَاغ بَقْرَا كِتَاب أَو بَتْفَرَّج عَلَى فِلْم.",
-                en: "Honestly, these days there isn’t much time, but when I have free time I read a book or watch a movie.",
-            },
-            {
-                speaker: "Noor",
-                ar: "حلو. أكتر إشي بحبّه هو الرياضة. بروح عالجيم ثلاث مرات بالأسبوع.",
-                en: "Nice. The thing I like most is exercise. I go to the gym three times a week.",
-            },
-            {
-                speaker: "Roba",
-                ar: "واو، حلو كتير. بعطلة نهاية الأسبوع أحيانًا بسبح بالبحر، وبعدين بقعد مع العيلة.",
-                en: "Wow, that’s great. On the weekend I sometimes swim at the sea, then I sit with the family.",
-            },
-            {
-                speaker: "Noor",
-                ar: "يعني بتستريحي مع عيلتك بعد الأسبوع الطويل.",
-                en: "So you relax with your family after the long week.",
-            },
-            {
-                speaker: "Roba",
-                ar: "أَيُّوَه، بَسْتِرِيح وَبَتْسَلَّى. وَإِنْتِي، مَع مِين أَكْثَر شِي بتقضي وفت فراغك؟",
-                en: "Yes, I relax and have fun. And you, with whom do you mostly spend your free time?",
-            },
-            {
-                speaker: "Noor",
-                ar: "أحيانًا لحالي، وأحيانًا مع صحابي. لما أكون لحالي برسم وبسمع موسيقى.",
-                en: "Sometimes by myself, sometimes with my friends. When I’m by myself I draw and listen to music.",
-            },
-
-            // Scene 2 – In class: talking about hobbies
-            {
-                speaker: "Narrator",
-                ar: "فِي الدَّرْس، المُدَرِّس طَلَب مِن الطُّلَّاب يِحْكُوا عَن هَوَايَاتْهُمْ.",
-                en: "In class, the teacher asked the students to talk about their hobbies.",
-            },
-            {
-                speaker: "Teacher",
-                ar: "طَيِّب يَا شَبَاب، هَلَّق بَدَّنَا نِحْكِي عَن الهَوَايَات. رُوبَا، اِبْدَيْ بِحَالِك. شُو هِوَايِتِك المُفَضَّلَة؟",
-                en: "Okay everyone, now we’ll talk about hobbies. Roba, start with yourself. What is your favorite hobby?",
-            },
-            {
-                speaker: "Roba",
-                ar: "هِوَايِتِي المُفَضَّلَة القراءة. عَادَةً بَقْرَا رِوَايَات بِالْعَرَبِي وبِالإِنْجْلِيزِي.",
-                en: "My favorite hobby is reading. Usually I read novels in Arabic and English.",
-            },
-            {
-                speaker: "Teacher",
-                ar: "مُمْتَاز. كَم مَرَّة فِي الأُسْبُوع بتقرئي؟",
-                en: "Excellent. How many times a week you read?",
-            },
-            {
-                speaker: "Roba",
-                ar: "أَحْيَانًا كُلّ يَوم، بَسّ أَحْيَانًا مَرَّة أَو مَرَّتَيْن بَسّ. نَادِرًا يَمُرّ أُسْبُوع بِلَا قراءة.",
-                en: "Sometimes every day, but sometimes only once or twice. It’s rare that a week passes without reading.",
-            },
-            {
-                speaker: "Teacher",
-                ar: "حِلُو كْتِير. نُور، شُو بِتْعْمْلِي فِي وقت فراغك",
-                en: "Very nice. Noor, what do you do in your free time?",
-            },
-            {
-                speaker: "Noor",
-                ar: "بِصَرَاحَة، هَالفَتْرَة مَا فِيش وَقْت كْتِير. بَسّ لَمَّا يِكُون فِي فَرَاغ بَرُوح أِمْشِي أَو أِلْعَب رِيَاضَة فِي النَّادِي.",
-                en: "Honestly, these days there isn’t much time. But when I have free time I go for a walk or play sports at the gym.",
-            },
-
-            // Scene 3 – Making plans for next weekend
-            {
-                speaker: "Narrator",
-                ar: "بَعْد الدَّرْس، رُوبَا وَنُور عَم بِرَتِّبُوا لنهاية الاسبوع الجَّاي.",
-                en: "After the lesson, Roba and Noor are planning for the next weekend.",
-            },
-            {
-                speaker: "Noor",
-                ar: "بنهاية الاسبوع الجَّاي، بِتْحِبّي نِزَبَّط قَعْدَة نِرْسِم وَنِتْفَرَّج عَلَى فِلْم؟",
-                en: "Next weekend, would you like us to plan a little hangout to draw and watch a movie?",
-            },
-            {
-                speaker: "Roba",
-                ar: "فِكْرَة مُمْتَازَة. عَادَةً الوِيكِينْد بَقْضِيه مَع العِيلَة، بَسّ هَالمَرَّة بَقْدَر آجِي.",
-                en: "Excellent idea. Usually I spend the weekend with my family, but this time I can come.",
-            },
-            {
-                speaker: "Noor",
-                ar: "ممتاز. مُمْكِن نبدأ بالرَسِم، بَعْدِين نِتْفَرَّج عَلَى فِلْم وَنِسْمَع مُوسِيقَى هَادِيَّة.",
-                en: "Great. We can start with drawing, then watch a movie and listen to calm music.",
-            },
-            {
-                speaker: "Roba",
-                ar: "هيك بكون كتير ممتع. طيب، برنّ عليك قبلها بيوم عشان نأكّد.",
-                en: "It’s really fun that way. Okay, I’ll call you one day before to confirm.",
-            },
-            {
-                speaker: "Noor",
-                ar: "أَهْلًا وَسَهْلًا فِيك دَايْمًا. مَا بَدّي أَطَوِّل عَلِك هَلَّق، بَنِحْكِي بَعْدِين.",
-                en: "You’re always welcome. I don’t want to keep you now, we’ll talk later.",
-            },
-            {
-                speaker: "Roba",
-                ar: "مُنَاسِب. مَع السَّلَامَة.",
-                en: "Sounds good. Goodbye",
-            },
-        ],
-    },
+dialogue: {
+    lines: [
+        {
+            speaker: "Noor",
+            ar: "هاي ربا، كيفك؟ والله من زمان ما شفتك، وين هالغيبة؟",
+            en: "Hi Roba, how are you? It's been a long time since I saw you. Where have you been?"
+        },
+        {
+            speaker: "Roba",
+            ar: "والله يا نور هالفترة مضغوطة كتير، بين الشغل والدراسة ما ضل وقت لإشي.",
+            en: "Honestly Noor, I've been really busy lately. Between work and studying, there's hardly time for anything."
+        },
+        {
+            speaker: "Noor",
+            ar: "حاسّة فيكي، أنا كمان نفس الوضع تقريبًا. مرات بحس الأسبوع كله بروح وأنا مش منتبهة.",
+            en: "I feel you. I'm pretty much the same. Sometimes the whole week passes before I notice."
+        },
+        {
+            speaker: "Roba",
+            ar: "بالزبط، وفجأة بتلاقي حالك وصلتي للويكند ولساتك تعبانة.",
+            en: "Exactly, and suddenly it's the weekend and you're still exhausted."
+        },
+        {
+            speaker: "Noor",
+            ar: "طيب لما يفضالك شوية وقت، شو بتحبي تعملي عادة؟",
+            en: "When you do get some free time, what do you usually like to do?"
+        },
+        {
+            speaker: "Roba",
+            ar: "بصراحة حسب المزاج، بس أغلب الوقت بحب أقعد بمكان هادي وأقرأ شوي.",
+            en: "Honestly, it depends on my mood, but most of the time I like sitting somewhere quiet and reading."
+        },
+        {
+            speaker: "Noor",
+            ar: "لساتك بتحبي القراءة لهلّق؟",
+            en: "You still like reading?"
+        },
+        {
+            speaker: "Roba",
+            ar: "آه طبعًا، يمكن مش زي قبل، بس لساتها من أكتر الأشياء اللي بستمتع فيها.",
+            en: "Yeah of course. Maybe not as much as before, but it's still one of the things I enjoy most."
+        },
+        {
+            speaker: "Noor",
+            ar: "شو آخر كتاب قريتيه؟",
+            en: "What's the last book you read?"
+        },
+        {
+            speaker: "Roba",
+            ar: "رواية كانت طويلة شوي، بس عجبتني كتير وخليتني أكمّلها بسرعة.",
+            en: "It was a fairly long novel, but I liked it a lot and finished it quickly."
+        },
+        {
+            speaker: "Noor",
+            ar: "أنا بصراحة نفسي أرجع أقرأ أكتر، بس كل ما أمسك كتاب بمسك التلفون بدل منه.",
+            en: "Honestly, I'd like to get back into reading, but every time I pick up a book, I end up using my phone instead."
+        },
+        {
+            speaker: "Roba",
+            ar: "هاي مشكلة أغلبنا هالأيام.",
+            en: "That's a problem most of us have these days."
+        },
+        {
+            speaker: "Noor",
+            ar: "مزبوط. ساعات بقعد أتفرج عالفيديوهات وما بحس بالوقت.",
+            en: "Exactly. Sometimes I spend hours watching videos without noticing the time."
+        },
+        {
+            speaker: "Roba",
+            ar: "أنا هيك كمان، وبعدها بزعل على الوقت اللي راح.",
+            en: "I'm the same, and afterward I regret the time I wasted."
+        },
+        {
+            speaker: "Noor",
+            ar: "غير القراءة، شو كمان بتعملي بوقت فراغك؟",
+            en: "Besides reading, what else do you do in your free time?"
+        },
+        {
+            speaker: "Roba",
+            ar: "بحب أتفرج على أفلام، خصوصًا لما أكون مخلصة كل اللي عليّ.",
+            en: "I like watching movies, especially when I've finished everything I need to do."
+        },
+        {
+            speaker: "Noor",
+            ar: "أنا أكتر وحدة ممكن تقضي ساعات تدور على فيلم وبالأخير ما تحضر إشي.",
+            en: "I'm the type who spends hours looking for a movie and ends up watching nothing."
+        },
+        {
+            speaker: "Roba",
+            ar: "ههههه والله هاي أنا بالزبط.",
+            en: "Haha, that's exactly me."
+        },
+        {
+            speaker: "Noor",
+            ar: "أما أنا أكتر إشي بحبه بوقت الفراغ إني أطلع أمشي.",
+            en: "For me, my favorite free-time activity is going for walks."
+        },
+        {
+            speaker: "Roba",
+            ar: "عنجد؟ كل يوم تقريبًا؟",
+            en: "Really? Almost every day?"
+        },
+        {
+            speaker: "Noor",
+            ar: "مش كل يوم، بس كم مرة بالأسبوع. بحس المشي بغيّر النفسية.",
+            en: "Not every day, but a few times a week. Walking really improves my mood."
+        },
+        {
+            speaker: "Roba",
+            ar: "معك حق، خصوصًا إذا الجو كان حلو.",
+            en: "You're right, especially when the weather is nice."
+        },
+        {
+            speaker: "Noor",
+            ar: "وكمان بحب أسمع موسيقى وأنا ماشية.",
+            en: "I also like listening to music while walking."
+        },
+        {
+            speaker: "Roba",
+            ar: "شو نوع الموسيقى اللي بتسمعيه عادة؟",
+            en: "What kind of music do you usually listen to?"
+        },
+        {
+            speaker: "Noor",
+            ar: "حسب المزاج، مرات هادي ومرات إشي حماسي أكتر.",
+            en: "Depends on my mood. Sometimes calm music, sometimes something more energetic."
+        },
+        {
+            speaker: "Roba",
+            ar: "أنا هيك كمان، الموسيقى بتفرق معي كتير بالمزاج.",
+            en: "Same here. Music really affects my mood."
+        },
+        {
+            speaker: "Noor",
+            ar: "وبالعطلة شو بتعملي عادة؟",
+            en: "What do you usually do on weekends?"
+        },
+        {
+            speaker: "Roba",
+            ar: "بصراحة بحاول أقضي وقت مع العيلة لأنه طول الأسبوع ما بنشوف بعض كتير.",
+            en: "Honestly, I try to spend time with my family because we don't see each other much during the week."
+        },
+        {
+            speaker: "Noor",
+            ar: "هاي شغلة حلوة، أنا كمان بحب لمّة العيلة.",
+            en: "That's nice. I also love family gatherings."
+        },
+        {
+            speaker: "Roba",
+            ar: "وأحيانًا إذا صحباتي طلعوا بمشي معهم أو بنقعد بكافيه.",
+            en: "And sometimes, if my friends go out, I join them for a walk or sit in a café."
+        },
+        {
+            speaker: "Noor",
+            ar: "بصراحة أحلى إشي لما الواحد يغير جو شوي بعد أسبوع طويل.",
+            en: "Honestly, the best thing is changing the atmosphere after a long week."
+        },
+        {
+            speaker: "Roba",
+            ar: "مية بالمية، الواحد بحاجة لفترة يرتاح فيها ويعمل إشي بحبه.",
+            en: "Absolutely. Everyone needs time to relax and do something they enjoy."
+        },
+        {
+            speaker: "Noor",
+            ar: "على سيرة الهوايات، زمان كنتِ تحبي التصوير صح؟",
+            en: "Speaking of hobbies, didn't you used to like photography?"
+        },
+        {
+            speaker: "Roba",
+            ar: "آه والله، كنت أصور أي إشي يعجبني.",
+            en: "Yeah, I used to photograph anything I liked."
+        },
+        {
+            speaker: "Noor",
+            ar: "وليش وقفتي؟",
+            en: "Why did you stop?"
+        },
+        {
+            speaker: "Roba",
+            ar: "ما بعرف، يمكن انشغلت شوي شوي لحد ما بطلت أمارسها.",
+            en: "I don't know. I guess I gradually got busy until I stopped doing it."
+        },
+        {
+            speaker: "Noor",
+            ar: "لازم ترجعي إلها، واضح إنك كنتي مستمتعة فيها.",
+            en: "You should get back to it. It sounds like you really enjoyed it."
+        },
+        {
+            speaker: "Roba",
+            ar: "والله بفكر بالموضوع من فترة.",
+            en: "I've actually been thinking about it lately."
+        },
+        {
+            speaker: "Noor",
+            ar: "طيب شو رأيك نهاية الأسبوع نطلع نتمشى ونشرب قهوة؟",
+            en: "How about we go for a walk and grab coffee this weekend?"
+        },
+        {
+            speaker: "Roba",
+            ar: "فكرة حلوة كتير، وهيك بكون عندي سبب أطلع من البيت كمان.",
+            en: "That's a really nice idea, and it'll give me a reason to get out of the house too."
+        },
+        {
+            speaker: "Noor",
+            ar: "خلص اتفقنا، وأنا ببعتلك التفاصيل قبلها بيوم.",
+            en: "Great, it's settled. I'll send you the details the day before."
+        }
+    ]
+},
 
     // ====================================
     // GRAMMAR
