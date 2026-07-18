@@ -3,6 +3,8 @@
 
 import * as CONST from '../core/constants.js';
 import { defaultLessons as importedDefaultLessons } from '../lessons/index.js';
+import { interactiveLessons } from '../curricula/interactive/index.js';
+import { gazaSituations } from '../curricula/interactive/data/gazaSituationsData.js';
 import * as Cloud from '../cloud/lessonsCloud.js?v=20260515-lesson-sync';
 import { arabicLetters, arabicLettersExtras, arabicLettersExercises } from '../data/arabicLettersData.js';
 import {
@@ -49,7 +51,17 @@ const LESSON_ID_HOBBIES = CONST.LESSON_ID_HOBBIES;
 const BASE_PROGRESS_TEMPLATE = CONST.BASE_PROGRESS_TEMPLATE;
 
 // Match original variable name used throughout the legacy code
-const defaultLessons = importedDefaultLessons;
+const CURRICULUMS = {
+    structured: { id: "structured", title: "Structured Teaching Curriculum", badge: "Curriculum 1" },
+    interactive: { id: "interactive", title: "Interactive Palestinian Arabic Course", badge: "Curriculum 2" },
+};
+const defaultLessons = {
+    ...Object.fromEntries(Object.entries(importedDefaultLessons).map(([id, lesson]) => [id, {
+        ...lesson,
+        meta: { ...(lesson.meta || {}), curriculumId: "structured" },
+    }])),
+    ...interactiveLessons,
+};
 const getServerTimestamp = Cloud.getServerTimestamp;
 const loadLessonsFromCloudOnce = Cloud.loadLessonsFromCloudOnce;
 const subscribeLessonsFromCloud = Cloud.subscribeLessonsFromCloud;
@@ -80,6 +92,7 @@ const appState = {
     students: [],
     currentStudentId: null,
     currentLessonId: LESSON_ID_GREETING,
+    currentCurriculumId: null,
     teacherMode: false,
     currentTab: "overview",
     lessonFontSize: 1,
@@ -274,7 +287,8 @@ function updateAuthUI() {
                 },
             ];
             appState.currentStudentId = user.uid;
-            goToLevels();
+            appState.currentCurriculumId = null;
+            goToCurriculumChoice();
         }
     } catch (err) {
         console.error("auth.onAuthStateChanged error:", err);
@@ -2145,6 +2159,7 @@ async function saveStudentsToCloud() {
             progress: s.progress || {},
             homeworkNotes: s.homeworkNotes || {},
             lastSeen: s.lastSeen || null,
+            lastSeenByCurriculum: s.lastSeenByCurriculum || {},
         });
     });
 
@@ -2175,6 +2190,7 @@ async function syncTeacherStudentsFromCloud() {
             progress: d.progress || {},
             homeworkNotes: d.homeworkNotes || {},
             lastSeen: d.lastSeen || null,
+            lastSeenByCurriculum: d.lastSeenByCurriculum || {},
         });
     });
 
@@ -2386,6 +2402,29 @@ function goToStudents() {
     renderStudents();
 }
 
+function goToCurriculumChoice() {
+    persistResumeBeforeNav();
+    document.body.classList.remove("home-only");
+    const student = getCurrentStudent();
+    if (!student) {
+        if (appState.currentUser?.role === "teacher") goToStudents();
+        else goToHome();
+        return;
+    }
+    showScreen("curriculum-screen");
+    const label = document.getElementById("currentStudentNameCurriculum");
+    if (label) label.textContent = student.name;
+}
+
+function selectCurriculum(curriculumId) {
+    if (!CURRICULUMS[curriculumId]) return;
+    appState.currentCurriculumId = curriculumId;
+    const student = getCurrentStudent();
+    if (student && tryResumeStudent(student)) return;
+    setStudentLessonContext(student);
+    goToLevels();
+}
+
 function goToLevels() {
     persistResumeBeforeNav();
     document.body.classList.remove("home-only");
@@ -2401,6 +2440,10 @@ function goToLevels() {
         }
         return;
     }
+    if (!appState.currentCurriculumId) {
+        goToCurriculumChoice();
+        return;
+    }
     showScreen("levels-screen");
     $("#currentStudentNameLevels").textContent = currentStudent.name;
     const btnSwitchProfile = $("#btnSwitchProfile");
@@ -2408,6 +2451,7 @@ function goToLevels() {
     if (btnSwitchProfile) btnSwitchProfile.style.display = isGuestUser() ? "none" : "inline-flex";
     if (btnGoTeacherDashboard) btnGoTeacherDashboard.style.display = isGuestUser() ? "none" : "inline-flex";
     renderLevels();
+    renderGazaSituationsHub();
     updateContinueButton();
 }
 
@@ -2903,11 +2947,8 @@ function renderStudents() {
         btnContinue.textContent = "Continue Learning";
         btnContinue.addEventListener("click", () => {
             appState.currentStudentId = student.id;
-            // If teacher saved a resume spot for this student, go there
-            if (!tryResumeStudent(student)) {
-                setStudentLessonContext(student);
-                goToLevels();
-            }
+            appState.currentCurriculumId = null;
+            goToCurriculumChoice();
         });
 
         const btnDelete = document.createElement("button");
@@ -2935,12 +2976,17 @@ function renderStudents() {
 }
 
 // ========================= LEVELS & UNITS =========================
+function getLessonCurriculumId(lesson) {
+    return lesson?.meta?.curriculumId || "structured";
+}
+
 function findLessonIdFor(levelName, unitName) {
-    return Object.keys(lessons).find(
-        (id) =>
-            lessons[id].meta &&
-            lessons[id].meta.level === levelName &&
-            lessons[id].meta.unit === unitName
+    const curriculumId = appState.currentCurriculumId || "structured";
+    return Object.keys(lessons).find((id) =>
+        lessons[id].meta &&
+        getLessonCurriculumId(lessons[id]) === curriculumId &&
+        lessons[id].meta.level === levelName &&
+        lessons[id].meta.unit === unitName
     );
 }
 
@@ -2978,7 +3024,7 @@ function renderLevels() {
 
         const badge = document.createElement("span");
         badge.className = "badge badge--soft";
-        badge.textContent = "Local track";
+        badge.textContent = CURRICULUMS[appState.currentCurriculumId]?.badge || "Curriculum";
 
         titleRow.appendChild(title);
         titleRow.appendChild(badge);
@@ -2986,8 +3032,14 @@ function renderLevels() {
         const unitsContainer = document.createElement("div");
         unitsContainer.className = "level-card__units";
 
-        // default units
-        const allUnits = [...lvl.units];
+        const curriculumUnits = Object.values(lessons)
+            .filter((lesson) => getLessonCurriculumId(lesson) === appState.currentCurriculumId)
+            .filter((lesson) => lesson?.meta?.level === lvl.level)
+            .map((lesson) => lesson.meta.unit)
+            .filter(Boolean);
+        const allUnits = appState.currentCurriculumId === "interactive"
+            ? Array.from(new Set(curriculumUnits))
+            : [...lvl.units];
 
         // add custom units for this level
         if (customUnits[lvl.level] && customUnits[lvl.level].length) {
@@ -3062,12 +3114,80 @@ function renderLevels() {
         container.appendChild(card);
     });
 
+    const dialogueContainer = document.getElementById("dialogueOnlyContainer");
+    const dialogueHeader = dialogueContainer?.previousElementSibling;
+    const showDialoguePractice = appState.currentCurriculumId === "structured";
+    if (dialogueContainer) {
+        dialogueContainer.style.display = showDialoguePractice ? "grid" : "none";
+    }
+    if (dialogueHeader) {
+        dialogueHeader.style.display = showDialoguePractice ? "block" : "none";
+    }
+
     // Render the new "Dialogue Only (Decisions)" section if present
     try {
-        if (typeof window.renderDialogueOnlyLevels === "function") {
+        if (showDialoguePractice && typeof window.renderDialogueOnlyLevels === "function") {
             window.renderDialogueOnlyLevels();
         }
     } catch (e) { }
+}
+
+
+function renderGazaSituationsHub() {
+    const hub = document.getElementById("gazaSituationsHub");
+    const container = document.getElementById("gazaSituationsContainer");
+    const visible = appState.currentCurriculumId === "interactive";
+    if (hub) hub.hidden = !visible;
+    if (!visible || !container) return;
+    container.innerHTML = "";
+    gazaSituations.forEach((situation) => {
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = "gaza-hub__card";
+        card.innerHTML = `
+            <span class="gaza-hub__icon" aria-hidden="true">${situation.icon || "💬"}</span>
+            <span class="gaza-hub__card-copy">
+                <strong>${situation.title}</strong>
+                <span>${situation.subtitle || situation.setting || ""}</span>
+                <small>${situation.lines.length} dialogue lines</small>
+            </span>
+            <span class="gaza-hub__arrow" aria-hidden="true">→</span>`;
+        card.addEventListener("click", () => openGazaSituation(situation.id));
+        container.appendChild(card);
+    });
+}
+
+function openGazaSituation(situationId) {
+    const situation = gazaSituations.find((item) => item.id === situationId);
+    const root = document.getElementById("gazaSituationRoot");
+    if (!situation || !root) return;
+    root.className = "gaza-situation";
+    root.innerHTML = "";
+    const hero = document.createElement("section");
+    hero.className = "gaza-situation__hero";
+    hero.innerHTML = `<span class="gaza-situation__hero-icon">${situation.icon || "💬"}</span><div><p class="gaza-situation__eyebrow">Real-life dialogue</p><h2>${situation.title}</h2><p>${situation.setting || situation.subtitle || ""}</p></div>`;
+    const controls = document.createElement("div");
+    controls.className = "gaza-situation__controls";
+    controls.innerHTML = '<button class="btn btn--outline btn--sm" type="button" data-toggle-arabeezy>Hide Arabeezy</button><button class="btn btn--outline btn--sm" type="button" data-toggle-english>Hide English</button>';
+    const dialogue = document.createElement("div");
+    dialogue.className = "gaza-situation__dialogue";
+    situation.lines.forEach((line) => {
+        const row = document.createElement("article");
+        row.className = "gaza-situation__line";
+        row.innerHTML = `<div class="gaza-situation__speaker">${line.speaker || ""}</div><div class="gaza-situation__text"><p class="gaza-situation__arabic" lang="ar" dir="rtl">${line.ar || ""}</p><p class="gaza-situation__arabeezy">${line.arabeezy || ""}</p><p class="gaza-situation__english">${line.en || ""}</p></div>`;
+        dialogue.appendChild(row);
+    });
+    root.append(hero, controls, dialogue);
+    controls.querySelector("[data-toggle-arabeezy]").addEventListener("click", (event) => {
+        root.classList.toggle("gaza-situation-root--hide-arabeezy");
+        event.currentTarget.textContent = root.classList.contains("gaza-situation-root--hide-arabeezy") ? "Show Arabeezy" : "Hide Arabeezy";
+    });
+    controls.querySelector("[data-toggle-english]").addEventListener("click", (event) => {
+        root.classList.toggle("gaza-situation-root--hide-english");
+        event.currentTarget.textContent = root.classList.contains("gaza-situation-root--hide-english") ? "Show English" : "Hide English";
+    });
+    showScreen("gaza-situation-screen");
+    window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 // ========================= LESSON VIEW =========================
@@ -3191,15 +3311,14 @@ function persistResumeBeforeNav() {
 }
 
 function getDefaultLessonIdForLevel(level) {
-    switch ((level || "").trim()) {
-        case "Pre-Intermediate":
-            return LESSON_ID_WORK_STUDY;
-        case "Intermediate":
-            return LESSON_ID_OPINIONS;
-        case "Beginner":
-        default:
-            return LESSON_ID_GREETING;
-    }
+    const curriculumId = appState.currentCurriculumId || "structured";
+    const wantedLevel = (level || "Beginner").trim();
+    return Object.keys(lessons).find((id) => {
+        const lesson = lessons[id];
+        return getLessonCurriculumId(lesson) === curriculumId
+            && (lesson?.meta?.level || "").trim() === wantedLevel
+            && !/review|final|placement/i.test(lesson?.meta?.unit || "");
+    }) || Object.keys(lessons).find((id) => getLessonCurriculumId(lessons[id]) === curriculumId) || LESSON_ID_GREETING;
 }
 
 function setStudentLessonContext(student) {
@@ -3222,11 +3341,11 @@ function saveResumeSpot({ silent = false } = {}) {
     if (!student) return;
     ensureStudentLastSeen(student);
 
-    student.lastSeen = {
-        lessonId: appState.currentLessonId,
-        tab: appState.currentTab || "overview",
-        at: Date.now(),
-    };
+    const curriculumId = appState.currentCurriculumId || "structured";
+    if (!student.lastSeenByCurriculum || typeof student.lastSeenByCurriculum !== "object") student.lastSeenByCurriculum = {};
+    const resumeSpot = { lessonId: appState.currentLessonId, tab: appState.currentTab || "overview", at: Date.now() };
+    student.lastSeenByCurriculum[curriculumId] = resumeSpot;
+    if (curriculumId === "structured") student.lastSeen = resumeSpot;
 
     saveStudentsToLS();
     // if teacher, also save student cloud snapshot (debounced)
@@ -3239,8 +3358,11 @@ function saveResumeSpot({ silent = false } = {}) {
 }
 
 function tryResumeStudent(student) {
-    if (!student || !student.lastSeen) return false;
-    const { lessonId, tab } = student.lastSeen || {};
+    if (!student || !appState.currentCurriculumId) return false;
+    const saved = student.lastSeenByCurriculum?.[appState.currentCurriculumId]
+        || (appState.currentCurriculumId === "structured" ? student.lastSeen : null);
+    if (!saved) return false;
+    const { lessonId, tab } = saved;
     if (!lessonId || !lessons[lessonId]) return false;
     const lessonLevel = (lessons[lessonId]?.meta?.level || "").trim();
     const studentLevel = (student.level || "").trim();
@@ -5641,6 +5763,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             goToArabicLetters();
         });
     }
+    const btnGazaSituationBack = document.getElementById("btnGazaSituationBack");
+    if (btnGazaSituationBack) btnGazaSituationBack.addEventListener("click", () => goToLevels());
     const btnLettersBackToUnits = $("#btnLettersBackToUnits");
     if (btnLettersBackToUnits) {
         btnLettersBackToUnits.addEventListener("click", () => {
@@ -5682,7 +5806,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             appState.currentLessonId = LESSON_ID_GREETING;
             appState.currentTab = "overview";
             updateAuthUI();
-            goToLevels();
+            appState.currentCurriculumId = null;
+            goToCurriculumChoice();
         });
     }
     // add student
@@ -5888,7 +6013,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Save current lesson position before clearing current student
         try { persistResumeBeforeNav(); } catch { }
         appState.currentStudentId = null;
+        appState.currentCurriculumId = null;
         goToStudents();
+    });
+    const btnChangeCurriculum = document.getElementById("btnChangeCurriculum");
+    if (btnChangeCurriculum) btnChangeCurriculum.addEventListener("click", () => goToCurriculumChoice());
+    document.querySelectorAll("[data-curriculum-id]").forEach((button) => {
+        button.addEventListener("click", () => selectCurriculum(button.dataset.curriculumId));
     });
     const btnContinueLesson = document.getElementById("btnContinueLesson");
     if (btnContinueLesson) {

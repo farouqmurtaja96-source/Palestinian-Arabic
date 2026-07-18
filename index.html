@@ -204,6 +204,29 @@
             </div>
         </section>
 
+        <!-- ============== CURRICULUM SELECTION SCREEN ============== -->
+        <section id="curriculum-screen" class="screen">
+            <div class="section-header">
+                <p class="curriculum-picker__eyebrow">Student curriculum</p>
+                <h2>Choose a Curriculum</h2>
+                <p class="section-header__subtitle">Current student: <span id="currentStudentNameCurriculum" class="tag"></span></p>
+            </div>
+            <div class="curriculum-picker">
+                <button class="curriculum-picker__card" type="button" data-curriculum-id="structured">
+                    <span class="badge badge--soft">Curriculum 1</span>
+                    <h3>Structured Teaching Curriculum</h3>
+                    <p>The original teacher-led curriculum with its existing lessons and teacher workflow.</p>
+                    <span class="curriculum-picker__action">Open curriculum →</span>
+                </button>
+                <button class="curriculum-picker__card curriculum-picker__card--interactive" type="button" data-curriculum-id="interactive">
+                    <span class="badge badge--soft">Curriculum 2</span>
+                    <h3>Interactive Palestinian Arabic Course</h3>
+                    <p>The expanded curriculum with richer lessons, reviews, dialogues, and independent practice.</p>
+                    <span class="curriculum-picker__action">Open curriculum →</span>
+                </button>
+            </div>
+        </section>
+
         <!-- ============== LEVEL & UNIT SCREEN ============== -->
         <section id="levels-screen" class="screen">
             <div class="section-header section-header--with-actions">
@@ -215,6 +238,7 @@
                 </div>
                 <div class="section-header__actions">
                     <button id="btnSwitchProfile" class="btn btn--ghost">Switch Profile</button>
+                    <button id="btnChangeCurriculum" class="btn btn--outline btn--sm">Change Curriculum</button>
                     <button id="btnContinueLesson" class="btn btn--primary btn--sm">Continue</button>
                     <button id="btnArabicLetters" class="btn btn--outline btn--sm">Arabic Letters</button>
                     <button id="btnSyncLessonsNow" class="btn btn--ghost">↻ Sync lessons</button>
@@ -224,6 +248,15 @@
 
             <div id="levelsContainer" class="levels-grid"></div>
 
+            <section id="gazaSituationsHub" class="gaza-hub" aria-labelledby="gazaHubTitle" hidden>
+                <header class="gaza-hub__header">
+                    <p class="gaza-hub__eyebrow">Gaza Situations Hub</p>
+                    <h2 id="gazaHubTitle">Real-Life Spoken Arabic Situations</h2>
+                    <p>Practice natural Palestinian Arabic through complete conversations from everyday life in Gaza.</p>
+                </header>
+                <div id="gazaSituationsContainer" class="gaza-hub__grid"></div>
+            </section>
+
             <div class="section-header" style="margin-top:18px;">
                 <h3 style="margin:0;">Dialogue Practice (Decisions)</h3>
                 <p class="section-header__subtitle">Same units, but dialogue-only with branching choices.</p>
@@ -232,6 +265,19 @@
             <div id="dialogueOnlyContainer" class="levels-grid"></div>
 
 
+        </section>
+
+        <section id="gaza-situation-screen" class="screen">
+            <div class="section-header section-header--with-actions">
+                <div>
+                    <p class="gaza-hub__eyebrow">Gaza Situations Hub</p>
+                    <h2>Real-Life Spoken Arabic</h2>
+                </div>
+                <div class="section-header__actions">
+                    <button id="btnGazaSituationBack" class="btn btn--ghost btn--sm" type="button">Back to Curriculum</button>
+                </div>
+            </div>
+            <div id="gazaSituationRoot"></div>
         </section>
 
         <!-- ============== ARABIC LETTERS SCREEN ============== -->
