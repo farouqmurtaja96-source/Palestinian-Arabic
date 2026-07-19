@@ -5,6 +5,7 @@ import * as CONST from '../core/constants.js';
 import { defaultLessons as importedDefaultLessons } from '../lessons/index.js';
 import { interactiveLessons } from '../curricula/interactive/index.js';
 import { gazaSituations } from '../curricula/interactive/data/gazaSituationsData.js';
+import { palestinianProverbs } from '../curricula/interactive/data/palestinianCultureData.js';
 import * as Cloud from '../cloud/lessonsCloud.js?v=20260515-lesson-sync';
 import { arabicLetters, arabicLettersExtras, arabicLettersExercises } from '../data/arabicLettersData.js';
 import {
@@ -2448,8 +2449,12 @@ function goToLevels() {
     $("#currentStudentNameLevels").textContent = currentStudent.name;
     const btnSwitchProfile = $("#btnSwitchProfile");
     const btnGoTeacherDashboard = $("#btnGoTeacherDashboard");
+    const btnPlacementTest = $("#btnPlacementTest");
+    const btnPalestinianProverbs = $("#btnPalestinianProverbs");
     if (btnSwitchProfile) btnSwitchProfile.style.display = isGuestUser() ? "none" : "inline-flex";
     if (btnGoTeacherDashboard) btnGoTeacherDashboard.style.display = isGuestUser() ? "none" : "inline-flex";
+    if (btnPlacementTest) btnPlacementTest.hidden = appState.currentCurriculumId !== "interactive";
+    if (btnPalestinianProverbs) btnPalestinianProverbs.hidden = appState.currentCurriculumId !== "interactive";
     renderLevels();
     renderGazaSituationsHub();
     updateContinueButton();
@@ -3155,6 +3160,50 @@ function renderGazaSituationsHub() {
         card.addEventListener("click", () => openGazaSituation(situation.id));
         container.appendChild(card);
     });
+}
+
+function renderPalestinianProverbs() {
+    const root = document.getElementById("palestinianProverbsRoot");
+    if (!root) return;
+    root.innerHTML = "";
+
+    const intro = document.createElement("p");
+    intro.className = "culture-intro";
+    intro.textContent = "These sayings are part of everyday Palestinian speech. Read the meaning and the natural situation for each one before using it in conversation.";
+    root.appendChild(intro);
+
+    const grid = document.createElement("div");
+    grid.className = "proverbs-grid";
+    palestinianProverbs.forEach((proverb) => {
+        const card = document.createElement("article");
+        card.className = "proverb-card";
+        const category = document.createElement("p");
+        category.className = "proverb-card__category";
+        category.textContent = proverb.category || "Palestinian saying";
+        const arabic = document.createElement("h3");
+        arabic.className = "proverb-card__arabic";
+        arabic.dir = "rtl";
+        arabic.textContent = proverb.ar;
+        const transliteration = document.createElement("p");
+        transliteration.className = "proverb-card__transliteration";
+        transliteration.textContent = proverb.arabeezy;
+        const meaning = document.createElement("p");
+        meaning.className = "proverb-card__meaning";
+        meaning.textContent = proverb.meaningEn;
+        const explanation = document.createElement("p");
+        explanation.textContent = proverb.explanation;
+        const usageLabel = document.createElement("strong");
+        usageLabel.textContent = "When to use it: ";
+        const usage = document.createElement("p");
+        usage.append(usageLabel, document.createTextNode(proverb.whenUsed));
+        const example = document.createElement("p");
+        example.className = "proverb-card__example";
+        example.textContent = `Example: ${proverb.exampleEn}`;
+        card.append(category, arabic, transliteration, meaning, explanation, usage, example);
+        grid.appendChild(card);
+    });
+    root.appendChild(grid);
+    showScreen("palestinian-proverbs-screen");
 }
 
 function openGazaSituation(situationId) {
@@ -4289,6 +4338,121 @@ function renderGrammarTab(container, lesson) {
 
 // Practice
 function renderPracticeTab(container, lesson) {
+    if (lesson?.practice?.assessmentMode) {
+        renderAssessmentPractice(container, lesson);
+        return;
+    }
+
+    renderStandardPractice(container, lesson);
+}
+
+function renderAssessmentPractice(container, lesson) {
+    const practice = lesson.practice || {};
+    const questions = Array.isArray(practice.questions) ? practice.questions : [];
+    const title = document.createElement("h4");
+    title.className = "td-lessonitem__title";
+    title.textContent = practice.assessmentTitle || "Assessment";
+    container.appendChild(title);
+
+    const intro = document.createElement("p");
+    intro.className = "assessment-intro";
+    intro.textContent = "Choose one answer for every question, then submit. After submitting, your incorrect answer appears in red and the correct answer appears in green.";
+    container.appendChild(intro);
+
+    if (!questions.length) {
+        const empty = document.createElement("p");
+        empty.textContent = "This assessment has no questions yet.";
+        container.appendChild(empty);
+        return;
+    }
+
+    const answers = new Map();
+    const questionViews = [];
+    const list = document.createElement("div");
+    list.className = "assessment-questions";
+
+    questions.forEach((question, questionIndex) => {
+        const card = document.createElement("article");
+        card.className = "quiz-question assessment-question";
+        const questionText = document.createElement("div");
+        questionText.className = "flashcard__ar";
+        questionText.textContent = `${questionIndex + 1}. ${question.prompt || question.question || question.questionEn || question.questionAr || "Question"}`;
+        card.appendChild(questionText);
+
+        const options = Array.isArray(question.options) ? question.options : (Array.isArray(question.optionsEn) ? question.optionsEn : []);
+        const optionsWrap = document.createElement("div");
+        optionsWrap.className = "quiz-options";
+        const buttons = [];
+        options.forEach((option, optionIndex) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "quiz-option assessment-choice";
+            button.textContent = option;
+            button.addEventListener("click", () => {
+                if (list.dataset.submitted === "true") return;
+                answers.set(questionIndex, optionIndex);
+                buttons.forEach((item) => item.classList.remove("assessment-choice--selected"));
+                button.classList.add("assessment-choice--selected");
+            });
+            buttons.push(button);
+            optionsWrap.appendChild(button);
+        });
+        const feedback = document.createElement("div");
+        feedback.className = "quiz-feedback assessment-feedback";
+        card.appendChild(optionsWrap);
+        card.appendChild(feedback);
+        list.appendChild(card);
+        questionViews.push({ question, buttons, feedback });
+    });
+    container.appendChild(list);
+
+    const submit = document.createElement("button");
+    submit.type = "button";
+    submit.className = "btn btn--primary btn--sm";
+    submit.textContent = "Submit assessment";
+    const result = document.createElement("p");
+    result.className = "assessment-result";
+    submit.addEventListener("click", () => {
+        if (answers.size !== questions.length) {
+            result.textContent = `Please answer all ${questions.length} questions before submitting.`;
+            result.className = "assessment-result assessment-result--warning";
+            return;
+        }
+        list.dataset.submitted = "true";
+        let correct = 0;
+        questionViews.forEach(({ question, buttons, feedback }, index) => {
+            const correctIndex = Number.isInteger(question.correctIndex) ? question.correctIndex : question.answerIndex;
+            const chosen = answers.get(index);
+            buttons.forEach((button, optionIndex) => {
+                button.disabled = true;
+                button.classList.remove("assessment-choice--selected");
+                if (optionIndex === correctIndex) button.classList.add("quiz-option--correct", "assessment-choice--correct");
+                if (optionIndex === chosen && chosen !== correctIndex) button.classList.add("quiz-option--incorrect", "assessment-choice--wrong");
+            });
+            if (chosen === correctIndex) {
+                correct += 1;
+                feedback.textContent = "Correct.";
+            } else {
+                const answer = buttons[correctIndex]?.textContent || "the highlighted answer";
+                feedback.textContent = `Incorrect. Correct answer: ${answer}`;
+            }
+        });
+        const percent = Math.round((correct / questions.length) * 100);
+        const isPlacement = practice.placementMode;
+        const recommendation = isPlacement
+            ? (percent >= 72 ? " Recommended level: Intermediate." : percent >= 39 ? " Recommended level: Pre-Intermediate." : " Recommended level: Beginner.")
+            : (percent >= 80 ? " Passed." : " Please review the incorrect answers and try again.");
+        result.textContent = `Score: ${correct}/${questions.length} (${percent}%).${recommendation}`;
+        result.className = "assessment-result";
+        submit.disabled = true;
+        setStudentProgressField("practice", true);
+    });
+    container.appendChild(submit);
+    container.appendChild(result);
+    renderSectionStatus(container, "practice");
+}
+
+function renderStandardPractice(container, lesson) {
     const title = document.createElement("h4");
     title.className = "td-lessonitem__title";
     title.textContent = "Practice – Quiz & Role-play";
@@ -4296,7 +4460,7 @@ function renderPracticeTab(container, lesson) {
     const quizBlock = document.createElement("div");
     let correctCount = 0;
 
-    lesson.practice.quiz.forEach((q) => {
+    (lesson.practice?.quiz || []).forEach((q) => {
         const qWrap = document.createElement("div");
         qWrap.className = "quiz-question";
 
@@ -4345,7 +4509,7 @@ function renderPracticeTab(container, lesson) {
 
     const ul = document.createElement("ul");
     ul.className = "roleplay-list";
-    lesson.practice.rolePlays.forEach((rp) => {
+    (lesson.practice?.rolePlays || []).forEach((rp) => {
         const li = document.createElement("li");
         li.textContent = rp;
         ul.appendChild(li);
@@ -5763,6 +5927,23 @@ document.addEventListener("DOMContentLoaded", async () => {
             goToArabicLetters();
         });
     }
+    const btnPlacementTest = document.getElementById("btnPlacementTest");
+    if (btnPlacementTest) {
+        btnPlacementTest.addEventListener("click", () => {
+            const lessonId = findLessonIdFor("Placement", "Placement Test");
+            if (!lessonId) {
+                alert("Placement Test is not available yet.");
+                return;
+            }
+            appState.currentLessonId = lessonId;
+            appState.currentTab = "practice";
+            goToLessonView({ skipResume: true });
+        });
+    }
+    const btnPalestinianProverbs = document.getElementById("btnPalestinianProverbs");
+    if (btnPalestinianProverbs) btnPalestinianProverbs.addEventListener("click", () => renderPalestinianProverbs());
+    const btnProverbsBack = document.getElementById("btnProverbsBack");
+    if (btnProverbsBack) btnProverbsBack.addEventListener("click", () => goToLevels());
     const btnGazaSituationBack = document.getElementById("btnGazaSituationBack");
     if (btnGazaSituationBack) btnGazaSituationBack.addEventListener("click", () => goToLevels());
     const btnLettersBackToUnits = $("#btnLettersBackToUnits");
