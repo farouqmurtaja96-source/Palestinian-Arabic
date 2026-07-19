@@ -3306,22 +3306,33 @@ function isGuestAllowedLesson(lessonId) {
 
 function isGrammarTabEnabled(lesson) {
     if (!lesson) return false;
-    const hasGrammar = Array.isArray(lesson.grammar) && lesson.grammar.length > 0;
-    return appState.teacherMode && hasGrammar;
+    return (Array.isArray(lesson.grammarCapsuleIds) && lesson.grammarCapsuleIds.length > 0)
+        || (Array.isArray(lesson.grammar) && lesson.grammar.length > 0);
 }
 
 function updateLessonTabsVisibility(lesson) {
+    const availableTabs = safeArr(lesson?.meta?.availableTabs);
+    document.querySelectorAll(".lesson-tab[data-tab]").forEach((tab) => {
+        const tabKey = tab.dataset.tab;
+        if (availableTabs.length) tab.style.display = availableTabs.includes(tabKey) ? "inline-flex" : "none";
+        else if (tabKey !== "grammar" && tabKey !== "culture") tab.style.display = "inline-flex";
+    });
     const grammarTab = document.querySelector('.lesson-tab[data-tab="grammar"]');
     if (grammarTab) {
         grammarTab.textContent = "Grammar";
         grammarTab.style.display = isGrammarTabEnabled(lesson) ? "inline-flex" : "none";
     }
+    const cultureTab = document.querySelector('.lesson-tab[data-tab="culture"]');
+    if (cultureTab) cultureTab.style.display = safeArr(lesson?.culture).length ? "inline-flex" : "none";
 }
 
 function normalizeLessonTabKey(tabKey, lesson) {
+    const availableTabs = safeArr(lesson?.meta?.availableTabs);
+    if (availableTabs.length && !availableTabs.includes(tabKey)) return availableTabs[0] || "overview";
     if (tabKey === "grammar" && !isGrammarTabEnabled(lesson)) {
         return "translation";
     }
+    if (tabKey === "culture") return "overview";
     return tabKey || "overview";
 }
 
@@ -3502,6 +3513,18 @@ function renderOverviewTab(container, lesson) {
         ul.appendChild(li);
     });
 
+    const speakingOutcomes = Array.isArray(ov.speakingOutcomes) ? ov.speakingOutcomes : [];
+    const speakingTitle = document.createElement("p");
+    speakingTitle.textContent = "Speaking outcomes:";
+    speakingTitle.style.fontWeight = "600";
+    speakingTitle.style.marginTop = "10px";
+    const speakingList = document.createElement("ul");
+    speakingOutcomes.forEach((outcome) => {
+        const li = document.createElement("li");
+        li.textContent = outcome;
+        speakingList.appendChild(li);
+    });
+
     const useTitle = document.createElement("h4");
     useTitle.textContent = "Use it in your life";
     useTitle.style.marginTop = "12px";
@@ -3539,8 +3562,14 @@ function renderOverviewTab(container, lesson) {
     container.appendChild(p);
     container.appendChild(goalsTitle);
     container.appendChild(ul);
-    container.appendChild(useTitle);
-    container.appendChild(useList);
+    if (speakingOutcomes.length) {
+        container.appendChild(speakingTitle);
+        container.appendChild(speakingList);
+    }
+    if (useItems.length) {
+        container.appendChild(useTitle);
+        container.appendChild(useList);
+    }
     container.appendChild(btn);
     renderSectionStatus(container, "overview");
 }
