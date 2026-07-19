@@ -4356,12 +4356,19 @@ function renderInteractivePractice(container, lesson) {
     const sections = Array.isArray(practice.sections) ? practice.sections : [];
     const sectionA = sections[0] || {};
     const sectionB = sections[1] || sectionA;
-    const stages = [
+    const standardStages = [
         { id: "recognition", label: "Recognition", description: "Understand the phrase and choose its natural meaning." },
         { id: "build", label: "Build sentences", description: "Complete, correct, and build Palestinian Arabic sentences." },
         { id: "use", label: "Real use", description: "Use the language in a real-life situation." },
     ].filter((stage) => stage.id !== "use" || practice.showRealUse !== false);
+    const stages = practice.separateExerciseTypes ? [
+        { id: "recognition", label: "Recognition", description: "Review meanings before building sentences." },
+        { id: "fill", label: "Fill in the missing word", description: "Complete one focused sentence at a time." },
+        { id: "correct", label: "Correct the sentence", description: "Find the mistake and write the natural sentence." },
+        { id: "reorder", label: "Rearrange the words", description: "Build a natural Palestinian Arabic sentence." },
+    ] : standardStages;
     let activeStage = stages[0].id;
+    let recognitionIndex = 0;
     const root = document.createElement("div");
     root.className = "practice-pro";
     const header = document.createElement("header");
@@ -4420,12 +4427,25 @@ function renderInteractivePractice(container, lesson) {
         stageArea.innerHTML = "";
         const panel = stageShell(); const body = document.createElement("div"); body.className = "practice-pro__body"; panel.appendChild(body);
         if (activeStage === "recognition") {
-            (practice.quiz || []).forEach((q) => renderChoice(body, q.questionAr || q.question || "Choose the meaning", q.optionsEn || q.options || [], (q.optionsEn || q.options || [])[q.correctIndex], true));
-            (sectionA.multipleChoice || []).forEach((item) => renderChoice(body, item.prompt, item.options, item.correct));
-        } else if (activeStage === "build") {
-            (sectionB.fillInTheBlank || []).forEach((item) => renderInput(body, item, "Fill in the missing word."));
-            (sectionB.correctTheMistake || []).forEach((item) => renderInput(body, item, "Correct the sentence."));
-            (sectionB.reorderSentences || []).forEach((item) => {
+            const drills = [
+                ...(practice.quiz || []).map((q) => ({ prompt: q.questionAr || q.question || "Choose the meaning", options: q.optionsEn || q.options || [], correct: (q.optionsEn || q.options || [])[q.correctIndex], arabic: true })),
+                ...(sectionA.multipleChoice || []).map((item) => ({ prompt: item.prompt, options: item.options, correct: item.correct, arabic: false })),
+            ];
+            if (drills.length) {
+                recognitionIndex = Math.min(recognitionIndex, drills.length - 1);
+                const counter = document.createElement("div"); counter.className = "practice-pro__counter"; counter.textContent = `${recognitionIndex + 1} / ${drills.length}`; body.appendChild(counter);
+                const drill = drills[recognitionIndex]; renderChoice(body, drill.prompt, drill.options, drill.correct, drill.arabic);
+                const controls = document.createElement("div"); controls.className = "practice-pro__controls";
+                const previous = document.createElement("button"); previous.className = "btn btn--ghost btn--sm"; previous.textContent = "Previous";
+                const next = document.createElement("button"); next.className = "btn btn--ghost btn--sm"; next.textContent = "Next";
+                previous.addEventListener("click", () => { recognitionIndex = (recognitionIndex - 1 + drills.length) % drills.length; renderStage(); });
+                next.addEventListener("click", () => { recognitionIndex = (recognitionIndex + 1) % drills.length; renderStage(); });
+                controls.append(previous, next); body.appendChild(controls);
+            }
+        } else if (activeStage === "build" || activeStage === "fill" || activeStage === "correct" || activeStage === "reorder") {
+            if (activeStage === "build" || activeStage === "fill") (sectionB.fillInTheBlank || []).forEach((item) => renderInput(body, item, "Fill in the missing word."));
+            if (activeStage === "build" || activeStage === "correct") (sectionB.correctTheMistake || []).forEach((item) => renderInput(body, item, "Correct the sentence."));
+            if (activeStage === "build" || activeStage === "reorder") (sectionB.reorderSentences || []).forEach((item) => {
                 const copy = { ...item, prompt: `${item.prompt || "Put the words in order."} ${Array.isArray(item.words) ? item.words.join(" · ") : ""}` };
                 renderInput(body, copy, "Write the words in the correct order.");
             });
@@ -4437,7 +4457,7 @@ function renderInteractivePractice(container, lesson) {
         const done = document.createElement("button"); done.type = "button"; done.className = "btn btn--primary btn--sm"; done.textContent = "Mark practice as done"; done.addEventListener("click", () => setStudentProgressField("practice", true)); body.appendChild(done);
         stageArea.appendChild(panel);
     }
-    function renderNav() { nav.innerHTML = ""; stages.forEach((stage) => { const button = document.createElement("button"); button.type = "button"; button.className = "practice-pro__tab"; button.classList.toggle("is-active", stage.id === activeStage); button.textContent = stage.label; button.addEventListener("click", () => { activeStage = stage.id; renderNav(); renderStage(); }); nav.appendChild(button); }); }
+    function renderNav() { nav.innerHTML = ""; stages.forEach((stage) => { const button = document.createElement("button"); button.type = "button"; button.className = "practice-pro__tab"; button.classList.toggle("is-active", stage.id === activeStage); const count = stage.id === "recognition" ? (practice.quiz || []).length + (sectionA.multipleChoice || []).length : stage.id === "fill" ? (sectionB.fillInTheBlank || []).length : stage.id === "correct" ? (sectionB.correctTheMistake || []).length : stage.id === "reorder" ? (sectionB.reorderSentences || []).length : ""; button.innerHTML = `<span>${stage.label}</span>${count !== "" ? `<small>${count} items</small>` : ""}`; button.addEventListener("click", () => { activeStage = stage.id; renderNav(); renderStage(); }); nav.appendChild(button); }); }
     root.append(header, nav, stageArea); container.appendChild(root); renderNav(); renderStage(); renderSectionStatus(container, "practice");
 }
 
@@ -4468,10 +4488,14 @@ function renderAssessmentPractice(container, lesson) {
 
     questions.forEach((question, questionIndex) => {
         const card = document.createElement("article");
-        card.className = "quiz-question assessment-question";
+        card.className = "quiz-question assessment-question practice-pro__card";
+        const counter = document.createElement("div");
+        counter.className = "practice-pro__counter";
+        counter.textContent = `${questionIndex + 1} / ${questions.length} · ${question.skill || "Language"}`;
         const questionText = document.createElement("div");
-        questionText.className = "flashcard__ar";
+        questionText.className = "flashcard__ar assessment-question__prompt";
         questionText.textContent = `${questionIndex + 1}. ${question.prompt || question.question || question.questionEn || question.questionAr || "Question"}`;
+        card.appendChild(counter);
         card.appendChild(questionText);
 
         const options = Array.isArray(question.options) ? question.options : (Array.isArray(question.optionsEn) ? question.optionsEn : []);
