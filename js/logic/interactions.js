@@ -4343,7 +4343,102 @@ function renderPracticeTab(container, lesson) {
         return;
     }
 
+    if (lesson?.meta?.curriculumId === "interactive") {
+        renderInteractivePractice(container, lesson);
+        return;
+    }
+
     renderStandardPractice(container, lesson);
+}
+
+function renderInteractivePractice(container, lesson) {
+    const practice = lesson.practice || {};
+    const sections = Array.isArray(practice.sections) ? practice.sections : [];
+    const sectionA = sections[0] || {};
+    const sectionB = sections[1] || sectionA;
+    const stages = [
+        { id: "recognition", label: "Recognition", description: "Understand the phrase and choose its natural meaning." },
+        { id: "build", label: "Build sentences", description: "Complete, correct, and build Palestinian Arabic sentences." },
+        { id: "use", label: "Real use", description: "Use the language in a real-life situation." },
+    ].filter((stage) => stage.id !== "use" || practice.showRealUse !== false);
+    let activeStage = stages[0].id;
+    const root = document.createElement("div");
+    root.className = "practice-pro";
+    const header = document.createElement("header");
+    header.className = "practice-pro__header";
+    const head = document.createElement("div");
+    const title = document.createElement("h4");
+    title.textContent = "Practice";
+    const subtitle = document.createElement("p");
+    subtitle.textContent = "Work through each exercise type at your own pace.";
+    head.append(title, subtitle);
+    const arabizi = document.createElement("button");
+    arabizi.type = "button";
+    arabizi.className = "btn btn--outline btn--sm";
+    arabizi.textContent = "Hide Arabizi";
+    arabizi.addEventListener("click", () => {
+        const hidden = root.classList.toggle("practice-pro--hide-arabeezy");
+        arabizi.textContent = hidden ? "Show Arabizi" : "Hide Arabizi";
+    });
+    header.append(head, arabizi);
+    const nav = document.createElement("div");
+    nav.className = "practice-pro__nav";
+    const stageArea = document.createElement("div");
+    stageArea.className = "practice-pro__stage";
+
+    const normalise = (value) => String(value || "").toLowerCase().replace(/[\s.,!?،؟]/g, "").trim();
+    const makeFeedback = () => { const el = document.createElement("div"); el.className = "practice-pro__feedback"; return el; };
+    const setFeedback = (el, ok, text) => { el.className = `practice-pro__feedback ${ok ? "is-ok" : "is-no"}`; el.textContent = text; };
+    const stageShell = () => {
+        const panel = document.createElement("section"); panel.className = "practice-pro__panel";
+        const heading = document.createElement("div"); heading.className = "practice-pro__panel-head";
+        const stage = stages.find((item) => item.id === activeStage);
+        const h = document.createElement("h5"); h.textContent = stage.label;
+        const p = document.createElement("p"); p.textContent = stage.description;
+        heading.append(h, p); panel.appendChild(heading); return panel;
+    };
+    const renderChoice = (parent, promptText, options, correct, arabic = false) => {
+        const card = document.createElement("article"); card.className = "practice-pro__card";
+        const prompt = document.createElement("div"); prompt.className = arabic ? "practice-pro__arabic" : "practice-pro__prompt"; prompt.textContent = promptText || "";
+        const choices = document.createElement("div"); choices.className = "practice-pro__choices";
+        const feedback = makeFeedback();
+        (options || []).forEach((option) => { const button = document.createElement("button"); button.type = "button"; button.className = "practice-pro__choice"; button.textContent = option; button.addEventListener("click", () => { const ok = option === correct; choices.querySelectorAll("button").forEach((item) => item.classList.remove("is-ok", "is-no")); button.classList.add(ok ? "is-ok" : "is-no"); setFeedback(feedback, ok, ok ? "Correct" : `Answer: ${correct}`); }); choices.appendChild(button); });
+        card.append(prompt, choices, feedback); parent.appendChild(card);
+    };
+    const renderInput = (parent, item, instruction) => {
+        const card = document.createElement("article"); card.className = "practice-pro__card";
+        const hint = document.createElement("p"); hint.className = "practice-pro__hint"; hint.textContent = instruction;
+        const prompt = document.createElement("div"); prompt.className = "practice-pro__arabic"; prompt.textContent = item.prompt || "";
+        const arabeezy = document.createElement("small"); arabeezy.className = "practice-pro__arabeezy"; arabeezy.textContent = item.arabeezy ? `Read it: ${item.arabeezy}` : "";
+        const line = document.createElement("div"); line.className = "practice-pro__line";
+        const input = document.createElement("input"); input.className = "practice-pro__input"; input.placeholder = "Type your answer";
+        const check = document.createElement("button"); check.type = "button"; check.className = "btn btn--outline btn--sm"; check.textContent = "Check";
+        const feedback = makeFeedback(); check.addEventListener("click", () => { const ok = normalise(input.value) === normalise(item.answer); setFeedback(feedback, ok, ok ? "Correct" : `Answer: ${item.answer}`); });
+        line.append(input, check); card.append(hint, prompt, arabeezy, line, feedback); parent.appendChild(card);
+    };
+    function renderStage() {
+        stageArea.innerHTML = "";
+        const panel = stageShell(); const body = document.createElement("div"); body.className = "practice-pro__body"; panel.appendChild(body);
+        if (activeStage === "recognition") {
+            (practice.quiz || []).forEach((q) => renderChoice(body, q.questionAr || q.question || "Choose the meaning", q.optionsEn || q.options || [], (q.optionsEn || q.options || [])[q.correctIndex], true));
+            (sectionA.multipleChoice || []).forEach((item) => renderChoice(body, item.prompt, item.options, item.correct));
+        } else if (activeStage === "build") {
+            (sectionB.fillInTheBlank || []).forEach((item) => renderInput(body, item, "Fill in the missing word."));
+            (sectionB.correctTheMistake || []).forEach((item) => renderInput(body, item, "Correct the sentence."));
+            (sectionB.reorderSentences || []).forEach((item) => {
+                const copy = { ...item, prompt: `${item.prompt || "Put the words in order."} ${Array.isArray(item.words) ? item.words.join(" · ") : ""}` };
+                renderInput(body, copy, "Write the words in the correct order.");
+            });
+        } else {
+            const translations = practice.translation || (sections[2] || {}).translation || [];
+            translations.forEach((item) => renderInput(body, { prompt: item.prompt || item.en || item.ar || "Translate", answer: item.answer || item.ar || item.en || "" }, "Write your translation, then check it."));
+            (practice.rolePlays || []).forEach((rolePlay) => { const card = document.createElement("article"); card.className = "practice-pro__situation"; const badge = document.createElement("span"); badge.textContent = "Speaking situation"; const text = document.createElement("p"); text.textContent = rolePlay; card.append(badge, text); body.appendChild(card); });
+        }
+        const done = document.createElement("button"); done.type = "button"; done.className = "btn btn--primary btn--sm"; done.textContent = "Mark practice as done"; done.addEventListener("click", () => setStudentProgressField("practice", true)); body.appendChild(done);
+        stageArea.appendChild(panel);
+    }
+    function renderNav() { nav.innerHTML = ""; stages.forEach((stage) => { const button = document.createElement("button"); button.type = "button"; button.className = "practice-pro__tab"; button.classList.toggle("is-active", stage.id === activeStage); button.textContent = stage.label; button.addEventListener("click", () => { activeStage = stage.id; renderNav(); renderStage(); }); nav.appendChild(button); }); }
+    root.append(header, nav, stageArea); container.appendChild(root); renderNav(); renderStage(); renderSectionStatus(container, "practice");
 }
 
 function renderAssessmentPractice(container, lesson) {
