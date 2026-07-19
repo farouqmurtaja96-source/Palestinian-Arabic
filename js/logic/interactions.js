@@ -3002,15 +3002,15 @@ function renderLevels() {
     const levelsDef = [
         {
             level: "Beginner",
-            units: ["Greetings", "Family", "Daily Routine", "Food & Drink", "Transportation"],
+            units: ["Greetings", "Family", "Daily Routine", "Food & Drink", "Transportation", "Cumulative Review 1", "Beginner Final"],
         },
         {
             level: "Pre-Intermediate",
-            units: ["Work & Study", "Health & Emergencies", "Shopping & Prices", "Weather & Small Talk", "Apartment & Problems"],
+            units: ["Work & Study", "Weather & Small Talk", "Shopping & Prices", "Health & Emergencies", "Apartment & Problems", "Cumulative Review 2", "Pre-Intermediate Final"],
         },
         {
             level: "Intermediate",
-            units: ["Opinions", "Complaints", "Plans & Future", "Free Time & Hobbies", "Feelings & Mental State"],
+            units: ["Opinions", "Complaints", "Plans & Future", "Free Time & Hobbies", "Feelings", "Cumulative Review 3", "Intermediate Final"],
         },
     ];
 
@@ -3043,7 +3043,7 @@ function renderLevels() {
             .map((lesson) => lesson.meta.unit)
             .filter(Boolean);
         const allUnits = appState.currentCurriculumId === "interactive"
-            ? Array.from(new Set(curriculumUnits))
+            ? [...lvl.units.filter((unit) => curriculumUnits.includes(unit)), ...curriculumUnits.filter((unit) => !lvl.units.includes(unit))]
             : [...lvl.units];
 
         // add custom units for this level
@@ -3167,39 +3167,43 @@ function renderPalestinianProverbs() {
     if (!root) return;
     root.innerHTML = "";
 
-    const intro = document.createElement("p");
-    intro.className = "culture-intro";
-    intro.textContent = "These sayings are part of everyday Palestinian speech. Read the meaning and the natural situation for each one before using it in conversation.";
+    const intro = document.createElement("header");
+    intro.className = "culture-intro culture-intro--proverbs";
+    intro.innerHTML = `<p class="culture-intro__eyebrow">${palestinianProverbs.length} expressions from everyday memory</p><h4>Folk sayings Palestinians actually recognise</h4><p>Each card separates the literal image from the intended meaning, then places the proverb inside a natural Palestinian situation.</p>`;
     root.appendChild(intro);
 
     const grid = document.createElement("div");
-    grid.className = "proverbs-grid";
-    palestinianProverbs.forEach((proverb) => {
+    grid.className = "culture-grid culture-grid--proverbs";
+    palestinianProverbs.forEach((proverb, index) => {
         const card = document.createElement("article");
-        card.className = "proverb-card";
+        card.className = "culture-card culture-card--proverb";
+        const heading = document.createElement("div"); heading.className = "culture-card__heading";
+        const number = document.createElement("span"); number.className = "culture-card__number"; number.textContent = String(index + 1).padStart(2, "0");
         const category = document.createElement("p");
-        category.className = "proverb-card__category";
+        category.className = "culture-card__category";
         category.textContent = proverb.category || "Palestinian saying";
+        heading.append(number, category);
         const arabic = document.createElement("h3");
-        arabic.className = "proverb-card__arabic";
+        arabic.className = "culture-card__ar";
         arabic.dir = "rtl";
         arabic.textContent = proverb.ar;
         const transliteration = document.createElement("p");
-        transliteration.className = "proverb-card__transliteration";
+        transliteration.className = "culture-card__arabeezy";
         transliteration.textContent = proverb.arabeezy;
         const meaning = document.createElement("p");
-        meaning.className = "proverb-card__meaning";
-        meaning.textContent = proverb.meaningEn;
+        meaning.className = "culture-card__meaning";
+        meaning.innerHTML = `<strong>What it really means</strong><p>${proverb.meaningEn}</p>`;
+        const literal = document.createElement("p"); literal.className = "culture-card__literal"; literal.textContent = `Literal image: ${proverb.literalEn}`;
         const explanation = document.createElement("p");
-        explanation.textContent = proverb.explanation;
+        explanation.className = "culture-card__explanation"; explanation.textContent = proverb.explanation;
         const usageLabel = document.createElement("strong");
-        usageLabel.textContent = "When to use it: ";
+        usageLabel.textContent = "When to say it";
         const usage = document.createElement("p");
-        usage.append(usageLabel, document.createTextNode(proverb.whenUsed));
+        usage.className = "culture-card__use"; usage.append(usageLabel, document.createTextNode(` ${proverb.whenUsed}`));
         const example = document.createElement("p");
-        example.className = "proverb-card__example";
-        example.textContent = `Example: ${proverb.exampleEn}`;
-        card.append(category, arabic, transliteration, meaning, explanation, usage, example);
+        example.className = "culture-card__example";
+        example.innerHTML = `<strong>In a natural situation</strong><p dir="rtl">${proverb.exampleAr}</p><p>${proverb.exampleArabeezy}</p><p>${proverb.exampleEn}</p>`;
+        card.append(heading, arabic, transliteration, literal, meaning, explanation, usage, example);
         grid.appendChild(card);
     });
     root.appendChild(grid);
@@ -3306,8 +3310,9 @@ function isGuestAllowedLesson(lessonId) {
 
 function isGrammarTabEnabled(lesson) {
     if (!lesson) return false;
-    return (Array.isArray(lesson.grammarCapsuleIds) && lesson.grammarCapsuleIds.length > 0)
+    const hasGrammar = (Array.isArray(lesson.grammarCapsuleIds) && lesson.grammarCapsuleIds.length > 0)
         || (Array.isArray(lesson.grammar) && lesson.grammar.length > 0);
+    return appState.teacherMode && hasGrammar;
 }
 
 function updateLessonTabsVisibility(lesson) {
@@ -3350,12 +3355,7 @@ function getUseInLifeQuestions(lesson) {
         .filter(Boolean)
         .filter((q) => q.ar || q.en);
 
-    if (items.length >= 2) return items;
-
-    return [
-        { ar: "شو اسمك؟", en: "What's your name?" },
-        { ar: "إنتَ/إنتِ من وين؟", en: "Where are you from?" },
-    ];
+    return items;
 }
 
 function persistResumeBeforeNav() {
@@ -4471,6 +4471,19 @@ function renderInteractivePractice(container, lesson) {
                 next.addEventListener("click", () => { recognitionIndex = (recognitionIndex + 1) % drills.length; renderStage(); });
                 controls.append(previous, next); body.appendChild(controls);
             }
+            const matching = sectionA.matching || [];
+            if (matching.length) {
+                const match = document.createElement("section"); match.className = "practice-pro__match-board";
+                const title = document.createElement("h6"); title.textContent = "Choose the matching number"; match.appendChild(title);
+                matching.forEach((item, index) => {
+                    const row = document.createElement("div"); row.className = "practice-pro__line";
+                    const arabic = document.createElement("span"); arabic.className = "practice-pro__arabic"; arabic.textContent = `${index + 1}. ${item.ar || ""}`;
+                    const select = document.createElement("select"); select.className = "practice-pro__input"; select.innerHTML = `<option value="">#</option>${matching.map((_x, optionIndex) => `<option value="${optionIndex}">${optionIndex + 1}</option>`).join("")}`;
+                    const meaning = document.createElement("span"); meaning.textContent = item.en || "";
+                    const feedback = makeFeedback(); select.addEventListener("change", () => setFeedback(feedback, Number(select.value) === index, Number(select.value) === index ? "Correct" : "Try again"));
+                    row.append(arabic, select, meaning, feedback); match.appendChild(row);
+                }); body.appendChild(match);
+            }
         } else if (activeStage === "build" || activeStage === "fill" || activeStage === "correct" || activeStage === "reorder") {
             if (activeStage === "build" || activeStage === "fill") (sectionB.fillInTheBlank || []).forEach((item) => renderInput(body, item, "Fill in the missing word."));
             if (activeStage === "build" || activeStage === "correct") (sectionB.correctTheMistake || []).forEach((item) => renderInput(body, item, "Correct the sentence."));
@@ -4554,6 +4567,23 @@ function renderAssessmentPractice(container, lesson) {
     });
     container.appendChild(list);
 
+    const speakingScores = [];
+    if (practice.speaking) {
+        const speaking = document.createElement("article");
+        speaking.className = "practice-pro__panel assessment-speaking";
+        const heading = document.createElement("div"); heading.className = "practice-pro__panel-head";
+        heading.innerHTML = `<h5>Teacher-scored speaking task</h5><p>${practice.speaking.prompt || ""}</p>`;
+        speaking.appendChild(heading);
+        (practice.speaking.criteria || []).forEach((criterion, index) => {
+            const row = document.createElement("label"); row.className = "practice-pro__line";
+            const text = document.createElement("span"); text.textContent = criterion;
+            const select = document.createElement("select"); select.className = "practice-pro__input";
+            [[0, "0 - Not demonstrated"], [1, "1 - With support"], [2, "2 - Independent"]].forEach(([value, label]) => { const option = document.createElement("option"); option.value = value; option.textContent = label; select.appendChild(option); });
+            speakingScores[index] = select; row.append(text, select); speaking.appendChild(row);
+        });
+        container.appendChild(speaking);
+    }
+
     const submit = document.createElement("button");
     submit.type = "button";
     submit.className = "btn btn--primary btn--sm";
@@ -4586,11 +4616,12 @@ function renderAssessmentPractice(container, lesson) {
             }
         });
         const percent = Math.round((correct / questions.length) * 100);
+        const speakingScore = speakingScores.reduce((sum, select) => sum + Number(select.value || 0), 0);
         const isPlacement = practice.placementMode;
         const recommendation = isPlacement
             ? (percent >= 72 ? " Recommended level: Intermediate." : percent >= 39 ? " Recommended level: Pre-Intermediate." : " Recommended level: Beginner.")
             : (percent >= 80 ? " Passed." : " Please review the incorrect answers and try again.");
-        result.textContent = `Score: ${correct}/${questions.length} (${percent}%).${recommendation}`;
+        result.textContent = `${practice.placementMode ? "Placement score" : "Objective"}: ${correct}/${questions.length} (${percent}%).${speakingScores.length ? ` Speaking: ${speakingScore}/${speakingScores.length * 2}.` : ""}${recommendation}`;
         result.className = "assessment-result";
         submit.disabled = true;
         setStudentProgressField("practice", true);
