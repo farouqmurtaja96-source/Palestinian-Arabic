@@ -1,4 +1,4 @@
-:root {
+﻿:root {
     --primary: #2ba48c;
     --primary-soft: rgba(43, 164, 140, 0.12);
     --secondary: #0070c0;
@@ -159,7 +159,7 @@ main {
 
 
 
-/* لما نكون في وضع الصفحة الرئيسية فقط، خبّي شريط الـ Login/Auth */
+/* Ù„Ù…Ø§ Ù†ÙƒÙˆÙ† ÙÙŠ ÙˆØ¶Ø¹ Ø§Ù„ØµÙØ­Ø© Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ© ÙÙ‚Ø·ØŒ Ø®Ø¨Ù‘ÙŠ Ø´Ø±ÙŠØ· Ø§Ù„Ù€ Login/Auth */
 body.home-only #authBar {
     display: none;
 }
@@ -168,14 +168,14 @@ body.home-only .top-nav {
     display: none;
 }
 
-/* لو حابة تخفي كل الـ <main> بالكامل في الهوم: */
+/* Ù„Ùˆ Ø­Ø§Ø¨Ø© ØªØ®ÙÙŠ ÙƒÙ„ Ø§Ù„Ù€ <main> Ø¨Ø§Ù„ÙƒØ§Ù…Ù„ ÙÙŠ Ø§Ù„Ù‡ÙˆÙ…: */
 body.home-only main {
     display: none;
 }
 
 
 
-/* 🟦 الهيرو خلفية فل عرض + ارتفاع شاشة */
+/* Full-width hero background. */
 .hero.hero--full {
     width: 100%;
     height: 100vh;
@@ -427,7 +427,7 @@ body.home-only main {
     color: var(--text-muted);
 }
 
-/* لو حابة تصغّري المودال شوي */
+/* Ù„Ùˆ Ø­Ø§Ø¨Ø© ØªØµØºÙ‘Ø±ÙŠ Ø§Ù„Ù…ÙˆØ¯Ø§Ù„ Ø´ÙˆÙŠ */
 .modal__body {
     max-width: 520px;
 }
@@ -1000,10 +1000,10 @@ select:focus {
     color: var(--text-muted);
 }
 
-/* خلي الخط العربي واضح لو كتبت عربي */
+/* Ø®Ù„ÙŠ Ø§Ù„Ø®Ø· Ø§Ù„Ø¹Ø±Ø¨ÙŠ ÙˆØ§Ø¶Ø­ Ù„Ùˆ ÙƒØªØ¨Øª Ø¹Ø±Ø¨ÙŠ */
 .whiteboard-panel {
     direction: ltr;
-    /* الرسم نفسه مش محتاج RTL */
+    /* Ø§Ù„Ø±Ø³Ù… Ù†ÙØ³Ù‡ Ù…Ø´ Ù…Ø­ØªØ§Ø¬ RTL */
 }
 
 /* Progress */
@@ -1132,22 +1132,22 @@ select:focus {
 
 .vocab-item__ar {
     order: 2;
-    /* 👉 تخلي العربي على اليمين */
+    /* Keep Arabic aligned to the right. */
     direction: rtl;
     text-align: right;
     font-weight: 700;
     font-family: "IBM Plex Sans Arabic", system-ui,
         sans-serif;
     font-size: 1.3em;
-    /* يتأثر بـ --lesson-font-size */
+    /* ÙŠØªØ£Ø«Ø± Ø¨Ù€ --lesson-font-size */
     line-height: 1.5;
 }
 
 .vocab-item__en {
     order: 1;
-    /* 👉 الإنجليزي على الشمال */
+    /* Keep English aligned to the left. */
     font-size: 0.95em;
-    /* يتأثر كمان بـ --lesson-font-size */
+    /* ÙŠØªØ£Ø«Ø± ÙƒÙ…Ø§Ù† Ø¨Ù€ --lesson-font-size */
     color: var(--text-main);
     font-weight: 500;
     text-align: left;
@@ -1276,7 +1276,7 @@ select:focus {
     background: #f9fafb;
     padding: 12px 14px;
     font-size: 1.05em;
-    /* يتأثر بـ --lesson-font-size */
+    /* ÙŠØªØ£Ø«Ø± Ø¨Ù€ --lesson-font-size */
     box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
     border: 1px solid rgba(226, 232, 240, 0.96);
 }
@@ -1314,7 +1314,7 @@ select:focus {
     font-size: 1em;
     margin-left: 20px;
 
-    /* نسبي → يتبع --lesson-font-size */
+    /* Relative size follows --lesson-font-size. */
 }
 
 .dialogue-content {
@@ -1686,6 +1686,31 @@ select:focus {
     font-size: 0.92rem;
 }
 
+.homework-simple--plain {
+    margin-top: 10px;
+    padding: 18px 16px;
+    border: 1px solid #d8e2ee;
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.homework-simple--plain .homework-text {
+    margin: 0;
+    color: #07172e;
+    font-size: 1rem;
+    line-height: 1.55;
+    white-space: pre-line;
+}
+
+.homework-simple__complete {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 18px;
+    color: #667085;
+    font-size: 1rem;
+}
+
 .homework-notes {
     width: 100%;
     border-radius: 14px;
@@ -1729,7 +1754,7 @@ select:focus {
     padding: 8px 10px;
     border-radius: 10px;
     background: #fef3c7;
-    /* أصفر فاتح */
+    /* Ø£ØµÙØ± ÙØ§ØªØ­ */
     border: 1px solid #fbbf24;
     font-size: 0.85rem;
     color: #92400e;
@@ -3838,3 +3863,762 @@ practice-pro__match-list,
         width: 100%;
     }
 }
+
+/* Curriculum 2 exact source rendering styles */
+
+/* Practice */
+.practice-pro,
+.homework-pro {
+    display: grid;
+    gap: 14px;
+    margin-top: 4px;
+}
+
+.practice-pro__header,
+.homework-pro__header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 14px;
+    align-items: start;
+    padding: 14px;
+    border: 1px solid rgba(203, 213, 225, 0.95);
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.practice-pro__header h4,
+.homework-pro__header h4 {
+    margin: 0 0 4px;
+    font-size: 1.05rem;
+}
+
+.practice-pro__header p,
+.homework-pro__header p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.55;
+}
+
+.practice-pro__progress,
+.homework-pro__meter {
+    min-width: 92px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: #f0fdfa;
+    color: #0f766e;
+    text-align: center;
+    border: 1px solid rgba(43, 164, 140, 0.25);
+}
+
+.practice-pro__progress strong {
+    display: block;
+    font-size: 1.05rem;
+}
+
+.practice-pro__progress span,
+.homework-pro__meter {
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.practice-pro__nav {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    padding: 0 2px;
+    border-bottom: 1px solid rgba(203, 213, 225, 0.95);
+    scrollbar-width: thin;
+}
+
+.landing-nav {
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 5;
+    min-height: 70px;
+    padding: 14px max(22px, calc((100% - 1120px) / 2));
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    color: #fff;
+    background: linear-gradient(180deg, rgba(2, 6, 23, 0.72), transparent);
+}
+
+.landing-nav__brand,
+.landing-nav__links { display: flex; align-items: center; }
+.landing-nav__brand {
+    gap: 10px;
+    color: #fff;
+    font-weight: 800;
+    text-decoration: none;
+}
+.landing-nav__links { gap: 20px; }
+.landing-nav__links a {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+.landing-nav__links a:hover {
+    color: #fff;
+    text-decoration: underline;
+    text-underline-offset: 5px;
+}
+.hero__eyebrow {
+    margin: 0 0 14px;
+    color: #a7f3d0;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+@media (max-width: 580px) {
+    .landing-nav { padding-inline: 16px; }
+    .landing-nav__brand > span:last-child { display: none; }
+    .landing-nav__links { gap: 13px; }
+}
+
+.culture-intro {
+    margin-bottom: 18px;
+    padding: clamp(18px, 3vw, 28px);
+    border: 1px solid #bae6e2;
+    border-radius: 22px;
+    background: linear-gradient(135deg, #f0fdfa, #fff7ed);
+}
+
+.culture-intro__eyebrow {
+    margin: 0 0 5px;
+    color: #0f766e;
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.culture-intro h4 { margin: 0 0 7px; font-size: clamp(1.25rem, 3vw, 1.75rem); }
+.culture-intro > p:last-child { margin: 0; color: #526361; line-height: 1.6; }
+.culture-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-bottom: 17px; }
+
+.culture-card {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+    padding: 18px;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+}
+
+.culture-card__heading { display: flex; align-items: center; gap: 10px; }
+.culture-card__heading h5 { margin: 0; color: #173b38; font-size: 1rem; }
+.culture-card__number { color: #0f766e; font-size: 0.75rem; font-weight: 850; }
+.culture-card__language { padding: 13px; border-radius: 14px; background: #f8fafc; }
+.culture-card__language p { margin: 0; }
+.culture-card__ar { color: #102a2a; font-size: 1.35rem; font-weight: 750; line-height: 1.7; text-align: right; }
+.culture-card__arabeezy { margin-top: 3px !important; color: #0f766e; font-weight: 650; }
+.culture-card__en { margin-top: 4px !important; color: #64748b; }
+.culture-card__explanation { margin: 0; color: #334155; line-height: 1.65; }
+.culture-card__use { padding: 12px; border-inline-start: 4px solid #f59e0b; border-radius: 10px; background: #fffbeb; }
+.culture-card__use strong { color: #92400e; font-size: 0.82rem; }
+.culture-card__use p { margin: 5px 0 0; color: #5c4632; line-height: 1.55; }
+.culture-card__register { margin: auto 0 0; color: #64748b; font-size: 0.82rem; font-style: italic; }
+.culture-grid--proverbs { align-items: start; }
+.culture-card--proverb { gap: 11px; }
+.culture-card__category { color: #475569; font-size: 0.8rem; font-weight: 750; }
+.culture-card__literal { margin: 0; color: #64748b; font-size: 0.86rem; font-style: italic; }
+.culture-card__meaning { padding: 11px 12px; border-radius: 11px; background: #ecfdf5; }
+.culture-card__meaning strong { color: #047857; font-size: 0.8rem; }
+.culture-card__meaning p { margin: 4px 0 0; color: #17473c; line-height: 1.5; }
+.culture-card__example { padding: 13px; border: 1px solid #e2e8f0; border-radius: 13px; background: #f8fafc; }
+.culture-card__example > strong { color: #334155; font-size: 0.8rem; }
+.culture-card__example p { margin: 4px 0 0; }
+.culture-card__example-ar { color: #172b2a; font-size: 1.08rem; font-weight: 700; line-height: 1.65; text-align: right; }
+.culture-card__example-arabeezy { color: #0f766e; font-size: 0.88rem; }
+.culture-card__example-en { color: #64748b; font-size: 0.88rem; line-height: 1.5; }
+
+.grammar-mistakes,
+.grammar-checks {
+    margin-top: 13px;
+    padding: 13px;
+    border-radius: 13px;
+}
+
+.grammar-mistakes { border: 1px solid #fed7aa; background: #fff7ed; }
+.grammar-mistakes h6,
+.grammar-checks h6 { margin: 0 0 8px; font-size: 0.9rem; }
+.grammar-mistakes ul { margin: 0; padding-inline-start: 20px; color: #7c2d12; line-height: 1.6; }
+.grammar-checks { border: 1px solid #bae6e2; background: #f0fdfa; }
+.grammar-check { padding: 11px 0; border-top: 1px solid rgba(15, 118, 110, 0.13); }
+.grammar-check:first-of-type { border-top: 0; }
+.grammar-check__prompt { margin: 0 0 8px; color: #173b38; font-weight: 700; line-height: 1.5; }
+.grammar-check__options { display: flex; flex-wrap: wrap; gap: 7px; }
+.grammar-check__option { padding: 8px 11px; border: 1px solid #cbd5e1; border-radius: 10px; background: #fff; color: #1e293b; cursor: pointer; }
+.grammar-check__option:hover { border-color: #14b8a6; }
+.grammar-check__option--correct { border-color: #16a34a; background: #dcfce7; color: #166534; }
+.grammar-check__option--wrong { border-color: #dc2626; background: #fee2e2; color: #991b1b; }
+.grammar-check__feedback { margin: 8px 0 0; font-size: 0.86rem; line-height: 1.5; }
+.grammar-check__feedback--correct { color: #166534; }
+.grammar-check__feedback--wrong { color: #991b1b; }
+
+@media (max-width: 720px) {
+    .culture-grid { grid-template-columns: 1fr; }
+    .culture-card { padding: 15px; }
+    .grammar-topic-table { overflow-x: auto; }
+    .grammar-table__table { min-width: 620px; }
+    .grammar-check__options { display: grid; }
+    .grammar-check__option { width: 100%; text-align: start; }
+}
+
+.dialogue-mobile {
+    display: none;
+}
+
+.dialogue-mobile__card {
+    padding: 14px 16px;
+    border: 1px solid rgba(226, 232, 240, 0.96);
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+}
+
+.dialogue-mobile__speaker {
+    margin-bottom: 8px;
+    color: var(--primary, #0f766e);
+    font-size: 0.82em;
+    font-weight: 800;
+}
+
+.dialogue-mobile__arabic {
+    font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
+    font-size: 1.15em;
+    font-weight: 700;
+    line-height: 1.75;
+    text-align: right;
+}
+
+.dialogue-mobile__arabeezy {
+    margin-top: 4px;
+    color: var(--text-muted);
+    font-size: 0.92em;
+    line-height: 1.5;
+}
+
+.dialogue-mobile__english {
+    margin-top: 7px;
+    padding-top: 7px;
+    border-top: 1px solid rgba(226, 232, 240, 0.9);
+    color: var(--text);
+    line-height: 1.55;
+}
+
+.practice-pro__tab {
+    display: grid;
+    gap: 2px;
+    flex: 1 0 180px;
+    min-height: 58px;
+    padding: 9px 12px;
+    border-radius: 8px 8px 0 0;
+    border: 1px solid transparent;
+    border-bottom: 3px solid transparent;
+    background: #ffffff;
+    color: var(--text-main);
+    cursor: pointer;
+    text-align: left;
+}
+
+.practice-pro__tab span {
+    font-weight: 800;
+}
+
+.practice-pro__tab small {
+    color: var(--text-muted);
+}
+
+.practice-pro__tab.is-active {
+    border-color: rgba(203, 213, 225, 0.95);
+    border-bottom-color: #0f766e;
+    background: #f0fdfa;
+    color: #0f766e;
+}
+
+.practice-pro__tab.is-done span::after {
+    content: " Done";
+    color: #15803d;
+    font-size: 0.75rem;
+}
+
+.practice-pro__panel,
+.homework-pro__card,
+.homework-pro__notes-block {
+    border: 1px solid rgba(203, 213, 225, 0.95);
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.practice-pro__panel-head {
+    padding: 13px 14px 10px;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.95);
+}
+
+.practice-pro__panel-head h5,
+.homework-pro__card h5 {
+    margin: 0 0 4px;
+    font-size: 1rem;
+}
+
+.practice-pro__panel-head p,
+.practice-pro__hint,
+.homework-pro__card p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.55;
+}
+
+.practice-pro__body {
+    display: grid;
+    gap: 12px;
+    padding: 14px;
+}
+
+.practice-pro__grid,
+.homework-pro__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 10px;
+}
+
+.practice-pro__card {
+    display: grid;
+    gap: 9px;
+    padding: 12px;
+    border-radius: 8px;
+    background: #f8fafc;
+    border: 1px solid rgba(226, 232, 240, 0.95);
+}
+
+.practice-pro__drill {
+    display: grid;
+    gap: 11px;
+    max-width: 760px;
+    padding: 16px;
+    border-radius: 8px;
+    background: #ffffff;
+    border: 1px solid rgba(203, 213, 225, 0.95);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+}
+
+.practice-pro__arabic {
+    direction: rtl;
+    text-align: right;
+    font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
+    font-size: 1.08rem;
+    font-weight: 700;
+    line-height: 1.65;
+}
+
+.practice-pro__arabeezy {
+    display: block;
+    direction: ltr;
+    margin-top: 3px;
+    color: #64748b;
+    font-family: system-ui, sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-align: left;
+}
+
+.practice-pro--hide-arabeezy .practice-pro__arabeezy {
+    display: none;
+}
+
+.practice-pro__prompt {
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+.practice-pro__choices,
+.practice-pro__controls,
+.practice-pro__line,
+.practice-pro__chips,
+.homework-pro__examples,
+.homework-pro__footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.practice-pro__choice,
+.practice-pro__chip,
+.homework-pro__examples button {
+    border: 1px solid rgba(148, 163, 184, 0.75);
+    border-radius: 999px;
+    background: #ffffff;
+    color: var(--text-main);
+    padding: 7px 11px;
+    cursor: pointer;
+    font-size: 0.88rem;
+}
+
+.practice-pro__choice:hover,
+.practice-pro__chip:hover,
+.homework-pro__examples button:hover {
+    border-color: rgba(43, 164, 140, 0.75);
+    background: #f0fdfa;
+}
+
+.practice-pro__choice.is-ok,
+.practice-pro__chip.is-selected {
+    background: #dcfce7;
+    border-color: #16a34a;
+}
+
+.practice-pro__choice.is-no {
+    background: #fee2e2;
+    border-color: #ef4444;
+}
+
+.practice-pro__choice.is-selected {
+    border-color: #2563eb;
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.practice-pro__feedback {
+    min-height: 18px;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+}
+
+.practice-pro__feedback.is-ok {
+    color: #15803d;
+    font-weight: 800;
+}
+
+.practice-pro__feedback.is-no {
+    color: #b91c1c;
+    font-weight: 800;
+}
+
+.practice-pro__match-list,
+.practice-pro__situations {
+    display: grid;
+    gap: 8px;
+}
+
+.practice-pro__match-board {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.9fr) minmax(260px, 1.1fr);
+    gap: 12px;
+    align-items: start;
+}
+
+.practice-pro__match-col {
+    display: grid;
+    gap: 8px;
+}
+
+.practice-pro__match-title {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0;
+}
+
+.practice-pro__match-prompt,
+.practice-pro__match-answer {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: center;
+    min-height: 46px;
+    padding: 9px 10px;
+    border-radius: 8px;
+    background: #f8fafc;
+    border: 1px solid rgba(226, 232, 240, 0.95);
+}
+
+.practice-pro__match-answer {
+    grid-template-columns: 58px minmax(0, 1fr) auto;
+    background: #ffffff;
+}
+
+.practice-pro__match-answer.is-ok {
+    border-color: rgba(22, 163, 74, 0.45);
+    background: #f0fdf4;
+}
+
+.practice-pro__match-answer.is-no {
+    border-color: rgba(239, 68, 68, 0.45);
+    background: #fef2f2;
+}
+
+.practice-pro__match-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    background: #0f766e;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 0.82rem;
+}
+
+.practice-pro__match-select {
+    width: 52px;
+    min-height: 34px;
+    border-radius: 8px;
+    border: 1px solid rgba(148, 163, 184, 0.85);
+    background: #ffffff;
+    padding: 5px 6px;
+    font-weight: 800;
+}
+
+.practice-pro__match-status {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.practice-pro__match {
+    display: grid;
+    grid-template-columns: minmax(130px, 0.85fr) minmax(160px, 1fr);
+    gap: 10px;
+    align-items: center;
+    padding: 9px 10px;
+    border-radius: 8px;
+    background: #f8fafc;
+    border: 1px solid rgba(226, 232, 240, 0.95);
+}
+
+.practice-pro__input {
+    flex: 1 1 180px;
+    min-height: 36px;
+    border: 1px solid rgba(203, 213, 225, 0.95);
+    border-radius: 8px;
+    padding: 7px 9px;
+    font-size: 0.9rem;
+}
+
+.practice-pro__answer-bank,
+.practice-pro__chips {
+    min-height: 42px;
+    padding: 8px;
+    border: 1px dashed rgba(148, 163, 184, 0.75);
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.practice-pro__answer-bank {
+    background: #ecfdf5;
+}
+
+.practice-pro__chip.is-used {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.practice-pro__counter,
+.homework-pro__badge {
+    width: fit-content;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: rgba(43, 164, 140, 0.12);
+    color: #0f766e;
+    font-size: 0.76rem;
+    font-weight: 800;
+}
+
+.practice-pro__translate-card {
+    display: grid;
+    gap: 10px;
+    max-width: 760px;
+    padding: 16px;
+    border-radius: 8px;
+    background: #ffffff;
+    border: 1px solid rgba(203, 213, 225, 0.95);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+}
+
+.practice-pro__translate-direction {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 800;
+}
+
+.practice-pro__translate-prompt {
+    padding: 12px;
+    border-radius: 8px;
+    background: #f8fafc;
+    border: 1px solid rgba(226, 232, 240, 0.95);
+    font-size: 1rem;
+    font-weight: 750;
+    line-height: 1.55;
+}
+
+.practice-pro__translate-prompt.is-arabic,
+.practice-pro__translate-answer.is-arabic {
+    direction: rtl;
+    text-align: right;
+    font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
+    font-size: 1.08rem;
+}
+
+.practice-pro__translate-input {
+    width: 100%;
+    min-height: 82px;
+    resize: vertical;
+    border-radius: 8px;
+    border: 1px solid rgba(203, 213, 225, 0.95);
+    padding: 10px;
+    font-size: 0.94rem;
+    line-height: 1.5;
+}
+
+.practice-pro__translate-answer {
+    padding: 12px;
+    border-radius: 8px;
+    background: #ecfdf5;
+    border: 1px solid rgba(43, 164, 140, 0.25);
+    font-weight: 750;
+    line-height: 1.55;
+}
+
+.practice-pro__self-check {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    padding-top: 2px;
+}
+
+.practice-pro__self-btn {
+    border: 1px solid rgba(148, 163, 184, 0.75);
+    border-radius: 999px;
+    background: #ffffff;
+    color: var(--text-main);
+    padding: 7px 11px;
+    cursor: pointer;
+    font-size: 0.88rem;
+}
+
+.practice-pro__self-btn.is-ok {
+    background: #dcfce7;
+    border-color: #16a34a;
+}
+
+.practice-pro__self-btn.is-no {
+    background: #fef3c7;
+    border-color: #f59e0b;
+}
+
+.practice-pro__self-status {
+    color: var(--text-muted);
+    font-size: 0.83rem;
+    font-weight: 700;
+}
+
+.practice-pro__situation {
+    padding: 11px;
+    border-radius: 8px;
+    background: #f8fafc;
+    border: 1px solid rgba(226, 232, 240, 0.95);
+}
+
+.practice-pro__situation span {
+    display: inline-flex;
+    margin-bottom: 6px;
+    color: #0f766e;
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.practice-pro__situation p,
+.practice-pro__write p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.55;
+}
+
+.practice-pro__write {
+    display: grid;
+    gap: 7px;
+    padding: 12px;
+    border-radius: 8px;
+    background: #f8fafc;
+    border: 1px solid rgba(226, 232, 240, 0.95);
+}
+
+.practice-pro__write label,
+.homework-pro__notes-block label {
+    font-weight: 800;
+}
+
+.homework-pro__grid {
+    align-items: stretch;
+}
+
+.homework-pro__card {
+    display: grid;
+    gap: 9px;
+    padding: 13px;
+}
+
+.homework-pro__card.is-done {
+    border-color: rgba(22, 163, 74, 0.35);
+    background: #f0fdf4;
+}
+
+.homework-pro__examples button {
+    direction: rtl;
+    font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
+}
+
+.homework-pro__check,
+.homework-pro__complete {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.homework-pro__notes-block {
+    display: grid;
+    gap: 8px;
+    padding: 13px;
+}
+
+.homework-pro__notes {
+    min-height: 120px;
+}
+
+.homework-pro__footer {
+    justify-content: space-between;
+}
+
+@media (max-width: 720px) {
+    .practice-pro__header,
+    .homework-pro__header,
+    .practice-pro__nav,
+    .practice-pro__grid,
+    .homework-pro__grid,
+    .practice-pro__match-board,
+    .practice-pro__match {
+        grid-template-columns: 1fr;
+    }
+
+    .practice-pro__tab {
+        min-height: auto;
+    }
+}
+
+

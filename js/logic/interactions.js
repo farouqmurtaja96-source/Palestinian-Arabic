@@ -85,7 +85,7 @@ function scheduleCloudSave() {
     clearTimeout(cloudSaveTimer);
     cloudSaveTimer = setTimeout(() => {
         saveStudentsToCloud().catch(console.error);
-    }, 600); // نصف ثانية بعد آخر تغيير
+    }, 600); // Ù†ØµÙ Ø«Ø§Ù†ÙŠØ© Ø¨Ø¹Ø¯ Ø¢Ø®Ø± ØªØºÙŠÙŠØ±
 }
 
 // ========================= STATE =========================
@@ -128,14 +128,14 @@ function escapeAttr(str) {
 const exportContext = {
     lessonId: null,
     studentName: "",
-    source: "", // "lesson-view" أو "teacher-dashboard"
+    source: "", // "lesson-view" Ø£Ùˆ "teacher-dashboard"
 };
 let customUnits = {
     Beginner: [],
     "Pre-Intermediate": [],
     Intermediate: [],
 };
-// =============== SECONDARY AUTH APP (لإنشاء الطلاب فقط) ===============
+// =============== SECONDARY AUTH APP (Ù„Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„Ø·Ù„Ø§Ø¨ ÙÙ‚Ø·) ===============
 let secondaryAuth = null;
 
 function getSecondaryAuth() {
@@ -146,7 +146,7 @@ function getSecondaryAuth() {
         return null;
     }
 
-    // نحاول نلقى app باسم "teacherAdmin" لو موجود
+    // Ù†Ø­Ø§Ùˆل Ù†Ù„Ù‚Ù‰ app Ø¨Ø§Ø³م "teacherAdmin" Ù„Ùˆ Ù…ÙˆØ¬ÙˆØ¯
     let secondaryApp = firebase.apps.find((a) => a.name === "teacherAdmin");
     if (!secondaryApp) {
         secondaryApp = firebase.initializeApp(firebaseConfig, "teacherAdmin");
@@ -174,9 +174,9 @@ function updateAuthUI() {
         if (btnLogin) btnLogin.style.display = "inline-flex";
         if (btnLogout) btnLogout.style.display = "none";
 
-        // أي حد مش مسجّل → ما يشوف Teacher Dashboard
+        // Ø£ي Ø­Ø¯ Ù…Ø´ Ù…Ø³Ø¬ّل → Ù…Ø§ ÙŠØ´ÙˆÙ Teacher Dashboard
         if (navTeacher) navTeacher.style.display = "none";
-        // لو حابة تخلي Profiles ظاهر قبل تسجيل الدخول، خليه هيك:
+        // Ù„Ùˆ Ø­Ø§Ø¨Ø© ØªØ®لي Profiles Ø¸Ø§Ù‡Ø± Ù‚Ø¨ل ØªØ³Ø¬يل Ø§Ù„Ø¯Ø®Ùˆل، Ø®ليه Ù‡ÙŠÙƒ:
         if (navProfiles) navProfiles.style.display = "inline-flex";
         if (typeof window.setDrawingLayerForRole === "function") {
             window.setDrawingLayerForRole(null);
@@ -187,7 +187,7 @@ function updateAuthUI() {
     const { email, role } = appState.currentUser;
 
     if (role === "guest") {
-        if (authStatus) authStatus.textContent = "GUEST – Limited access";
+        if (authStatus) authStatus.textContent = "GUEST - Limited access";
         if (btnLogin) btnLogin.style.display = "inline-flex";
         if (btnLogout) {
             btnLogout.style.display = "inline-flex";
@@ -201,7 +201,7 @@ function updateAuthUI() {
         return;
     }
 
-    if (authStatus) authStatus.textContent = `${role.toUpperCase()} – ${email}`;
+    if (authStatus) authStatus.textContent = `${role.toUpperCase()} - ${email}`;
     if (btnLogin) btnLogin.style.display = "none";
     if (btnLogout) {
         btnLogout.style.display = "inline-flex";
@@ -214,7 +214,7 @@ function updateAuthUI() {
     } else {
         // student
         if (navTeacher) navTeacher.style.display = "none";
-        // الطالب ما يشوف صفحة البروفايلات
+        // Ø§Ù„Ø·Ø§Ù„Ø¨ Ù…Ø§ ÙŠØ´ÙˆÙ ØµÙØ­Ø© Ø§Ù„Ø¨Ø±ÙˆÙØ§ÙŠÙ„Ø§Øª
         if (navProfiles) navProfiles.style.display = "none";
     }
     if (typeof window.setDrawingLayerForRole === "function") {
@@ -229,13 +229,13 @@ function updateAuthUI() {
 	        appState.students = [];
 	        appState.currentStudentId = null;
 	        updateAuthUI();
-        // رجّعيه للصفحة الرئيسية
+        // Ø±Ø¬Ù‘Ø¹يه Ù„Ù„ØµÙØ­Ø© Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©
         showScreen("home-screen");
         return;
     }
 
     try {
-        // نحاول نقرأ الدور من Firestore، ولو مش موجود من localStorage
+        // Ù†Ø­Ø§Ùˆل Ù†Ù‚Ø±Ø£ Ø§Ù„Ø¯ÙˆØ± من Firestore، ÙˆÙ„Ùˆ Ù…Ø´ Ù…ÙˆØ¬ÙˆØ¯ من localStorage
         let savedRole = null;
         try {
             savedRole = localStorage.getItem(LS_USER_ROLE_KEY);
@@ -261,7 +261,7 @@ function updateAuthUI() {
 	            appState.currentStudentId = null;
 	        }
 
-        // نحدّث الـ localStorage بالدور النهائي
+        // Ù†Ø­Ø¯Ù‘Ø« Ø§Ù„Ù€ localStorage Ø¨Ø§Ù„Ø¯ÙˆØ± Ø§Ù„Ù†Ù‡Ø§Ø¦ي
         try {
             localStorage.setItem(LS_USER_ROLE_KEY, role);
         } catch (e) {
@@ -300,8 +300,36 @@ function updateAuthUI() {
 // Translation Sentence Generator (from lesson vocabulary)
 // =======================
 
+function repairMojibakeText(value) {
+    const text = (value || "").toString();
+    const mojibakePattern = /[\u00C3\u00C2\u00D8\u00D9\u00E2\u00F0]/;
+    if (!mojibakePattern.test(text)) return text;
+    const cp1252 = {
+        0x20AC: 0x80, 0x201A: 0x82, 0x0192: 0x83, 0x201E: 0x84,
+        0x2026: 0x85, 0x2020: 0x86, 0x2021: 0x87, 0x02C6: 0x88,
+        0x2030: 0x89, 0x0160: 0x8A, 0x2039: 0x8B, 0x0152: 0x8C,
+        0x017D: 0x8E, 0x2018: 0x91, 0x2019: 0x92, 0x201C: 0x93,
+        0x201D: 0x94, 0x2022: 0x95, 0x2013: 0x96, 0x2014: 0x97,
+        0x02DC: 0x98, 0x2122: 0x99, 0x0161: 0x9A, 0x203A: 0x9B,
+        0x0153: 0x9C, 0x017E: 0x9E, 0x0178: 0x9F,
+    };
+    try {
+        const bytes = [];
+        for (const ch of text) {
+            const code = ch.codePointAt(0);
+            if (code <= 255) bytes.push(code);
+            else if (cp1252[code]) bytes.push(cp1252[code]);
+            else return text;
+        }
+        const repaired = new TextDecoder("utf-8", { fatal: false }).decode(new Uint8Array(bytes));
+        return repaired.includes("\uFFFD") ? text : repaired;
+    } catch {
+        return text;
+    }
+}
+
 function normalizeText(s) {
-    return (s || "").toString().trim();
+    return repairMojibakeText(s).trim();
 }
 
 function pickRandom(arr) {
@@ -417,7 +445,7 @@ function generateTranslationFromVocab(lesson, count = 10) {
     const results = [];
 
     // Some reusable fillers to make sentences natural
-    const names = ["سارة", "أحمد", "لينا", "كريم", "نابل", "هبة"];
+    const names = ["سارة", "أحمد", "لينا", "كريم", "نابِل", "هبة"];
     const timesAr = ["اليوم", "هلّق", "بكرا"];
     const timesEn = ["today", "now", "tomorrow"];
 
@@ -442,7 +470,7 @@ function generateTranslationFromVocab(lesson, count = 10) {
     }
 
     // ---------- Template 1: Greeting + name ----------
-    // "Hello, I'm X." / "مرحبا، أنا X."
+    // "Hello, I'm X." / "Ù…Ø±Ø­Ø¨Ø§، Ø£Ù†Ø§ X."
     if (vocab.greetings.length) {
         const g = pickRandom(vocab.greetings);
         const helloAr = g?.ar || "مرحبا";
@@ -456,8 +484,8 @@ function generateTranslationFromVocab(lesson, count = 10) {
     }
 
     // ---------- Template 2: How are you? + I'm fine ----------
-    // "How are you today? I'm fine." / "كيفك اليوم؟ أنا منيح/منيحة."
-    // If you have "كيفك" or "منيح" in vocab, use them, else fallback
+    // "How are you today? I'm fine." / "ÙƒÙŠÙÙƒ Ø§Ù„ÙŠÙˆم؟ Ø£Ù†Ø§ Ù…Ù†ÙŠØ­/Ù…Ù†ÙŠØ­Ø©."
+    // If you have "ÙƒÙŠÙÙƒ" or "Ù…Ù†ÙŠØ­" in vocab, use them, else fallback
     const howAr =
         pickRandom(vocab.others.filter((x) => x.ar.includes("كيف")))?.ar || "كيفك";
     const howEn =
@@ -468,14 +496,14 @@ function generateTranslationFromVocab(lesson, count = 10) {
             ?.ar || "منيح";
     const fineEn =
         pickRandom(vocab.others.filter((x) => x.en.toLowerCase().includes("fine")))
-            ?.en || "I’m fine";
+            ?.en || "I'm fine";
 
     const tA = pickRandom(timesAr);
     const tE = timesEn[timesAr.indexOf(tA)] || "today";
     addPair(`${howEn} ${tE}? ${fineEn}.`, `${howAr} ${tA}؟ أنا ${fineAr}.`);
 
     // ---------- Template 3: Nice to meet you ----------
-    // "Nice to meet you, X." / "تشرفنا يا X."
+    // "Nice to meet you, X." / "ØªØ´Ø±ÙÙ†Ø§ ÙŠØ§ X."
     const meetAr =
         pickRandom(vocab.others.filter((x) => x.ar.includes("تشرف")))?.ar || "تشرفنا";
     const meetEn =
@@ -485,17 +513,17 @@ function generateTranslationFromVocab(lesson, count = 10) {
     addPair(`${meetEn}, ${name2}.`, `${meetAr} يا ${name2}.`);
 
     // ---------- Template 4: Want + noun (biddi + noun) ----------
-    // We'll pick a noun candidate; if none, use "قهوة" (coffee)
+    // We'll pick a noun candidate; if none, use "Ù‚Ù‡ÙˆØ©" (coffee)
     const noun = pickRandom(vocab.nouns) || { ar: "قهوة", en: "coffee" };
     // Natural sentence:
-    // "I want a coffee, please." / "بدي قهوة، لو سمحت."
+    // "I want a coffee, please." / "Ø¨Ø¯ي Ù‚Ù‡ÙˆØ©، Ù„Ùˆ Ø³Ù…Ø­Øª."
     addPair(
         `I want ${noun.en || "coffee"}, please.`,
         `بدي ${noun.ar || "قهوة"}، لو سمحت.`
     );
 
     // ---------- Template 5: Do you have + noun? ----------
-    // "Do you have ___?" / "عندك ___؟"
+    // "Do you have ___?" / "Ø¹Ù†Ø¯Ùƒ ___؟"
     const noun2 = pickRandom(shuffle(vocab.nouns)) || { ar: "مي", en: "water" };
     addPair(`Do you have ${noun2.en || "water"}?`, `عندك ${noun2.ar || "مي"}؟`);
 
@@ -586,7 +614,7 @@ function generateTranslationItemsFromLesson(lesson, minCount = 7) {
     const extra = safeArr(vocab.extra);
     const allVocab = [...core, ...extra];
 
-    // 1) أخذ أمثلة من vocabulary (أفضل مصدر لأنه جمل جاهزة من المنهج)
+    // 1) Ø£Ø®Ø° Ø£Ù…Ø«Ù„Ø© من vocabulary (Ø£ÙØ¶ل Ù…ØµØ¯Ø± Ù„Ø£نه Ø¬مل Ø¬Ø§Ù‡Ø²Ø© من Ø§Ù„Ù…Ù†Ù‡Ø¬)
     for (const v of allVocab) {
         const ar = txt(v.exampleAr);
         const en = txt(v.exampleEn);
@@ -595,7 +623,7 @@ function generateTranslationItemsFromLesson(lesson, minCount = 7) {
         }
     }
 
-    // 2) أخذ جمل من الحوار (كل سطر pair مع ترجمته)
+    // 2) Ø£Ø®Ø° Ø¬مل من Ø§Ù„Ø­ÙˆØ§Ø± (Ùƒل Ø³Ø·Ø± pair Ù…Ø¹ ØªØ±Ø¬Ù…Øªه)
     const lines = safeArr(lesson?.dialogue?.lines);
     for (const line of lines) {
         const ar = txt(line.ar);
@@ -605,12 +633,12 @@ function generateTranslationItemsFromLesson(lesson, minCount = 7) {
         }
     }
 
-    // 3) إذا لسه أقل من المطلوب: نولّد جمل بالقوالب
+    // 3) Ø¥Ø°Ø§ Ù„Ø³ه Ø£قل من Ø§Ù„Ù…Ø·Ù„ÙˆØ¨: Ù†ÙˆÙ„Ù‘Ø¯ Ø¬مل Ø¨Ø§Ù„Ù‚ÙˆØ§Ù„Ø¨
     const nouns = allVocab
         .map(v => ({ ar: txt(v.ar), en: txt(v.en) }))
         .filter(v => v.ar || v.en);
 
-    const nameAr = ["سارة", "أحمد", "لينا", "كريم", "هبة", "نابل"];
+    const nameAr = ["سارة", "أحمد", "لينا", "كريم", "هبة", "نابِل"];
     const nameEn = ["Sara", "Ahmad", "Lina", "Karim", "Hiba", "Nabil"];
 
     const getNoun = () => pick(nouns) || { ar: "قهوة", en: "coffee" };
@@ -661,11 +689,11 @@ function ensureTranslationItems(lesson, minCount = 7) {
     if (!lesson.practice) lesson.practice = {};
     const list = safeArr(lesson.practice.translation);
 
-    if (list.length > 0) return; // موجودة مسبقاً
+    if (list.length > 0) return; // Ù…ÙˆØ¬ÙˆØ¯Ø© Ù…Ø³Ø¨Ù‚Ø§Ù‹
 
     const generated = generateTranslationItemsFromLesson(lesson, minCount);
 
-    // نحولها لصيغة القالب: type + textEn/textAr
+    // Ù†Ø­ÙˆÙ„Ù‡Ø§ Ù„ØµÙŠØºØ© Ø§Ù„Ù‚Ø§Ù„Ø¨: type + textEn/textAr
     lesson.practice.translation = generated.map((it, idx) => ({
         id: it.id || `t_${idx + 1}`,
         type: idx % 2 === 0 ? "enToAr" : "arToEn",
@@ -677,9 +705,9 @@ function ensureTranslationItems(lesson, minCount = 7) {
 
 // ========================= VOCAB MODAL STATE =========================
 const vocabModalState = {
-    list: [],       // array of items (core أو extra)
+    list: [],       // array of items (core Ø£Ùˆ extra)
     index: 0,       // current index in list
-    showExamples: true,// هل الأمثلة ظاهرة أو مخفية
+    showExamples: true,// هل Ø§Ù„Ø£Ù…Ø«Ù„Ø© Ø¸Ø§Ù‡Ø±Ø© Ø£Ùˆ Ù…Ø®ÙÙŠØ©
     showAr: true,
     showEn: true,
     showArabeezy: true,
@@ -833,7 +861,7 @@ function buildMatchMicroCheck(vocab, makeId) {
     return {
         id: makeId("match"),
         type: "match",
-        prompt: `طابق الكلمة العربية مع الترجمة: ${target.ar}`,
+        prompt: `Match the Arabic word with its English meaning: ${target.ar}`,
         options,
         correct: target.en,
     };
@@ -874,7 +902,7 @@ function buildReorderMicroCheck(vocab, makeId) {
     return {
         id: makeId("reorder"),
         type: "reorder",
-        prompt: "رتّب الكلمات",
+        prompt: "Rearrange the words",
         options: target.words,
         correct: target.words,
     };
@@ -892,7 +920,7 @@ function buildChooseMicroCheck(rows, makeId) {
     return {
         id: makeId("choose"),
         type: "choose",
-        prompt: `اختر الضمير الصحيح: ${target.example}`,
+        prompt: `Choose the correct pronoun: ${target.example}`,
         options,
         correct: target.pronoun,
     };
@@ -958,10 +986,10 @@ function renderMicroCheckItem(item) {
     if (!titleEl || !promptEl || !optionsEl || !builderEl || !feedbackEl) return;
 
     const titles = {
-        match: "Match (Arabic ↔ English) – طابق",
-        complete: "Complete the sentence – اختار الكلمة الناقصة",
-        reorder: "Build it – رتّب الكلمات",
-        choose: "Choose the correct form – اختر الصيغة",
+        match: "Match (Arabic ↔ English)",
+        complete: "Complete the sentence",
+        reorder: "Build it",
+        choose: "Choose the correct form",
     };
 
     titleEl.textContent = item.title || titles[item.type] || "Micro-Check";
@@ -1188,11 +1216,11 @@ function initWhiteboardCanvas() {
     const ctx = canvas.getContext("2d");
     whiteboardState.ctx = ctx;
 
-    // إعدادات الرسم
+    // Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª Ø§Ù„Ø±Ø³م
     ctx.lineJoin = "round";
     ctx.lineCap = "round";
 
-    // تحميل أي رسم محفوظ
+    // ØªØ­ميل Ø£ي Ø±Ø³م Ù…Ø­ÙÙˆØ¸
     loadWhiteboardFromLS();
 
     function getCanvasPos(evt) {
@@ -1303,7 +1331,7 @@ function checkBackupReminder() {
     }
 
     if (!backupSettings.lastBackupAt) {
-        // ما في ولا backup لسه
+        // Ù…Ø§ Ùي ÙˆÙ„Ø§ backup Ù„Ø³ه
         banner.textContent =
             "You haven't created any backup yet. It's a good time to export your data now.";
         banner.classList.remove("hidden");
@@ -1371,7 +1399,7 @@ function handleExportBackup() {
     const snapshot = buildBackupSnapshot();
     downloadBackupFile(snapshot);
 
-    // حدّث وقت آخر backup
+    // Ø­Ø¯Ù‘Ø« ÙˆÙ‚Øª Ø¢Ø®Ø± backup
     backupSettings.lastBackupAt = new Date().toISOString();
     saveBackupSettings();
     checkBackupReminder();
@@ -1390,7 +1418,7 @@ function applyBackupSnapshot(snapshot) {
         saveStudentsToLS();
     }
 
-    // lessons (نمحي القديم ونحط الجديد)
+    // lessons (Ù†Ù…Ø­ي Ø§Ù„Ù‚Ø¯يم ÙˆÙ†Ø­Ø· Ø§Ù„Ø¬Ø¯ÙŠØ¯)
     if (snapshot.lessons && typeof snapshot.lessons === "object") {
         // clear current lessons
         Object.keys(lessons).forEach((id) => {
@@ -1402,7 +1430,7 @@ function applyBackupSnapshot(snapshot) {
             const key = localStorage.key(i);
             if (key && key.startsWith(LS_LESSON_PREFIX)) {
                 localStorage.removeItem(key);
-                i--; // لأن length تغير
+                i--; // Ù„Ø£ن length ØªØºÙŠØ±
             }
         }
 
@@ -1422,7 +1450,7 @@ function applyBackupSnapshot(snapshot) {
         saveCustomUnits();
     }
 
-    // settings (زي حجم الخط)
+    // settings (Ø²ي Ø­Ø¬م Ø§Ù„Ø®Ø·)
     if (snapshot.settings) {
         if (typeof snapshot.settings.lessonFontSize === "number") {
             appState.lessonFontSize = snapshot.settings.lessonFontSize;
@@ -1431,7 +1459,7 @@ function applyBackupSnapshot(snapshot) {
         }
     }
 
-    // إعادة رسم الواجهات الرئيسية
+    // Ø¥Ø¹Ø§Ø¯Ø© Ø±Ø³م Ø§Ù„ÙˆØ§Ø¬Ù‡Ø§Øª Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©
     renderStudents();
     renderTeacherPicker();
     if (getCurrentStudent()) {
@@ -1698,7 +1726,7 @@ function exportArabicLettersPdf() {
     const html = buildArabicLettersExportHtml();
     const win = window.open("", "_blank");
     if (!win) {
-        alert("Popup blocked – please allow popups to export PDF.");
+        alert("Popup blocked - please allow popups to export PDF.");
         return;
     }
     win.document.write(html);
@@ -2146,7 +2174,7 @@ async function saveStudentsToCloud() {
     const batch = db.batch();
     const ref = db.collection("teacherStudents");
 
-    // نفضي كل طلاب هذا المعلم ثم نرفع من جديد (بسيطة مبدئيًا)
+    // Ù†ÙØ¶ي Ùƒل Ø·Ù„Ø§Ø¨ Ù‡Ø°Ø§ Ø§Ù„Ù…Ø¹لم Ø«م Ù†Ø±ÙØ¹ من Ø¬Ø¯ÙŠØ¯ (Ø¨Ø³ÙŠØ·Ø© Ù…Ø¨Ø¯Ø¦ÙŠÙ‹Ø§)
     const snap = await ref.where("teacherId", "==", appState.currentUser.uid).get();
     snap.forEach((doc) => batch.delete(doc.ref));
 
@@ -2184,7 +2212,7 @@ async function syncTeacherStudentsFromCloud() {
     snap.forEach((doc) => {
         const d = doc.data();
         loaded.push({
-            id: doc.id, // أو خلي ID محلي منفصل
+            id: doc.id, // Ø£Ùˆ Ø®لي ID Ù…Ø­لي Ù…Ù†ÙØµل
             name: d.name,
             level: d.level,
             goals: d.goals || [],
@@ -2196,7 +2224,7 @@ async function syncTeacherStudentsFromCloud() {
     });
 
     appState.students = loaded;
-    saveStudentsToLS({ skipCloud: true }); // نخزن نسخة محلية
+    saveStudentsToLS({ skipCloud: true }); // Ù†Ø®Ø²ن Ù†Ø³Ø®Ø© Ù…Ø­Ù„ÙŠØ©
     } catch (err) {
         console.warn("Could not sync teacher students from cloud, using local students.", err);
         appState.students = loadStudentsFromLS();
@@ -2319,8 +2347,8 @@ function loadLessonDataFromLS() {
     });
 }
 function markVocabularyDone() {
-    // هذي الدالة تعتمد إنو عندك setStudentProgressField موجودة
-    // وتشتغل على الدرس والطالب الحاليين
+    // Ù‡Ø°ي Ø§Ù„Ø¯Ø§Ù„Ø© ØªØ¹ØªÙ…Ø¯ Ø¥Ù†Ùˆ Ø¹Ù†Ø¯Ùƒ setStudentProgressField Ù…ÙˆØ¬ÙˆØ¯Ø©
+    // ÙˆØªØ´ØªØºل Ø¹Ù„Ù‰ Ø§Ù„Ø¯Ø±Ø³ ÙˆØ§Ù„Ø·Ø§Ù„Ø¨ Ø§Ù„Ø­Ø§ليين
     try {
         setStudentProgressField("vocabulary", true);
     } catch (e) {
@@ -2380,10 +2408,10 @@ function showScreen(id) {
 
 function goToHome() {
     persistResumeBeforeNav();
-    // ندخل وضع الصفحة الرئيسية فقط
+    // Ù†Ø¯Ø®ل ÙˆØ¶Ø¹ Ø§Ù„ØµÙØ­Ø© Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ© ÙÙ‚Ø·
     document.body.classList.add("home-only");
 
-    // نخلي بس الهوم screen هي الظاهرة
+    // Ù†Ø®لي Ø¨Ø³ Ø§Ù„Ù‡Ùˆم screen هي Ø§Ù„Ø¸Ø§Ù‡Ø±Ø©
     showScreen("home-screen");
 }
 
@@ -2491,7 +2519,7 @@ function goToLessonView(opts = {}) {
     appState.currentTab = normalizeLessonTabKey(appState.currentTab, lesson);
     setActiveTab(appState.currentTab || "overview");
 
-    // حاول يحمّل whiteboard حق هذا الدرس لو اللوحة مفتوحة
+    // Ø­Ø§Ùˆل ÙŠØ­مّل whiteboard Ø­ق Ù‡Ø°Ø§ Ø§Ù„Ø¯Ø±Ø³ Ù„Ùˆ Ø§Ù„Ù„ÙˆØ­Ø© Ù…ÙØªÙˆØ­Ø©
     const whiteboardPanel = document.getElementById("whiteboardPanel");
     if (whiteboardPanel && !whiteboardPanel.classList.contains("hidden")) {
         initWhiteboardCanvas();
@@ -2647,7 +2675,7 @@ function buildLessonExportHtml(lesson, options) {
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8" />
-<title>Lesson Export – ${escapeHtml(lesson.meta.lessonTitle)}</title>
+<title>Lesson Export - ${escapeHtml(lesson.meta.lessonTitle)}</title>
 <style>
     body {
         font-family:
@@ -2690,13 +2718,13 @@ function buildLessonExportHtml(lesson, options) {
         margin-top: 12px;
         padding-top: 10px;
         border-top: 1px solid #e5e7eb;
-        /* 🔴 مهم: شلنا page-break-inside: avoid; عشان ما يطير القسم كله لصفحة جديدة ويترك الهيدر لحاله */
+        /* Keep sections together where possible, but allow long blocks to split naturally. */
     }
     table {
         width: 100%;
         border-collapse: collapse;
         font-size: 11px;
-        direction: rtl; /* الجدول نفسه RTL */
+        direction: rtl; /* Ø§Ù„Ø¬Ø¯Ùˆل Ù†ÙØ³ه RTL */
     }
     th, td {
         border: 1px solid #e5e7eb;
@@ -2747,7 +2775,7 @@ function buildLessonExportHtml(lesson, options) {
         color:#047857;
     }
 
-    /* 🗨️ المحادثة RTL مع الإنجليزي تحت */
+    /* Dialogue RTL with English below. */
     .dialogue-line {
         margin-bottom: 6px;
         direction: rtl;
@@ -2766,7 +2794,7 @@ function buildLessonExportHtml(lesson, options) {
        
         font-size: 20px;
         color: #4b5563;
-        margin-right: 2em; /* شوي مسافة عن اسم المتحدث */
+        margin-right: 2em; /* Ø´Ùˆي Ù…Ø³Ø§ÙØ© Ø¹ن Ø§Ø³م Ø§Ù„Ù…ØªØ­Ø¯Ø« */
     }
 
     @media print {
@@ -2776,7 +2804,7 @@ function buildLessonExportHtml(lesson, options) {
 </style>
 </head>
 <body>
-    <h1 class="headtext">Palestinian Arabic – ${escapeHtml(lesson.meta.lessonTitle)}</h1>
+    <h1 class="headtext">Palestinian Arabic - ${escapeHtml(lesson.meta.lessonTitle)}</h1>
     <div class="meta" >
         <div><strong>Level:</strong> ${escapeHtml(lesson.meta.level)}</div>
         <div><strong>Unit:</strong> ${escapeHtml(lesson.meta.unit)}</div>
@@ -2791,7 +2819,7 @@ function buildLessonExportHtml(lesson, options) {
     ${vocabRows
             ? `<div class="section">
                 <div class="section-title">
-                    <h2>المفردات – Vocabulary</h2>
+                    <h2>المفردات - Vocabulary</h2>
                     <span class="badge">Core & Extra</span>
                 </div>
                 <table>
@@ -2813,7 +2841,7 @@ function buildLessonExportHtml(lesson, options) {
 
     ${dialogueHtml
             ? `<div class="section">
-                <h2>المحادثة – Dialogue</h2>
+                <h2>المحادثة - Dialogue</h2>
                 ${dialogueHtml}
             </div>`
             : ""
@@ -2821,7 +2849,7 @@ function buildLessonExportHtml(lesson, options) {
 
     ${grammarHtml
             ? `<div class="section">
-                <h2>القواعد – Grammar</h2>
+                <h2>القواعد - Grammar</h2>
                 ${grammarHtml}
             </div>`
             : ""
@@ -2829,7 +2857,7 @@ function buildLessonExportHtml(lesson, options) {
 
     ${homeworkHtml
             ? `<div class="section">
-                <h2>الواجب – Homework</h2>
+                <h2>الواجب - Homework</h2>
                 ${homeworkHtml}
             </div>`
             : ""
@@ -2837,14 +2865,14 @@ function buildLessonExportHtml(lesson, options) {
 
     ${teacherNotesHtml
             ? `<div class="section">
-                <h2>ملاحظات المعلم – Teacher Notes</h2>
+                <h2>ملاحظات المعلم - Teacher Notes</h2>
                 ${teacherNotesHtml}
             </div>`
             : ""
         }
 
     <p class="small-note">
-        Generated from Palestinian Arabic Local LMS – you can print or save as PDF from your browser.
+        Generated from Palestinian Arabic Local LMS - you can print or save as PDF from your browser.
     </p>
 </body>
 </html>
@@ -2857,13 +2885,13 @@ function buildLessonExportHtml(lesson, options) {
 function openPrintWindow(html) {
     const win = window.open("", "_blank");
     if (!win) {
-        alert("Popup blocked – please allow popups to export PDF.");
+        alert("Popup blocked - please allow popups to export PDF.");
         return;
     }
     win.document.open();
     win.document.write(html);
     win.document.close();
-    // نعطيه وقت بسيط يرنّدر قبل الطباعة
+    // Ù†Ø¹Ø·يه ÙˆÙ‚Øª Ø¨Ø³ÙŠØ· ÙŠØ±Ù†Ù‘Ø¯Ø± Ù‚Ø¨ل Ø§Ù„Ø·Ø¨Ø§Ø¹Ø©
     win.focus();
     setTimeout(() => {
         win.print();
@@ -2872,9 +2900,9 @@ function openPrintWindow(html) {
 
 function goToTeacherDashboard() {
     persistResumeBeforeNav();
-    // لو مش مسجل، أو مش مدرّس:
+    // Ù„Ùˆ Ù…Ø´ Ù…Ø³Ø¬ل، Ø£Ùˆ Ù…Ø´ Ù…Ø¯Ø±Ù‘Ø³:
     if (!appState.currentUser || appState.currentUser.role !== "teacher") {
-        // بدل ما نعمل alert بس، نفتحه على مودال تسجيل دخول المدرّس
+        // Ø¨Ø¯ل Ù…Ø§ Ù†Ø¹مل alert Ø¨Ø³، Ù†ÙØªØ­ه Ø¹Ù„Ù‰ Ù…ÙˆØ¯Ø§ل ØªØ³Ø¬يل Ø¯Ø®Ùˆل Ø§Ù„Ù…Ø¯Ø±Ù‘Ø³
         if (typeof openAuthModal === "function") {
             openAuthModal("teacher");
         } else {
@@ -2924,12 +2952,12 @@ function renderStudents() {
         const goals = student.goals || [];
         if (goals.length) {
             const map = {
-                Travel: "✈️ Travel",
+                Travel: "Travel",
                 Study: "🎓 Study",
-                Family: "👨‍👩‍👧 Family",
+                Family: "Family",
                 VisitPalestine: "🕌 Visit Palestine",
-                Work: "💼 Work",
-                Fun: "😊 For Fun",
+                Work: "Work",
+                Fun: "For Fun",
             };
             goals.forEach((g) => {
                 const tag = document.createElement("span");
@@ -2958,7 +2986,7 @@ function renderStudents() {
 
         const btnDelete = document.createElement("button");
         btnDelete.className = "student-card__delete";
-        btnDelete.textContent = "❌";
+        btnDelete.textContent = "Delete";
         btnDelete.addEventListener("click", () => {
             if (!confirm(`Delete student "${student.name}"?`)) return;
             appState.students = appState.students.filter((s) => s.id !== student.id);
@@ -3249,7 +3277,7 @@ function updateLessonTopBar() {
     const lesson = lessons[appState.currentLessonId];
     if (!student || !lesson) return;
     $("#lessonStudentName").textContent = student.name;
-    $("#lessonMeta").textContent = `${lesson.meta.level} – ${lesson.meta.unit} – ${lesson.meta.lessonTitle}`;
+    $("#lessonMeta").textContent = `${lesson.meta.level} - ${lesson.meta.unit} - ${lesson.meta.lessonTitle}`;
 }
 
 function countCompletedSections(p) {
@@ -3333,9 +3361,10 @@ function updateLessonTabsVisibility(lesson) {
 
 function normalizeLessonTabKey(tabKey, lesson) {
     const availableTabs = safeArr(lesson?.meta?.availableTabs);
-    if (availableTabs.length && !availableTabs.includes(tabKey)) return availableTabs[0] || "overview";
+    const firstVisibleTab = () => availableTabs.find((key) => key !== "grammar" && key !== "culture") || "overview";
+    if (availableTabs.length && !availableTabs.includes(tabKey)) return firstVisibleTab();
     if (tabKey === "grammar" && !isGrammarTabEnabled(lesson)) {
-        return "translation";
+        return firstVisibleTab();
     }
     if (tabKey === "culture") return "overview";
     return tabKey || "overview";
@@ -3618,15 +3647,15 @@ function renderVocabModalFromState() {
     if (exArabeezy) exArabeezy.style.display = vocabModalState.showArabeezy ? "" : "none";
 
     // Buttons text
-    const btnAr = $("#vocabToggleArBtn");          // لو عندك زر عربي
+    const btnAr = $("#vocabToggleArBtn");          // Ù„Ùˆ Ø¹Ù†Ø¯Ùƒ Ø²Ø± Ø¹Ø±Ø¨ي
     const btnEn = $("#vocabToggleEnBtn");
     const btnEx = $("#vocabToggleExamplesBtn");
     const btnArabeezy = $("#vocabToggleArabeezyBtn");
 
-    if (btnAr) btnAr.textContent = vocabModalState.showAr ? "👁 Hide" : "👁 Show";
-    if (btnEn) btnEn.textContent = vocabModalState.showEn ? "👁 Hide" : "👁 Show";
-    if (btnArabeezy) btnArabeezy.textContent = vocabModalState.showArabeezy ? "👁 Hide" : "👁 Show";
-    if (btnEx) btnEx.textContent = vocabModalState.showExamples ? "👁 Hide" : "👁 Show";
+    if (btnAr) btnAr.textContent = vocabModalState.showAr ? "Hide" : "Show";
+    if (btnEn) btnEn.textContent = vocabModalState.showEn ? "Hide" : "Show";
+    if (btnArabeezy) btnArabeezy.textContent = vocabModalState.showArabeezy ? "Hide" : "Show";
+    if (btnEx) btnEx.textContent = vocabModalState.showExamples ? "Hide" : "Show";
 }
 
 
@@ -3698,10 +3727,10 @@ function renderVocabularyGroup(container, titleText, items, isCore) {
         card.appendChild(en);
 
         card.addEventListener("click", () => {
-            // ✅ نرسل الليست + index للمودال
+            // ✅ Ù†Ø±Ø³ل Ø§Ù„Ù„ÙŠØ³Øª + index Ù„Ù„Ù…ÙˆØ¯Ø§ل
             openVocabModal(items, index);
 
-            // نفس منطق الـ progress القديم
+            // Ù†ÙØ³ Ù…Ù†Ø·ق Ø§Ù„Ù€ progress Ø§Ù„Ù‚Ø¯يم
             if (isCore) {
                 const s = ensureVocabVisitedSet();
                 s.add(item.id);
@@ -3805,7 +3834,7 @@ function renderVocabularyTab(container, lesson) {
         "Tap a card to see details and example sentences. When you finish reviewing, press 'Done' to complete this section.";
     container.appendChild(hint);
 
-    // ✅ شريط "تم إنهاء القسم"
+    // ✅ Ø´Ø±ÙŠØ· "Øªم Ø¥Ù†Ù‡Ø§Ø¡ Ø§Ù„Ù‚Ø³م"
     const doneBar = document.createElement("div");
     doneBar.className = "section-done-bar";
 
@@ -3825,7 +3854,7 @@ function renderVocabularyTab(container, lesson) {
     doneBar.appendChild(doneBtn);
     container.appendChild(doneBar);
 
-    // ✅ باقي تبويب المفردات
+    // ✅ Ø¨Ø§قي ØªØ¨ÙˆÙŠØ¨ Ø§Ù„Ù…ÙØ±Ø¯Ø§Øª
     const vocab = lesson.vocabulary || {};
     const core = Array.isArray(vocab.core) ? vocab.core : [];
     const extra = Array.isArray(vocab.extra) ? vocab.extra : [];
@@ -3955,7 +3984,7 @@ function renderDialogueTab(container, lesson) {
             arCol.style.display = "block";
             arCol.style.margin = "0 auto";
         } else {
-            // لو الاثنين مخفيين، خليه فاضي لكن نحافظ على التخطيط
+            // Ù„Ùˆ Ø§Ù„Ø§Ø«نين Ù…Ø®Ùيين، Ø®ليه ÙØ§Ø¶ي Ù„Ùƒن Ù†Ø­Ø§ÙØ¸ Ø¹Ù„Ù‰ Ø§Ù„ØªØ®Ø·ÙŠØ·
             layout.style.gridTemplateColumns = "minmax(0, 1fr)";
             enCol.style.display = "none";
             arCol.style.display = "none";
@@ -3991,7 +4020,7 @@ function renderDialogueTab(container, lesson) {
         updateArabeezyVisibility();
     });
 
-    // أول مرة
+    // Ø£Ùˆل Ù…Ø±Ø©
     adjustLayout();
     updateArabicVisibility();
     updateArabeezyVisibility();
@@ -4077,11 +4106,11 @@ function renderTranslationTab(container, lesson) {
 
     const btnPrev = document.createElement("button");
     btnPrev.className = "btn btn--ghost btn--sm";
-    btnPrev.textContent = "⬅ Prev";
+    btnPrev.textContent = "Prev";
 
     const btnNext = document.createElement("button");
     btnNext.className = "btn btn--ghost btn--sm";
-    btnNext.textContent = "Next ➡";
+    btnNext.textContent = "Next";
 
     right.appendChild(btnPrev);
     right.appendChild(btnNext);
@@ -4368,278 +4397,22 @@ function renderGrammarTab(container, lesson) {
 // Practice
 function renderPracticeTab(container, lesson) {
     if (lesson?.practice?.assessmentMode) {
-        renderAssessmentPractice(container, lesson);
-        return;
+        return renderAssessmentPractice(container, lesson);
     }
-
     if (lesson?.meta?.curriculumId === "interactive") {
-        renderInteractivePractice(container, lesson);
-        return;
+        return renderPracticeTabClean(container, lesson);
     }
-
-    renderStandardPractice(container, lesson);
+    return renderStandardPractice(container, lesson);
 }
-
-function renderInteractivePractice(container, lesson) {
-    const practice = lesson.practice || {};
-    const sections = Array.isArray(practice.sections) ? practice.sections : [];
-    const sectionA = sections[0] || {};
-    const sectionB = sections[1] || sectionA;
-    const standardStages = [
-        { id: "recognition", label: "Recognition", description: "Understand the phrase and choose its natural meaning." },
-        { id: "build", label: "Build sentences", description: "Complete, correct, and build Palestinian Arabic sentences." },
-        { id: "use", label: "Real use", description: "Use the language in a real-life situation." },
-    ].filter((stage) => stage.id !== "use" || practice.showRealUse !== false);
-    const stages = practice.separateExerciseTypes ? [
-        { id: "recognition", label: "Recognition", description: "Review meanings before building sentences." },
-        { id: "fill", label: "Fill in the missing word", description: "Complete one focused sentence at a time." },
-        { id: "correct", label: "Correct the sentence", description: "Find the mistake and write the natural sentence." },
-        { id: "reorder", label: "Rearrange the words", description: "Build a natural Palestinian Arabic sentence." },
-    ] : standardStages;
-    let activeStage = stages[0].id;
-    let recognitionIndex = 0;
-    const root = document.createElement("div");
-    root.className = "practice-pro";
-    const header = document.createElement("header");
-    header.className = "practice-pro__header";
-    const head = document.createElement("div");
-    const title = document.createElement("h4");
-    title.textContent = "Practice";
-    const subtitle = document.createElement("p");
-    subtitle.textContent = "Work through each exercise type at your own pace.";
-    head.append(title, subtitle);
-    const arabizi = document.createElement("button");
-    arabizi.type = "button";
-    arabizi.className = "btn btn--outline btn--sm";
-    arabizi.textContent = "Hide Arabizi";
-    arabizi.addEventListener("click", () => {
-        const hidden = root.classList.toggle("practice-pro--hide-arabeezy");
-        arabizi.textContent = hidden ? "Show Arabizi" : "Hide Arabizi";
-    });
-    header.append(head, arabizi);
-    const nav = document.createElement("div");
-    nav.className = "practice-pro__nav";
-    const stageArea = document.createElement("div");
-    stageArea.className = "practice-pro__stage";
-
-    const normalise = (value) => String(value || "").toLowerCase().replace(/[\s.,!?،؟]/g, "").trim();
-    const makeFeedback = () => { const el = document.createElement("div"); el.className = "practice-pro__feedback"; return el; };
-    const setFeedback = (el, ok, text) => { el.className = `practice-pro__feedback ${ok ? "is-ok" : "is-no"}`; el.textContent = text; };
-    const stageShell = () => {
-        const panel = document.createElement("section"); panel.className = "practice-pro__panel";
-        const heading = document.createElement("div"); heading.className = "practice-pro__panel-head";
-        const stage = stages.find((item) => item.id === activeStage);
-        const h = document.createElement("h5"); h.textContent = stage.label;
-        const p = document.createElement("p"); p.textContent = stage.description;
-        heading.append(h, p); panel.appendChild(heading); return panel;
-    };
-    const renderChoice = (parent, promptText, options, correct, arabic = false) => {
-        const card = document.createElement("article"); card.className = "practice-pro__card";
-        const prompt = document.createElement("div"); prompt.className = arabic ? "practice-pro__arabic" : "practice-pro__prompt"; prompt.textContent = promptText || "";
-        const choices = document.createElement("div"); choices.className = "practice-pro__choices";
-        const feedback = makeFeedback();
-        (options || []).forEach((option) => { const button = document.createElement("button"); button.type = "button"; button.className = "practice-pro__choice"; button.textContent = option; button.addEventListener("click", () => { const ok = option === correct; choices.querySelectorAll("button").forEach((item) => item.classList.remove("is-ok", "is-no")); button.classList.add(ok ? "is-ok" : "is-no"); setFeedback(feedback, ok, ok ? "Correct" : `Answer: ${correct}`); }); choices.appendChild(button); });
-        card.append(prompt, choices, feedback); parent.appendChild(card);
-    };
-    const renderInput = (parent, item, instruction) => {
-        const card = document.createElement("article"); card.className = "practice-pro__card";
-        const hint = document.createElement("p"); hint.className = "practice-pro__hint"; hint.textContent = instruction;
-        const prompt = document.createElement("div"); prompt.className = "practice-pro__arabic"; prompt.textContent = item.prompt || "";
-        const arabeezy = document.createElement("small"); arabeezy.className = "practice-pro__arabeezy"; arabeezy.textContent = item.arabeezy ? `Read it: ${item.arabeezy}` : "";
-        const line = document.createElement("div"); line.className = "practice-pro__line";
-        const input = document.createElement("input"); input.className = "practice-pro__input"; input.placeholder = "Type your answer";
-        const check = document.createElement("button"); check.type = "button"; check.className = "btn btn--outline btn--sm"; check.textContent = "Check";
-        const feedback = makeFeedback(); check.addEventListener("click", () => { const ok = normalise(input.value) === normalise(item.answer); setFeedback(feedback, ok, ok ? "Correct" : `Answer: ${item.answer}`); });
-        line.append(input, check); card.append(hint, prompt, arabeezy, line, feedback); parent.appendChild(card);
-    };
-    function renderStage() {
-        stageArea.innerHTML = "";
-        const panel = stageShell(); const body = document.createElement("div"); body.className = "practice-pro__body"; panel.appendChild(body);
-        if (activeStage === "recognition") {
-            const drills = [
-                ...(practice.quiz || []).map((q) => ({ prompt: q.questionAr || q.question || "Choose the meaning", options: q.optionsEn || q.options || [], correct: (q.optionsEn || q.options || [])[q.correctIndex], arabic: true })),
-                ...(sectionA.multipleChoice || []).map((item) => ({ prompt: item.prompt, options: item.options, correct: item.correct, arabic: false })),
-            ];
-            if (drills.length) {
-                recognitionIndex = Math.min(recognitionIndex, drills.length - 1);
-                const counter = document.createElement("div"); counter.className = "practice-pro__counter"; counter.textContent = `${recognitionIndex + 1} / ${drills.length}`; body.appendChild(counter);
-                const drill = drills[recognitionIndex]; renderChoice(body, drill.prompt, drill.options, drill.correct, drill.arabic);
-                const controls = document.createElement("div"); controls.className = "practice-pro__controls";
-                const previous = document.createElement("button"); previous.className = "btn btn--ghost btn--sm"; previous.textContent = "Previous";
-                const next = document.createElement("button"); next.className = "btn btn--ghost btn--sm"; next.textContent = "Next";
-                previous.addEventListener("click", () => { recognitionIndex = (recognitionIndex - 1 + drills.length) % drills.length; renderStage(); });
-                next.addEventListener("click", () => { recognitionIndex = (recognitionIndex + 1) % drills.length; renderStage(); });
-                controls.append(previous, next); body.appendChild(controls);
-            }
-            const matching = sectionA.matching || [];
-            if (matching.length) {
-                const match = document.createElement("section"); match.className = "practice-pro__match-board";
-                const title = document.createElement("h6"); title.textContent = "Choose the matching number"; match.appendChild(title);
-                matching.forEach((item, index) => {
-                    const row = document.createElement("div"); row.className = "practice-pro__line";
-                    const arabic = document.createElement("span"); arabic.className = "practice-pro__arabic"; arabic.textContent = `${index + 1}. ${item.ar || ""}`;
-                    const select = document.createElement("select"); select.className = "practice-pro__input"; select.innerHTML = `<option value="">#</option>${matching.map((_x, optionIndex) => `<option value="${optionIndex}">${optionIndex + 1}</option>`).join("")}`;
-                    const meaning = document.createElement("span"); meaning.textContent = item.en || "";
-                    const feedback = makeFeedback(); select.addEventListener("change", () => setFeedback(feedback, Number(select.value) === index, Number(select.value) === index ? "Correct" : "Try again"));
-                    row.append(arabic, select, meaning, feedback); match.appendChild(row);
-                }); body.appendChild(match);
-            }
-        } else if (activeStage === "build" || activeStage === "fill" || activeStage === "correct" || activeStage === "reorder") {
-            if (activeStage === "build" || activeStage === "fill") (sectionB.fillInTheBlank || []).forEach((item) => renderInput(body, item, "Fill in the missing word."));
-            if (activeStage === "build" || activeStage === "correct") (sectionB.correctTheMistake || []).forEach((item) => renderInput(body, item, "Correct the sentence."));
-            if (activeStage === "build" || activeStage === "reorder") (sectionB.reorderSentences || []).forEach((item) => {
-                const copy = { ...item, prompt: `${item.prompt || "Put the words in order."} ${Array.isArray(item.words) ? item.words.join(" · ") : ""}` };
-                renderInput(body, copy, "Write the words in the correct order.");
-            });
-        } else {
-            const translations = practice.translation || (sections[2] || {}).translation || [];
-            translations.forEach((item) => renderInput(body, { prompt: item.prompt || item.en || item.ar || "Translate", answer: item.answer || item.ar || item.en || "" }, "Write your translation, then check it."));
-            (practice.rolePlays || []).forEach((rolePlay) => { const card = document.createElement("article"); card.className = "practice-pro__situation"; const badge = document.createElement("span"); badge.textContent = "Speaking situation"; const text = document.createElement("p"); text.textContent = rolePlay; card.append(badge, text); body.appendChild(card); });
-        }
-        const done = document.createElement("button"); done.type = "button"; done.className = "btn btn--primary btn--sm"; done.textContent = "Mark practice as done"; done.addEventListener("click", () => setStudentProgressField("practice", true)); body.appendChild(done);
-        stageArea.appendChild(panel);
-    }
-    function renderNav() { nav.innerHTML = ""; stages.forEach((stage) => { const button = document.createElement("button"); button.type = "button"; button.className = "practice-pro__tab"; button.classList.toggle("is-active", stage.id === activeStage); const count = stage.id === "recognition" ? (practice.quiz || []).length + (sectionA.multipleChoice || []).length : stage.id === "fill" ? (sectionB.fillInTheBlank || []).length : stage.id === "correct" ? (sectionB.correctTheMistake || []).length : stage.id === "reorder" ? (sectionB.reorderSentences || []).length : ""; button.innerHTML = `<span>${stage.label}</span>${count !== "" ? `<small>${count} items</small>` : ""}`; button.addEventListener("click", () => { activeStage = stage.id; renderNav(); renderStage(); }); nav.appendChild(button); }); }
-    root.append(header, nav, stageArea); container.appendChild(root); renderNav(); renderStage(); renderSectionStatus(container, "practice");
-}
-
-function renderAssessmentPractice(container, lesson) {
-    const practice = lesson.practice || {};
-    const questions = Array.isArray(practice.questions) ? practice.questions : [];
-    const title = document.createElement("h4");
-    title.className = "td-lessonitem__title";
-    title.textContent = practice.assessmentTitle || "Assessment";
-    container.appendChild(title);
-
-    const intro = document.createElement("p");
-    intro.className = "assessment-intro";
-    intro.textContent = "Choose one answer for every question, then submit. After submitting, your incorrect answer appears in red and the correct answer appears in green.";
-    container.appendChild(intro);
-
-    if (!questions.length) {
-        const empty = document.createElement("p");
-        empty.textContent = "This assessment has no questions yet.";
-        container.appendChild(empty);
-        return;
-    }
-
-    const answers = new Map();
-    const questionViews = [];
-    const list = document.createElement("div");
-    list.className = "assessment-questions";
-
-    questions.forEach((question, questionIndex) => {
-        const card = document.createElement("article");
-        card.className = "quiz-question assessment-question practice-pro__card";
-        const counter = document.createElement("div");
-        counter.className = "practice-pro__counter";
-        counter.textContent = `${questionIndex + 1} / ${questions.length} · ${question.skill || "Language"}`;
-        const questionText = document.createElement("div");
-        questionText.className = "flashcard__ar assessment-question__prompt";
-        questionText.textContent = `${questionIndex + 1}. ${question.prompt || question.question || question.questionEn || question.questionAr || "Question"}`;
-        card.appendChild(counter);
-        card.appendChild(questionText);
-
-        const options = Array.isArray(question.options) ? question.options : (Array.isArray(question.optionsEn) ? question.optionsEn : []);
-        const optionsWrap = document.createElement("div");
-        optionsWrap.className = "quiz-options";
-        const buttons = [];
-        options.forEach((option, optionIndex) => {
-            const button = document.createElement("button");
-            button.type = "button";
-            button.className = "quiz-option assessment-choice";
-            button.textContent = option;
-            button.addEventListener("click", () => {
-                if (list.dataset.submitted === "true") return;
-                answers.set(questionIndex, optionIndex);
-                buttons.forEach((item) => item.classList.remove("assessment-choice--selected"));
-                button.classList.add("assessment-choice--selected");
-            });
-            buttons.push(button);
-            optionsWrap.appendChild(button);
-        });
-        const feedback = document.createElement("div");
-        feedback.className = "quiz-feedback assessment-feedback";
-        card.appendChild(optionsWrap);
-        card.appendChild(feedback);
-        list.appendChild(card);
-        questionViews.push({ question, buttons, feedback });
-    });
-    container.appendChild(list);
-
-    const speakingScores = [];
-    if (practice.speaking) {
-        const speaking = document.createElement("article");
-        speaking.className = "practice-pro__panel assessment-speaking";
-        const heading = document.createElement("div"); heading.className = "practice-pro__panel-head";
-        heading.innerHTML = `<h5>Teacher-scored speaking task</h5><p>${practice.speaking.prompt || ""}</p>`;
-        speaking.appendChild(heading);
-        (practice.speaking.criteria || []).forEach((criterion, index) => {
-            const row = document.createElement("label"); row.className = "practice-pro__line";
-            const text = document.createElement("span"); text.textContent = criterion;
-            const select = document.createElement("select"); select.className = "practice-pro__input";
-            [[0, "0 - Not demonstrated"], [1, "1 - With support"], [2, "2 - Independent"]].forEach(([value, label]) => { const option = document.createElement("option"); option.value = value; option.textContent = label; select.appendChild(option); });
-            speakingScores[index] = select; row.append(text, select); speaking.appendChild(row);
-        });
-        container.appendChild(speaking);
-    }
-
-    const submit = document.createElement("button");
-    submit.type = "button";
-    submit.className = "btn btn--primary btn--sm";
-    submit.textContent = "Submit assessment";
-    const result = document.createElement("p");
-    result.className = "assessment-result";
-    submit.addEventListener("click", () => {
-        if (answers.size !== questions.length) {
-            result.textContent = `Please answer all ${questions.length} questions before submitting.`;
-            result.className = "assessment-result assessment-result--warning";
-            return;
-        }
-        list.dataset.submitted = "true";
-        let correct = 0;
-        questionViews.forEach(({ question, buttons, feedback }, index) => {
-            const correctIndex = Number.isInteger(question.correctIndex) ? question.correctIndex : question.answerIndex;
-            const chosen = answers.get(index);
-            buttons.forEach((button, optionIndex) => {
-                button.disabled = true;
-                button.classList.remove("assessment-choice--selected");
-                if (optionIndex === correctIndex) button.classList.add("quiz-option--correct", "assessment-choice--correct");
-                if (optionIndex === chosen && chosen !== correctIndex) button.classList.add("quiz-option--incorrect", "assessment-choice--wrong");
-            });
-            if (chosen === correctIndex) {
-                correct += 1;
-                feedback.textContent = "Correct.";
-            } else {
-                const answer = buttons[correctIndex]?.textContent || "the highlighted answer";
-                feedback.textContent = `Incorrect. Correct answer: ${answer}`;
-            }
-        });
-        const percent = Math.round((correct / questions.length) * 100);
-        const speakingScore = speakingScores.reduce((sum, select) => sum + Number(select.value || 0), 0);
-        const isPlacement = practice.placementMode;
-        const recommendation = isPlacement
-            ? (percent >= 72 ? " Recommended level: Intermediate." : percent >= 39 ? " Recommended level: Pre-Intermediate." : " Recommended level: Beginner.")
-            : (percent >= 80 ? " Passed." : " Please review the incorrect answers and try again.");
-        result.textContent = `${practice.placementMode ? "Placement score" : "Objective"}: ${correct}/${questions.length} (${percent}%).${speakingScores.length ? ` Speaking: ${speakingScore}/${speakingScores.length * 2}.` : ""}${recommendation}`;
-        result.className = "assessment-result";
-        submit.disabled = true;
-        setStudentProgressField("practice", true);
-    });
-    container.appendChild(submit);
-    container.appendChild(result);
-    renderSectionStatus(container, "practice");
-}
-
 function renderStandardPractice(container, lesson) {
     const title = document.createElement("h4");
     title.className = "td-lessonitem__title";
-    title.textContent = "Practice – Quiz & Role-play";
+    title.textContent = "Practice - Recognition, Production & Simulation";
 
     const quizBlock = document.createElement("div");
     let correctCount = 0;
 
-    (lesson.practice?.quiz || []).forEach((q) => {
+    lesson.practice.quiz.forEach((q) => {
         const qWrap = document.createElement("div");
         qWrap.className = "quiz-question";
 
@@ -4669,7 +4442,7 @@ function renderStandardPractice(container, lesson) {
                     }
                 } else {
                     btn.classList.add("quiz-option--incorrect");
-                    feedback.textContent = "❌ Not quite. Try again.";
+                    feedback.textContent = "Not quite. Try again.";
                 }
             });
             optionsWrap.appendChild(btn);
@@ -4688,10 +4461,64 @@ function renderStandardPractice(container, lesson) {
 
     const ul = document.createElement("ul");
     ul.className = "roleplay-list";
-    (lesson.practice?.rolePlays || []).forEach((rp) => {
+    lesson.practice.rolePlays.forEach((rp) => {
         const li = document.createElement("li");
         li.textContent = rp;
         ul.appendChild(li);
+    });
+
+    const structuredPractice = document.createElement("div");
+    const practiceSections = Array.isArray(lesson.practice.sections)
+        ? lesson.practice.sections
+        : [];
+
+    practiceSections.forEach((section) => {
+        const sectionWrap = document.createElement("div");
+        sectionWrap.className = "quiz-question";
+
+        const sectionTitle = document.createElement("h4");
+        sectionTitle.className = "td-lessonitem__title";
+        sectionTitle.textContent = section.title || "Practice";
+        sectionWrap.appendChild(sectionTitle);
+
+        if (section.realSituationSimulation) {
+            const sim = document.createElement("p");
+            sim.className = "teacher-edit-note";
+            sim.textContent = `Real Situation Simulation: ${section.realSituationSimulation}`;
+            sectionWrap.appendChild(sim);
+        }
+
+        function appendList(label, items, formatter) {
+            if (!Array.isArray(items) || !items.length) return;
+            const subTitle = document.createElement("p");
+            subTitle.style.fontWeight = "600";
+            subTitle.textContent = label;
+            sectionWrap.appendChild(subTitle);
+
+            const list = document.createElement("ul");
+            list.className = "roleplay-list";
+            items.forEach((item) => {
+                const li = document.createElement("li");
+                li.textContent = formatter(item);
+                list.appendChild(li);
+            });
+            sectionWrap.appendChild(list);
+        }
+
+        appendList("Matching", section.matching, (item) => `${item.ar} = ${item.en}`);
+        appendList("Multiple choice", section.multipleChoice, (item) => {
+            const opts = Array.isArray(item.options) ? item.options.join(" / ") : "";
+            return `${item.prompt} (${opts})`;
+        });
+        appendList("Fill in the blank", section.fillInTheBlank, (item) => `${item.prompt} Answer: ${item.answer}`);
+        appendList("Reorder sentences", section.reorderSentences, (item) => {
+            const words = Array.isArray(item.words) ? item.words.join(" / ") : "";
+            return `${item.prompt} Words: ${words}`;
+        });
+        appendList("Translation (Arabic ↔ English)", section.translation, (item) => `${item.en} = ${item.ar}`);
+        appendList("Write your own sentences (5-10)", section.writeYourOwnSentences, (item) => item);
+
+        structuredPractice.appendChild(sectionWrap);
     });
 
     const btnDone = document.createElement("button");
@@ -4703,67 +4530,951 @@ function renderStandardPractice(container, lesson) {
     container.appendChild(quizBlock);
     container.appendChild(roleTitle);
     container.appendChild(ul);
+    if (practiceSections.length) {
+        container.appendChild(structuredPractice);
+    }
     container.appendChild(btnDone);
 
     if (appState.teacherMode) {
         const note = document.createElement("p");
         note.className = "teacher-edit-note";
         note.textContent =
-            "Teacher Mode: You can adjust questions and role-plays from the Teacher Dashboard form (Edit Lesson Content).";
+            "Teacher notes are disabled in the public student build.";
         container.appendChild(note);
     }
 
     renderSectionStatus(container, "practice");
 }
 
+function renderAssessmentPractice(container, lesson) {
+    const practice = lesson.practice || {};
+    const questions = safeArr(practice.questions);
+    const answers = new Map();
+    const shuffledOptions = questions.map((question) => {
+        const entries = safeArr(question.options).map((text, originalIndex) => ({ text, originalIndex }));
+        for (let index = entries.length - 1; index > 0; index -= 1) {
+            const swapIndex = Math.floor(Math.random() * (index + 1));
+            [entries[index], entries[swapIndex]] = [entries[swapIndex], entries[index]];
+        }
+        return entries;
+    });
+    const root = document.createElement("div");
+    root.className = "practice-pro";
+
+    const header = document.createElement("div");
+    header.className = "practice-pro__header";
+    const headerText = document.createElement("div");
+    const title = document.createElement("h4");
+    title.textContent = practice.assessmentTitle || "Final Assessment";
+    const intro = document.createElement("p");
+    intro.textContent = "Answer every question, then submit once. Correct answers are not shown during the test.";
+    headerText.appendChild(title);
+    headerText.appendChild(intro);
+    header.appendChild(headerText);
+    root.appendChild(header);
+
+    const list = document.createElement("div");
+    list.className = "practice-pro__body";
+    questions.forEach((question, questionIndex) => {
+        const card = document.createElement("article");
+        card.className = "practice-pro__card";
+        const counter = document.createElement("div");
+        counter.className = "practice-pro__counter";
+        counter.textContent = `${questionIndex + 1} / ${questions.length} · ${question.skill || "Language"}`;
+        const prompt = document.createElement("div");
+        prompt.className = "practice-pro__prompt";
+        prompt.textContent = question.prompt || "";
+        const choices = document.createElement("div");
+        choices.className = "practice-pro__choices";
+        shuffledOptions[questionIndex].forEach(({ text: option, originalIndex }) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "practice-pro__choice";
+            button.textContent = option;
+            button.addEventListener("click", () => {
+                answers.set(questionIndex, originalIndex);
+                choices.querySelectorAll("button").forEach((item) => item.classList.remove("is-selected"));
+                button.classList.add("is-selected");
+            });
+            choices.appendChild(button);
+        });
+        card.appendChild(counter);
+        card.appendChild(prompt);
+        card.appendChild(choices);
+        list.appendChild(card);
+    });
+    root.appendChild(list);
+
+    const speakingScores = [];
+    if (practice.speaking) {
+        const speaking = document.createElement("article");
+        speaking.className = "practice-pro__panel";
+        const body = document.createElement("div");
+        body.className = "practice-pro__body";
+        const heading = document.createElement("h5");
+        heading.textContent = "Teacher-scored speaking task";
+        const prompt = document.createElement("p");
+        prompt.className = "practice-pro__prompt";
+        prompt.textContent = practice.speaking.prompt || "";
+        body.appendChild(heading);
+        body.appendChild(prompt);
+        safeArr(practice.speaking.criteria).forEach((criterion, index) => {
+            const row = document.createElement("label");
+            row.className = "practice-pro__line";
+            const text = document.createElement("span");
+            text.textContent = criterion;
+            const select = document.createElement("select");
+            select.className = "practice-pro__input";
+            [[0, "0 - Not demonstrated"], [1, "1 - With support"], [2, "2 - Independent"]].forEach(([value, label]) => {
+                const option = document.createElement("option");
+                option.value = String(value);
+                option.textContent = label;
+                select.appendChild(option);
+            });
+            speakingScores[index] = select;
+            row.appendChild(text);
+            row.appendChild(select);
+            body.appendChild(row);
+        });
+        speaking.appendChild(body);
+        root.appendChild(speaking);
+    }
+
+    const result = document.createElement("div");
+    result.className = "practice-pro__feedback";
+    const submit = document.createElement("button");
+    submit.type = "button";
+    submit.className = "btn btn--primary";
+    submit.textContent = "Submit final assessment";
+    submit.addEventListener("click", () => {
+        if (answers.size < questions.length) {
+            result.className = "practice-pro__feedback is-no";
+            result.textContent = `Answer all questions first (${answers.size}/${questions.length} completed).`;
+            return;
+        }
+        const objectiveScore = questions.reduce((score, question, index) => score + (answers.get(index) === question.correctIndex ? 1 : 0), 0);
+        const speakingScore = speakingScores.reduce((score, select) => score + Number(select.value || 0), 0);
+        const objectivePercent = questions.length ? Math.round((objectiveScore / questions.length) * 100) : 0;
+        const overallMax = questions.length + speakingScores.length * 2;
+        const overallScore = objectiveScore + speakingScore;
+        const overallPercent = overallMax ? Math.round((overallScore / overallMax) * 100) : 0;
+        const level = lesson?.meta?.level || "Beginner";
+        const recommendations = {
+            Beginner: {
+                ready: "Ready for Pre-Intermediate.",
+                review: "Continue, but review weak Beginner topics first.",
+                repeat: "Repeat Cumulative Review 1 before moving on.",
+            },
+            "Pre-Intermediate": {
+                ready: "Ready for Intermediate.",
+                review: "Continue, but review weak Pre-Intermediate topics first.",
+                repeat: "Repeat Cumulative Review 2 before moving on.",
+            },
+            Intermediate: {
+                ready: "Intermediate outcomes achieved; move to advanced expansion and real-life fluency work.",
+                review: "Review weak Intermediate topics before advanced expansion.",
+                repeat: "Repeat Cumulative Review 3 before moving on.",
+            },
+        };
+        const messages = recommendations[level] || recommendations.Beginner;
+        const recommendation = practice.placementMode
+            ? objectivePercent >= 72
+                ? "Recommended starting level: Intermediate. Review any missed Pre-Intermediate skills first."
+                : objectivePercent >= 39
+                    ? "Recommended starting level: Pre-Intermediate."
+                    : "Recommended starting level: Beginner."
+            : overallPercent >= 80
+                ? messages.ready
+                : overallPercent >= 60
+                    ? messages.review
+                    : messages.repeat;
+        result.className = "practice-pro__feedback is-ok";
+        result.textContent = practice.placementMode
+            ? `Placement score: ${objectiveScore}/${questions.length} (${objectivePercent}%). ${recommendation}`
+            : `Objective: ${objectiveScore}/${questions.length} (${objectivePercent}%). Speaking: ${speakingScore}/${speakingScores.length * 2}. Overall: ${overallPercent}%. ${recommendation}`;
+        setStudentProgressField("practice", true);
+    });
+    root.appendChild(submit);
+    root.appendChild(result);
+    container.appendChild(root);
+    renderSectionStatus(container, "practice");
+}
+
+function renderPracticeTabClean(container, lesson) {
+    const practice = lesson.practice || {};
+    const sections = safeArr(practice.sections);
+    const sectionA = sections.find((s) => String(s.title || "").startsWith("A")) || sections[0] || {};
+    const sectionB = sections.find((s) => String(s.title || "").startsWith("B"))
+        || sections[1]
+        || (practice.separateExerciseTypes ? sections[0] : null)
+        || {};
+    const sectionC = sections.find((s) => String(s.title || "").startsWith("C")) || sections[2] || {};
+    let activeStage = "recognition";
+    let completed = new Set();
+
+    const root = document.createElement("div");
+    root.className = "practice-pro";
+
+    const header = document.createElement("div");
+    header.className = "practice-pro__header";
+    const headerText = document.createElement("div");
+    const title = document.createElement("h4");
+    title.textContent = "Practice";
+    const subtitle = document.createElement("p");
+    subtitle.textContent = "Choose one exercise type and review at your own pace.";
+    headerText.appendChild(title);
+    headerText.appendChild(subtitle);
+
+    const progressWrap = document.createElement("div");
+    progressWrap.className = "practice-pro__progress";
+    const progressNumber = document.createElement("strong");
+    const progressLabel = document.createElement("span");
+    progressLabel.textContent = "complete";
+    progressWrap.appendChild(progressNumber);
+    progressWrap.appendChild(progressLabel);
+    header.appendChild(headerText);
+    const arabeezyToggle = document.createElement("button");
+    arabeezyToggle.type = "button";
+    arabeezyToggle.className = "btn btn--outline btn--sm";
+    arabeezyToggle.textContent = "Hide Arabizi";
+    arabeezyToggle.addEventListener("click", () => {
+        const hidden = root.classList.toggle("practice-pro--hide-arabeezy");
+        arabeezyToggle.textContent = hidden ? "Show Arabizi" : "Hide Arabizi";
+    });
+    header.appendChild(arabeezyToggle);
+    header.appendChild(progressWrap);
+
+    const nav = document.createElement("div");
+    nav.className = "practice-pro__nav";
+    nav.setAttribute("role", "tablist");
+    nav.setAttribute("aria-label", "Practice exercise types");
+
+    const stageArea = document.createElement("div");
+    stageArea.className = "practice-pro__stage";
+
+    let stages = [
+        {
+            id: "recognition",
+            label: "A) Recognition",
+            desc: "Understand the phrase before answering.",
+            count: safeArr(practice.quiz).slice(0, 5).length + safeArr(sectionA.matching).length + safeArr(sectionA.multipleChoice).length,
+        },
+        {
+            id: "controlled",
+            label: "B) Controlled",
+            desc: "Build correct sentences with help.",
+            count: safeArr(sectionB.fillInTheBlank).length
+                + safeArr(sectionB.correctTheMistake).length
+                + safeArr(sectionB.reorderSentences).length,
+        },
+        {
+            id: "real",
+            label: "C) Real Use",
+            desc: "Use the phrases in real situations.",
+            count: Math.min(
+                safeArr(practice.translation).length + safeArr(sectionC.translation).length,
+                Number(practice.maxTranslationItems) || Infinity
+            ) + safeArr(practice.rolePlays).length,
+        },
+    ].filter((stage) => stage.id !== "real" || practice.showRealUse !== false);
+    if (practice.separateExerciseTypes) {
+        stages = [
+            { id: "recognition", label: "Recognition", desc: "Review meanings before building sentences.", count: safeArr(practice.quiz).slice(0, 5).length + safeArr(sectionA.matching).length + safeArr(sectionA.multipleChoice).length },
+            { id: "fill", label: "Fill in the missing word", desc: "Complete one focused sentence at a time.", count: safeArr(sectionB.fillInTheBlank).length },
+            { id: "correct", label: "Correct the sentence", desc: "Find the grammar mistake and correct it.", count: safeArr(sectionB.correctTheMistake).length },
+            { id: "reorder", label: "Rearrange the words", desc: "Build a natural Palestinian Arabic sentence.", count: safeArr(sectionB.reorderSentences).length },
+        ].filter((stage) => stage.count > 0);
+    }
+
+    function normalizeAnswer(value) {
+        return String(value || "").replace(/[،.؟!?\s]/g, "").trim();
+    }
+
+    const englishCueByAnswer = new Map(Object.entries({
+        "Ø¨ÙŽØ±Ù’ÙƒÙŽØ¨": "ride / take", "Ø²ÙŽØ­Ù’Ù…ÙŽØ©": "traffic", "Ù‚ÙŽØ¯Ù‘ÙÙŠØ´": "how much", "Ù„ÙŽÙˆْ": "if / please", "Ù…ÙØ´Ù’ÙˆÙŽØ§Ø±": "trip / errand",
+        "Ø¨ÙŽØ¯Ù’Ø±ÙØ³": "study", "Ø¨ÙØªÙØ´Ù’ØªÙŽØºÙ’Ù„Ùي": "work - you, feminine", "Ø¨ÙÙƒÙŽÙ…Ù‘Ùل": "finish - he", "Ø¨ÙÙ†Ù’Ø±ÙŽØ§Ø¬ÙØ¹": "review - we", "Ø¨ÙØ´Ù’ØªÙØºÙ’Ù„ÙÙˆØ§": "work - they", "Ø¨ÙÙ€": "by / per",
+        "Ù…Ùن": "than / from", "ÙƒÙŽØ§ن": "was", "Ø±ÙŽØ§Ø­": "will", "ÙÙي": "there is / in", "Ø£ÙŽØ´Ù’ØªÙØ±Ùي": "buy", "Ø³ÙØ¹ÙØ±": "price", "ÙƒÙÙŠÙ„ÙÙˆ": "kilo", "Ø¨ÙÙ„ÙŽÙˆْن": "in a color",
+        "Ù†Ùي": "me - object suffix", "Ø¹ÙÙ†Ù’Ø¯": "with / at", "Ø§ÙØ±Ù’Ø¬ÙŽØ¹": "come back", "Ù‚ÙŽØ§Ø³ÙŽØª": "measured - she",
+        "ØªÙŽØ­Ù’Øª": "under", "ÙˆÙŽØ±ÙŽØ§": "behind", "Ù…ÙŽØ³Ù’Ø¯ÙÙˆØ¯ÙŽØ©": "blocked - feminine", "ØµÙŽÙ„Ù‘ÙŽØ­": "fixed - he",
+        "Ù„ÙŽØ£ÙŽÙ†Ù‘ÙŽÙ‡ÙŽØ§": "because it is - feminine", "Ø¨ÙŽØ³": "but", "Ù…ÙŽØ¹": "although / with", "Ù†ÙŽÙÙ’Ø³": "same", "Ø£ÙŽØ­Ù’ÙƒÙي": "talk", "Ø­َلّ": "solution", "Ø­ÙŽÙ‚Ù‘Ùي": "my right", "ÙŠÙÙŠØ¬Ùي": "come - he",
+        "Ù†ÙŽØ§ÙˆÙي/Ù†ÙŽØ§ÙˆÙ’ÙŠÙŽØ©": "planning / intending", "Ø¨ÙÙ†Ù’Ø£ÙŽØ¬Ù‘Ùل": "we postpone", "Ø¨ÙŽØ¹Ù’Ø¯": "after", "ØªÙØ´Ùيل": "carry / take", "ÙÙŽØ±ÙŽØ§ØºÙي": "my free time", "Ù‚ÙŽØ¨ْل": "before", "Ù…ÙŽØ±Ù‘ÙŽØªÙين": "twice", "Ù†ÙŽØ§Ø¯ÙØ±Ù‹Ø§": "rarely", "Ø¹ÙŽØ´ÙŽØ§ن": "because",
+        "Ù…ÙŽØ²ÙŽØ§Ø¬Ùي": "my mood", "Ù…ÙŽØ¶Ù’ØºÙÙˆØ·/Ù…ÙŽØ¶Ù’ØºÙÙˆØ·ÙŽØ©": "stressed", "Ø®ÙØ¯/Ø®ÙØ¯Ùي": "take - masculine/feminine", "Ø·ÙŽÙ…Ù‘ÙÙ†Ù‘Ùي": "reassure me"
+    }).map(([answer, cue]) => [normalizeAnswer(answer), cue]));
+
+    function englishCueFor(item) {
+        if (/\([^)]*[A-Za-z][^)]*\)/.test(String(item.prompt || ""))) return "";
+        return item.cueEn || englishCueByAnswer.get(normalizeAnswer(item.answer)) || "";
+    }
+
+    function recognitionPromptInEnglish(value) {
+        const text = String(value || "").trim();
+        const quoted = text.match(/[«“\"]([^»”\"]+)[»”\"]/);
+        if (quoted && /(Ù…ÙŽØ¹ْ?ن|Ù…Ø¹Ù†Ø§)/.test(text)) return `Choose the English meaning of ${quoted[1]}.`;
+        if (/^Ùƒ[َ]?Ù…Ù‘Ùل/.test(text)) return `Complete the sentence: ${text.replace(/^Ùƒ[َ]?Ù…Ù‘Ùل\s*:?\s*/, "")}`;
+        if (/^[«“\"]/.test(text) && quoted) return `Choose the correct meaning or use of ${quoted[1]}.`;
+        return /[A-Za-z]{4}/.test(text) ? text : `Choose the correct answer: ${text}`;
+    }
+
+    function setProgress() {
+        const total = stages.length;
+        progressNumber.textContent = `${completed.size}/${total}`;
+        if (completed.size >= total) setStudentProgressField("practice", true);
+    }
+
+    function markStageDone(stageId) {
+        completed.add(stageId);
+        setProgress();
+        renderNav();
+    }
+
+    function makeButton(text, className = "btn btn--outline btn--sm") {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = className;
+        btn.textContent = text;
+        return btn;
+    }
+
+    function feedback(text = "") {
+        const fb = document.createElement("div");
+        fb.className = "practice-pro__feedback";
+        fb.textContent = text;
+        return fb;
+    }
+
+    function setFeedback(fb, ok, text) {
+        fb.className = ok ? "practice-pro__feedback is-ok" : "practice-pro__feedback is-no";
+        fb.textContent = text;
+    }
+
+    function stageShell(stage) {
+        stageArea.innerHTML = "";
+        const shell = document.createElement("div");
+        shell.className = "practice-pro__panel";
+
+        const head = document.createElement("div");
+        head.className = "practice-pro__panel-head";
+        const h = document.createElement("h5");
+        h.textContent = stage.label;
+        const p = document.createElement("p");
+        p.textContent = stage.desc;
+        head.appendChild(h);
+        head.appendChild(p);
+
+        const body = document.createElement("div");
+        body.className = "practice-pro__body";
+        shell.appendChild(head);
+        shell.appendChild(body);
+        stageArea.appendChild(shell);
+        return body;
+    }
+
+    function renderNav() {
+        nav.innerHTML = "";
+        stages.forEach((stage) => {
+            const btn = makeButton(stage.label, "practice-pro__tab");
+            btn.setAttribute("role", "tab");
+            btn.classList.toggle("is-active", stage.id === activeStage);
+            btn.classList.toggle("is-done", completed.has(stage.id));
+            btn.setAttribute("aria-selected", String(stage.id === activeStage));
+            btn.innerHTML = `<span>${stage.label}</span><small>${stage.count || 0} items</small>`;
+            btn.addEventListener("click", () => {
+                activeStage = stage.id;
+                renderNav();
+                renderStage();
+            });
+            nav.appendChild(btn);
+        });
+    }
+
+    function renderChoiceCard(parent, promptText, options, correctValue, isArabic = false) {
+        const card = document.createElement("article");
+        card.className = "practice-pro__card";
+        const prompt = document.createElement("div");
+        prompt.className = isArabic ? "practice-pro__arabic" : "practice-pro__prompt";
+        prompt.textContent = promptText || "";
+        const choices = document.createElement("div");
+        choices.className = "practice-pro__choices";
+        const fb = feedback();
+        safeArr(options).forEach((option) => {
+            const btn = makeButton(option, "practice-pro__choice");
+            btn.addEventListener("click", () => {
+                choices.querySelectorAll("button").forEach((b) => b.classList.remove("is-ok", "is-no"));
+                const ok = option === correctValue;
+                btn.classList.add(ok ? "is-ok" : "is-no");
+                setFeedback(fb, ok, ok ? "Correct" : `Answer: ${correctValue}`);
+            });
+            choices.appendChild(btn);
+        });
+        card.appendChild(prompt);
+        card.appendChild(choices);
+        card.appendChild(fb);
+        parent.appendChild(card);
+    }
+
+    function renderChoiceDrill(parent, items) {
+        if (!items.length) return;
+        let index = 0;
+        const shell = document.createElement("article");
+        shell.className = "practice-pro__drill";
+        const counter = document.createElement("div");
+        counter.className = "practice-pro__counter";
+        const prompt = document.createElement("div");
+        const choices = document.createElement("div");
+        choices.className = "practice-pro__choices";
+        const fb = feedback();
+        const controls = document.createElement("div");
+        controls.className = "practice-pro__controls";
+        const prev = makeButton("Previous", "btn btn--ghost btn--sm");
+        const next = makeButton("Next", "btn btn--ghost btn--sm");
+
+        function paint() {
+            const item = items[index];
+            counter.textContent = `${index + 1} / ${items.length}`;
+            prompt.className = item.isArabic ? "practice-pro__arabic" : "practice-pro__prompt";
+            prompt.textContent = item.prompt || "";
+            choices.innerHTML = "";
+            fb.textContent = "";
+            fb.className = "practice-pro__feedback";
+            safeArr(item.options).forEach((option) => {
+                const btn = makeButton(option, "practice-pro__choice");
+                btn.addEventListener("click", () => {
+                    choices.querySelectorAll("button").forEach((b) => b.classList.remove("is-ok", "is-no"));
+                    const ok = option === item.correct;
+                    btn.classList.add(ok ? "is-ok" : "is-no");
+                    setFeedback(fb, ok, ok ? "Correct" : `Answer: ${item.correct}`);
+                });
+                choices.appendChild(btn);
+            });
+        }
+
+        prev.addEventListener("click", () => {
+            index = (index - 1 + items.length) % items.length;
+            paint();
+        });
+        next.addEventListener("click", () => {
+            index = (index + 1) % items.length;
+            paint();
+        });
+
+        controls.appendChild(prev);
+        controls.appendChild(next);
+        shell.appendChild(counter);
+        shell.appendChild(prompt);
+        shell.appendChild(choices);
+        shell.appendChild(fb);
+        shell.appendChild(controls);
+        parent.appendChild(shell);
+        paint();
+    }
+
+    function renderRecognition() {
+        const stage = stages[0];
+        const body = stageShell(stage);
+        const choiceItems = [
+            ...safeArr(practice.quiz).slice(0, 5).map((q) => {
+                const options = safeArr(q.optionsEn);
+                return {
+                    prompt: recognitionPromptInEnglish(q.questionAr),
+                    options,
+                    correct: options[q.correctIndex],
+                    isArabic: true,
+                };
+            }),
+            ...safeArr(sectionA.multipleChoice).map((item) => ({
+                prompt: item.prompt,
+                options: item.options,
+                correct: item.correct,
+                isArabic: false,
+            })),
+        ];
+        renderChoiceDrill(body, choiceItems);
+
+        if (safeArr(sectionA.matching).length) {
+            const match = document.createElement("div");
+            match.className = "practice-pro__match-board";
+
+            const promptCol = document.createElement("div");
+            promptCol.className = "practice-pro__match-col";
+            const answerCol = document.createElement("div");
+            answerCol.className = "practice-pro__match-col";
+
+            const promptTitle = document.createElement("div");
+            promptTitle.className = "practice-pro__match-title";
+            promptTitle.textContent = "Arabic";
+            const answerTitle = document.createElement("div");
+            answerTitle.className = "practice-pro__match-title";
+            answerTitle.textContent = "Choose the matching number";
+            promptCol.appendChild(promptTitle);
+            answerCol.appendChild(answerTitle);
+
+            const matchingItems = safeArr(sectionA.matching);
+        matchingItems.forEach((item, idx) => {
+                const promptRow = document.createElement("div");
+                promptRow.className = "practice-pro__match-prompt";
+                const number = document.createElement("span");
+                number.className = "practice-pro__match-number";
+                number.textContent = String(idx + 1);
+                const ar = document.createElement("span");
+                ar.className = "practice-pro__arabic";
+                ar.textContent = item.ar || "";
+                if (item.arabeezy) {
+                    const arabeezy = document.createElement("small");
+                    arabeezy.className = "practice-pro__arabeezy";
+                    arabeezy.textContent = item.arabeezy;
+                    ar.appendChild(arabeezy);
+                }
+                promptRow.appendChild(number);
+                promptRow.appendChild(ar);
+                promptCol.appendChild(promptRow);
+            });
+
+            shuffleArray(matchingItems.map((item, idx) => ({ ...item, matchNumber: idx + 1 }))).forEach((item) => {
+                const answerRow = document.createElement("div");
+                answerRow.className = "practice-pro__match-answer";
+                const select = document.createElement("select");
+                select.className = "practice-pro__match-select";
+                const empty = document.createElement("option");
+                empty.value = "";
+                empty.textContent = "#";
+                select.appendChild(empty);
+                matchingItems.forEach((_candidate, idx) => {
+                    const option = document.createElement("option");
+                    option.value = String(idx + 1);
+                    option.textContent = String(idx + 1);
+                    select.appendChild(option);
+                });
+                const text = document.createElement("span");
+                text.textContent = item.en || "";
+                const fb = document.createElement("span");
+                fb.className = "practice-pro__match-status";
+                select.addEventListener("change", () => {
+                    const ok = Number(select.value) === item.matchNumber;
+                    answerRow.classList.toggle("is-ok", ok);
+                    answerRow.classList.toggle("is-no", Boolean(select.value) && !ok);
+                    fb.textContent = ok ? "Correct" : (select.value ? "Try again" : "");
+                });
+                answerRow.appendChild(select);
+                answerRow.appendChild(text);
+                answerRow.appendChild(fb);
+                answerCol.appendChild(answerRow);
+            });
+
+            match.appendChild(promptCol);
+            match.appendChild(answerCol);
+            body.appendChild(match);
+        }
+
+        const done = makeButton("Finish Recognition", "btn btn--primary btn--sm");
+        done.addEventListener("click", () => {
+            markStageDone("recognition");
+            const nextStage = stages[1];
+            if (nextStage) {
+                activeStage = nextStage.id;
+                renderStage();
+            }
+        });
+        body.appendChild(done);
+    }
+
+    function renderControlled(stageId = "controlled") {
+        const stage = stages.find((item) => item.id === stageId) || stages[1];
+        const body = stageShell(stage);
+        let responseItems = [
+            ...safeArr(sectionB.fillInTheBlank).map((item) => ({ ...item, instruction: "Fill in the missing word." })),
+            ...safeArr(sectionB.correctTheMistake).map((item) => ({ ...item, instruction: "Correct the sentence." })),
+        ];
+        if (practice.separateExerciseTypes) {
+            if (stageId === "fill") responseItems = safeArr(sectionB.fillInTheBlank).map((item) => ({ ...item, instruction: "Fill in the missing word." }));
+            else if (stageId === "correct") responseItems = safeArr(sectionB.correctTheMistake).map((item) => ({ ...item, instruction: "Correct the sentence." }));
+            else responseItems = [];
+        }
+        const responseDeck = document.createElement("div");
+        const responseCards = [];
+
+        responseItems.forEach((item, itemIndex) => {
+            const card = document.createElement("article");
+            card.className = "practice-pro__card";
+            const counter = document.createElement("div");
+            counter.className = "practice-pro__counter";
+            counter.textContent = `${itemIndex + 1} / ${responseItems.length}`;
+            const instruction = document.createElement("p");
+            instruction.className = "practice-pro__hint";
+            const cue = englishCueFor(item);
+            instruction.textContent = cue ? `${item.instruction} English cue: ${cue}.` : item.instruction;
+            const prompt = document.createElement("div");
+            prompt.className = "practice-pro__arabic";
+            prompt.textContent = item.prompt || "";
+            const readingHelp = document.createElement("p");
+            readingHelp.className = "practice-pro__hint";
+            readingHelp.classList.add("practice-pro__arabeezy");
+            readingHelp.textContent = item.arabeezy ? `Read it: ${item.arabeezy}` : "";
+            const row = document.createElement("div");
+            row.className = "practice-pro__line";
+            const input = document.createElement("input");
+            input.className = "practice-pro__input";
+            input.type = "text";
+            input.placeholder = stageId === "correct" ? "Type the corrected sentence" : "Type the missing word";
+            const check = makeButton("Check");
+            const fb = feedback();
+            check.addEventListener("click", () => {
+                const ok = normalizeAnswer(input.value) === normalizeAnswer(item.answer);
+                setFeedback(fb, ok, ok ? "Correct" : `Answer: ${item.answer}`);
+            });
+            row.appendChild(input);
+            row.appendChild(check);
+            card.appendChild(counter);
+            card.appendChild(instruction);
+            card.appendChild(prompt);
+            if (item.arabeezy) card.appendChild(readingHelp);
+            card.appendChild(row);
+            card.appendChild(fb);
+            card.classList.toggle("hidden", itemIndex !== 0);
+            responseCards.push(card);
+            responseDeck.appendChild(card);
+        });
+        body.appendChild(responseDeck);
+
+        if (responseCards.length > 1) {
+            let responseIndex = 0;
+            const controls = document.createElement("div");
+            controls.className = "practice-pro__controls";
+            const previous = makeButton("Previous", "btn btn--ghost btn--sm");
+            const next = makeButton("Next exercise", "btn btn--outline btn--sm");
+            const showResponse = (nextIndex) => {
+                responseCards[responseIndex].classList.add("hidden");
+                responseIndex = (nextIndex + responseCards.length) % responseCards.length;
+                responseCards[responseIndex].classList.remove("hidden");
+            };
+            previous.addEventListener("click", () => showResponse(responseIndex - 1));
+            next.addEventListener("click", () => showResponse(responseIndex + 1));
+            controls.appendChild(previous);
+            controls.appendChild(next);
+            body.appendChild(controls);
+        }
+
+        const reorderItems = !practice.separateExerciseTypes || stageId === "reorder"
+            ? safeArr(sectionB.reorderSentences)
+            : [];
+        reorderItems.forEach((item) => {
+            const card = document.createElement("article");
+            card.className = "practice-pro__card";
+            const prompt = document.createElement("p");
+            prompt.className = "practice-pro__hint";
+            prompt.textContent = item.prompt || "Put the words in order.";
+            if (item.arabeezy) {
+                const arabeezy = document.createElement("span");
+                arabeezy.className = "practice-pro__arabeezy";
+                arabeezy.textContent = `Read it: ${item.arabeezy}`;
+                prompt.appendChild(arabeezy);
+            }
+            const answer = document.createElement("div");
+            answer.className = "practice-pro__answer-bank";
+            const bank = document.createElement("div");
+            bank.className = "practice-pro__chips";
+            const selected = [];
+
+            safeArr(item.words).forEach((word) => {
+                const chip = makeButton(word, "practice-pro__chip");
+                chip.addEventListener("click", () => {
+                    selected.push(word);
+                    chip.disabled = true;
+                    chip.classList.add("is-used");
+                    const chosen = makeButton(word, "practice-pro__chip is-selected");
+                    chosen.addEventListener("click", () => {
+                        const index = selected.indexOf(word);
+                        if (index > -1) selected.splice(index, 1);
+                        chosen.remove();
+                        chip.disabled = false;
+                        chip.classList.remove("is-used");
+                    });
+                    answer.appendChild(chosen);
+                });
+                bank.appendChild(chip);
+            });
+
+            const fb = feedback();
+            const check = makeButton("Check order");
+            check.addEventListener("click", () => {
+                const ok = normalizeAnswer(selected.join(" ")) === normalizeAnswer(item.answer);
+                setFeedback(fb, ok, ok ? "Correct" : `Answer: ${item.answer}`);
+            });
+            card.appendChild(prompt);
+            card.appendChild(answer);
+            card.appendChild(bank);
+            card.appendChild(check);
+            card.appendChild(fb);
+            body.appendChild(card);
+        });
+
+        const done = makeButton(`Finish ${stage.label}`, "btn btn--primary btn--sm");
+        done.addEventListener("click", () => {
+            markStageDone(stage.id);
+            const currentIndex = stages.findIndex((item) => item.id === stage.id);
+            const nextStage = stages[currentIndex + 1];
+            if (nextStage) {
+                activeStage = nextStage.id;
+                renderStage();
+            }
+        });
+
+        const isLastPracticeStage = stages[stages.length - 1]?.id === stage.id;
+        if (practice.showRealUse === false && isLastPracticeStage && safeArr(practice.rolePlays).length) {
+            const situation = document.createElement("article");
+            situation.className = "practice-pro__situation";
+            const badge = document.createElement("span");
+            badge.textContent = "Speaking situation";
+            const situationText = document.createElement("p");
+            situationText.textContent = practice.rolePlays[0];
+            situation.appendChild(badge);
+            situation.appendChild(situationText);
+            body.appendChild(situation);
+        }
+        body.appendChild(done);
+    }
+
+    function renderRealUse() {
+        const stage = stages[2];
+        const body = stageShell(stage);
+        const allTranslations = safeArr(practice.translation).length
+            ? safeArr(practice.translation)
+            : safeArr(sectionC.translation);
+        const translations = allTranslations.slice(0, Number(practice.maxTranslationItems) || allTranslations.length);
+
+        if (translations.length) {
+            const slider = document.createElement("div");
+            slider.className = "practice-pro__translation";
+            let index = 0;
+            const card = document.createElement("article");
+            card.className = "practice-pro__translate-card";
+            const counter = document.createElement("div");
+            counter.className = "practice-pro__counter";
+            const direction = document.createElement("div");
+            direction.className = "practice-pro__translate-direction";
+            const prompt = document.createElement("div");
+            prompt.className = "practice-pro__translate-prompt";
+            const response = document.createElement("textarea");
+            response.className = "practice-pro__translate-input";
+            response.rows = 3;
+            response.placeholder = "Write your translation here...";
+            const answer = document.createElement("div");
+            answer.className = "practice-pro__translate-answer hidden";
+            const controls = document.createElement("div");
+            controls.className = "practice-pro__controls";
+            const prev = makeButton("Previous", "btn btn--ghost btn--sm");
+            const show = makeButton("Show answer", "btn btn--outline btn--sm");
+            const next = makeButton("Next", "btn btn--ghost btn--sm");
+            const selfCheck = document.createElement("div");
+            selfCheck.className = "practice-pro__self-check hidden";
+            const gotIt = makeButton("Got it", "practice-pro__self-btn");
+            const needsWork = makeButton("Need practice", "practice-pro__self-btn");
+            const selfStatus = document.createElement("span");
+            selfStatus.className = "practice-pro__self-status";
+            selfCheck.appendChild(gotIt);
+            selfCheck.appendChild(needsWork);
+            selfCheck.appendChild(selfStatus);
+
+            function paintTranslation() {
+                const item = translations[index];
+                counter.textContent = `${index + 1} / ${translations.length}`;
+                const sourceIsArabic = item.type === "arToEn";
+                const source = sourceIsArabic
+                    ? (item.textAr || item.ar || "")
+                    : (item.textEn || item.en || "");
+                const target = sourceIsArabic
+                    ? (item.textEn || item.en || "")
+                    : (item.textAr || item.ar || "");
+                direction.textContent = sourceIsArabic ? "Arabic -> English" : "English -> Arabic";
+                prompt.textContent = source;
+                prompt.classList.toggle("is-arabic", sourceIsArabic);
+                if (sourceIsArabic && item.textArabeezy) {
+                    prompt.textContent = `${source}\n${item.textArabeezy}`;
+                }
+                answer.textContent = target;
+                answer.classList.toggle("is-arabic", !sourceIsArabic);
+                answer.classList.add("hidden");
+                response.value = "";
+                selfCheck.classList.add("hidden");
+                selfStatus.textContent = "";
+                gotIt.classList.remove("is-ok");
+                needsWork.classList.remove("is-no");
+                show.textContent = "Show answer";
+            }
+
+            prev.addEventListener("click", () => {
+                index = (index - 1 + translations.length) % translations.length;
+                paintTranslation();
+            });
+            next.addEventListener("click", () => {
+                index = (index + 1) % translations.length;
+                paintTranslation();
+            });
+            show.addEventListener("click", () => {
+                answer.classList.toggle("hidden");
+                show.textContent = answer.classList.contains("hidden") ? "Show answer" : "Hide answer";
+                selfCheck.classList.toggle("hidden", answer.classList.contains("hidden"));
+            });
+            gotIt.addEventListener("click", () => {
+                gotIt.classList.add("is-ok");
+                needsWork.classList.remove("is-no");
+                selfStatus.textContent = "Nice. Move to the next one.";
+            });
+            needsWork.addEventListener("click", () => {
+                needsWork.classList.add("is-no");
+                gotIt.classList.remove("is-ok");
+                selfStatus.textContent = "Mark it for review and try it again.";
+            });
+
+            controls.appendChild(prev);
+            controls.appendChild(show);
+            controls.appendChild(next);
+            card.appendChild(counter);
+            card.appendChild(direction);
+            card.appendChild(prompt);
+            card.appendChild(response);
+            card.appendChild(answer);
+            card.appendChild(selfCheck);
+            card.appendChild(controls);
+            slider.appendChild(card);
+            body.appendChild(slider);
+            paintTranslation();
+        }
+
+        const rolePlays = safeArr(practice.rolePlays);
+        if (rolePlays.length) {
+            const sims = document.createElement("div");
+            sims.className = "practice-pro__situations";
+            rolePlays.forEach((text, idx) => {
+                const item = document.createElement("article");
+                item.className = "practice-pro__situation";
+                const badge = document.createElement("span");
+                badge.textContent = `Situation ${idx + 1}`;
+                const p = document.createElement("p");
+                p.textContent = text;
+                item.appendChild(badge);
+                item.appendChild(p);
+                sims.appendChild(item);
+            });
+            body.appendChild(sims);
+        }
+
+        if (practice.showWriting !== false) {
+            const writingPrompts = safeArr(sectionC.writeYourOwnSentences);
+            const write = document.createElement("div");
+            write.className = "practice-pro__write";
+            const label = document.createElement("label");
+            label.textContent = "Write your own sentences";
+            const help = document.createElement("p");
+            help.textContent = writingPrompts.length
+                ? writingPrompts.slice(0, 2).join(" ")
+                : "Write 5-10 short sentences using the phrases from this lesson.";
+            const textarea = document.createElement("textarea");
+            textarea.className = "homework-notes";
+            textarea.rows = 5;
+            textarea.placeholder = "Write 5-10 short sentences here...";
+            write.appendChild(label);
+            write.appendChild(help);
+            write.appendChild(textarea);
+            body.appendChild(write);
+        }
+
+        const done = makeButton("Finish Practice", "btn btn--primary btn--sm");
+        done.addEventListener("click", () => markStageDone("real"));
+        body.appendChild(done);
+    }
+
+    function renderStage() {
+        if (activeStage === "recognition") renderRecognition();
+        else if (activeStage === "real") renderRealUse();
+        else renderControlled(activeStage);
+    }
+
+    container.appendChild(root);
+    root.appendChild(header);
+    root.appendChild(nav);
+    root.appendChild(stageArea);
+
+    const doneAll = makeButton("Mark Practice as Done", "btn btn--outline btn--sm");
+    doneAll.addEventListener("click", () => {
+        completed = new Set(stages.map((stage) => stage.id));
+        setProgress();
+        renderNav();
+    });
+    root.appendChild(doneAll);
+
+    renderNav();
+    setProgress();
+    renderStage();
+    renderSectionStatus(container, "practice");
+}
+
 // Homework
 function renderHomeworkTab(container, lesson) {
+    if (lesson?.meta?.curriculumId === "interactive") {
+        return renderHomeworkTabClean(container, lesson);
+    }
+    return renderHomeworkTabLegacy(container, lesson);
+}
+function renderHomeworkTabClean(container, lesson) {
     const student = getCurrentStudent();
     const progress = student && getStudentProgress(student, appState.currentLessonId);
+    const tasks = safeArr(lesson.homework?.tasks);
+    const taskState = new Set();
 
-    const title = document.createElement("h4");
-    title.className = "td-lessonitem__title";
-    title.textContent = "Homework";
+    if (!tasks.length) {
+        const title = document.createElement("h4");
+        title.className = "td-lessonitem__title";
+        title.textContent = "Homework";
 
-    const text = document.createElement("p");
-    text.className = "homework-text";
-    text.textContent = lesson.homework.instructions;
+        const card = document.createElement("div");
+        card.className = "homework-simple homework-simple--plain";
 
-    const wrap = document.createElement("div");
-    wrap.style.display = "flex";
-    wrap.style.alignItems = "center";
-    wrap.style.gap = "6px";
-    wrap.style.marginBottom = "8px";
+        const text = document.createElement("p");
+        text.className = "homework-text homework-simple__text";
+        text.textContent = lesson.homework?.instructions || "No homework assigned yet.";
+        card.appendChild(text);
 
-    const check = document.createElement("input");
-    check.type = "checkbox";
-    check.id = "homeworkAssignedCheckbox";
-    check.checked = progress && progress.homework;
+        const complete = document.createElement("label");
+        complete.className = "homework-simple__complete";
+        const check = document.createElement("input");
+        check.type = "checkbox";
+        check.checked = progress && progress.homework;
+        const checkText = document.createElement("span");
+        checkText.textContent = "Homework assigned / completed";
+        complete.appendChild(check);
+        complete.appendChild(checkText);
+        check.addEventListener("change", () => setStudentProgressField("homework", check.checked));
 
-    const label = document.createElement("label");
-    label.htmlFor = "homeworkAssignedCheckbox";
-    label.textContent = "Homework assigned / completed";
+        container.appendChild(title);
+        container.appendChild(card);
+        container.appendChild(complete);
+        renderSectionStatus(container, "homework");
+        return;
+    }
 
-    wrap.appendChild(check);
-    wrap.appendChild(label);
+    const root = document.createElement("div");
+    root.className = "homework-pro";
 
-    check.addEventListener("change", () => {
-        setStudentProgressField("homework", check.checked);
-    });
-
-    const notesLabel = document.createElement("p");
-    notesLabel.className = "teacher-edit-note";
-    notesLabel.textContent = "Teacher notes for this student:";
+    const header = document.createElement("div");
+    header.className = "homework-pro__header";
+    const h = document.createElement("h4");
+    h.textContent = "Homework";
+    const p = document.createElement("p");
+    p.textContent = lesson.homework?.instructions || "Complete the homework tasks.";
+    const meter = document.createElement("div");
+    meter.className = "homework-pro__meter";
+    header.appendChild(h);
+    header.appendChild(p);
+    header.appendChild(meter);
 
     const notes = document.createElement("textarea");
-    notes.className = "homework-notes";
-    notes.placeholder = "E.g. Needs more practice with kifak/kifik.";
+    notes.className = "homework-notes homework-pro__notes";
+    notes.placeholder = "Write homework answers or teacher notes here...";
     notes.value =
         (student &&
             student.homeworkNotes &&
             student.homeworkNotes[appState.currentLessonId]) ||
         "";
-
     notes.addEventListener("change", () => {
         if (!student) return;
         if (!student.homeworkNotes) student.homeworkNotes = {};
@@ -4771,38 +5482,110 @@ function renderHomeworkTab(container, lesson) {
         saveStudentsToLS();
     });
 
-    const btnDone = document.createElement("button");
-    btnDone.className = "btn btn--primary btn--sm";
-    btnDone.textContent = "Mark Homework as Done";
-    btnDone.addEventListener("click", () => {
-        check.checked = true;
-        setStudentProgressField("homework", true);
-    });
-
-    container.appendChild(title);
-    container.appendChild(text);
-    container.appendChild(wrap);
-    container.appendChild(notesLabel);
-    container.appendChild(notes);
-    container.appendChild(btnDone);
-
-    if (appState.teacherMode) {
-        const note = document.createElement("p");
-        note.className = "teacher-edit-note";
-        note.textContent =
-            "Teacher Mode: You can edit the main homework instructions for this lesson from the Teacher Dashboard form (Edit Lesson Content).";
-        container.appendChild(note);
+    function updateMeter() {
+        meter.textContent = `${taskState.size}/${tasks.length || 0} tasks done`;
+        if (tasks.length && taskState.size === tasks.length) setStudentProgressField("homework", true);
     }
 
+    const grid = document.createElement("div");
+    grid.className = "homework-pro__grid";
+    tasks.forEach((task, idx) => {
+        const card = document.createElement("article");
+        card.className = "homework-pro__card";
+        const badge = document.createElement("span");
+        badge.className = "homework-pro__badge";
+        badge.textContent = `Task ${idx + 1}`;
+        const title = document.createElement("h5");
+        title.textContent = task.title || "Homework task";
+        const desc = document.createElement("p");
+        desc.textContent = task.instructions || "";
+        card.appendChild(badge);
+        card.appendChild(title);
+        card.appendChild(desc);
+
+        if (safeArr(task.examples).length) {
+            const examples = document.createElement("div");
+            examples.className = "homework-pro__examples";
+            safeArr(task.examples).forEach((example) => {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.textContent = example;
+                btn.addEventListener("click", () => {
+                    notes.value = notes.value ? `${notes.value}\n${example}` : example;
+                    notes.dispatchEvent(new Event("change"));
+                    notes.focus();
+                });
+                examples.appendChild(btn);
+            });
+            card.appendChild(examples);
+        }
+
+        const done = document.createElement("label");
+        done.className = "homework-pro__check";
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        const span = document.createElement("span");
+        span.textContent = "Done";
+        checkbox.addEventListener("change", () => {
+            if (checkbox.checked) {
+                taskState.add(idx);
+                card.classList.add("is-done");
+            } else {
+                taskState.delete(idx);
+                card.classList.remove("is-done");
+            }
+            updateMeter();
+        });
+        done.appendChild(checkbox);
+        done.appendChild(span);
+        card.appendChild(done);
+        grid.appendChild(card);
+    });
+
+    const notesBlock = document.createElement("div");
+    notesBlock.className = "homework-pro__notes-block";
+    const notesTitle = document.createElement("label");
+    notesTitle.textContent = "Answers / notes";
+    notesBlock.appendChild(notesTitle);
+    notesBlock.appendChild(notes);
+
+    const footer = document.createElement("div");
+    footer.className = "homework-pro__footer";
+    const complete = document.createElement("label");
+    complete.className = "homework-pro__complete";
+    const completeCheck = document.createElement("input");
+    completeCheck.type = "checkbox";
+    completeCheck.checked = progress && progress.homework;
+    const completeText = document.createElement("span");
+    completeText.textContent = "Homework assigned / completed";
+    complete.appendChild(completeCheck);
+    complete.appendChild(completeText);
+    completeCheck.addEventListener("change", () => setStudentProgressField("homework", completeCheck.checked));
+
+    const doneAll = document.createElement("button");
+    doneAll.type = "button";
+    doneAll.className = "btn btn--primary btn--sm";
+    doneAll.textContent = "Mark Homework as Done";
+    doneAll.addEventListener("click", () => {
+        completeCheck.checked = true;
+        setStudentProgressField("homework", true);
+    });
+    footer.appendChild(complete);
+    footer.appendChild(doneAll);
+
+    root.appendChild(header);
+    root.appendChild(grid);
+    root.appendChild(notesBlock);
+    root.appendChild(footer);
+    container.appendChild(root);
+    updateMeter();
     renderSectionStatus(container, "homework");
 }
-
-// Quick review
 
 function renderReviewTab(container, lesson) {
     const title = document.createElement("h4");
     title.className = "td-lessonitem__title";
-    title.textContent = "Quick Review – Flashcards";
+    title.textContent = "Quick Review - Flashcards";
 
     const all = [...lesson.vocabulary.core, ...lesson.vocabulary.extra];
     if (!all.length) {
@@ -5128,7 +5911,7 @@ function renderTeacherLessonList() {
 
             const title = document.createElement("h4");
             title.className = "td-lessonitem__title";
-            title.textContent = `${lesson.meta.level} – ${lesson.meta.unit}`;
+            title.textContent = `${lesson.meta.level} - ${lesson.meta.unit}`;
 
             const meta = document.createElement("p");
             meta.className = "td-lessonitem__meta";
@@ -5146,7 +5929,7 @@ function renderTeacherLessonList() {
             btnEdit.textContent = "Edit Lesson Content";
             btnEdit.addEventListener("click", () => {
                 appState.currentLessonId = id;
-                renderTeacherEditor(id, card); // ⭐ مررنا الكارد
+                renderTeacherEditor(id, card);
             });
 
 
@@ -5261,7 +6044,7 @@ function renderTeacherEditor(lessonId, anchorCard, preselectSection) {
         delete lesson.grammarTab;
     }
 
-    // نحرك الفورم تحت الكارد اللي انضغط (Teacher Dashboard)
+    // Ù†Ø­Ø±Ùƒ Ø§Ù„ÙÙˆØ±م ØªØ­Øª Ø§Ù„ÙƒØ§Ø±Ø¯ Ø§للي Ø§Ù†Ø¶ØºØ· (Teacher Dashboard)
     editor.innerHTML = "";
     if (anchorCard) {
         anchorCard.insertAdjacentElement("afterend", editor);
@@ -5279,7 +6062,7 @@ function renderTeacherEditor(lessonId, anchorCard, preselectSection) {
         <button id="tdCloseEditor" class="btn btn--ghost btn--sm">Close Editor</button>
       </div>
     </div>
-    <h3>Editing: ${escapeHtml(lesson.meta.level)} – ${escapeHtml(lesson.meta.unit)} – ${escapeHtml(lesson.meta.lessonTitle)}</h3>
+    <h3>Editing: ${escapeHtml(lesson.meta.level)} - ${escapeHtml(lesson.meta.unit)} - ${escapeHtml(lesson.meta.lessonTitle)}</h3>
     <p class="teacher-edit-note">
       All saved changes here are stored locally and synced to Firebase for all students.
     </p>
@@ -5354,7 +6137,7 @@ function renderTeacherEditor(lessonId, anchorCard, preselectSection) {
     <div class="teacher-editor__section" data-td-section="vocab">
       <h4>Vocabulary</h4>
       <p class="teacher-edit-note">
-        Edit core and extra vocabulary for this lesson. These words تظهر في تبويب Vocabulary و Quick Review.
+        Edit core and extra vocabulary for this lesson. These words ØªØ¸Ù‡Ø± Ùي ØªØ¨ÙˆÙŠØ¨ Vocabulary Ùˆ Quick Review.
       </p>
 
       <h5>Core Vocabulary</h5>
@@ -5403,7 +6186,7 @@ function renderTeacherEditor(lessonId, anchorCard, preselectSection) {
     </div>
 
     <div class="teacher-editor__section" data-td-section="practice">
-      <h4>Practice – MCQ</h4>
+      <h4>Practice - MCQ</h4>
       <p class="teacher-edit-note">Edit quiz questions: Arabic question and 3 English options.</p>
       <div id="tdQuizList"></div>
       <div class="td-editor-buttons">
@@ -5413,7 +6196,7 @@ function renderTeacherEditor(lessonId, anchorCard, preselectSection) {
     </div>
 
     <div class="teacher-editor__section" data-td-section="practice">
-      <h4>Practice – Role-play Prompts</h4>
+      <h4>Practice - Role-play Prompts</h4>
       <p class="teacher-edit-note">Short speaking prompts for in-class practice.</p>
       <div id="tdRoleList"></div>
       <div class="td-editor-buttons">
@@ -5745,7 +6528,7 @@ function renderTeacherEditor(lessonId, anchorCard, preselectSection) {
       <div class="td-label">Description</div>
       <textarea class="td-input td-grammar-desc" rows="2" placeholder="Description / example"></textarea>
       <div class="td-label">Examples (Arabic | Arabeezy | English)</div>
-      <textarea class="td-input td-grammar-examples" rows="3" placeholder="مثال عربي | Arabeezy | English"></textarea>
+      <textarea class="td-input td-grammar-examples" rows="3" placeholder="Ù…Ø«Ø§ل Ø¹Ø±Ø¨ي | Arabeezy | English"></textarea>
       <div class="td-label">Teacher notes</div>
       <textarea class="td-input td-grammar-notes" rows="2" placeholder="Notes for teacher mode"></textarea>
     `;
@@ -6060,15 +6843,15 @@ function openAuthModal(forcedRole) {
 
     if (!modal) return;
 
-    // مسح أي خطأ قديم
+    // Ù…Ø³Ø­ Ø£ي Ø®Ø·Ø£ Ù‚Ø¯يم
     if (errorBox) errorBox.textContent = "";
 
-    // لو جاي من زر "أنا طالب" أو "أنا مدرس"
+    // Ù„Ùˆ Ø¬Ø§ي من Ø²Ø± "Ø£Ù†Ø§ Ø·Ø§Ù„Ø¨" Ø£Ùˆ "Ø£Ù†Ø§ Ù…Ø¯Ø±Ø³"
     if (forcedRole === "student" || forcedRole === "teacher") {
         modal.dataset.forcedRole = forcedRole;
         if (roleSelect) roleSelect.value = forcedRole;
     } else {
-        // لو جاي من زر Login العادي
+        // Ù„Ùˆ Ø¬Ø§ي من Ø²Ø± Login Ø§Ù„Ø¹Ø§Ø¯ي
         delete modal.dataset.forcedRole;
     }
 
@@ -6138,7 +6921,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
     // hero buttons
-    // ===== HERO BUTTONS (أنا طالب / أنا مدرس) =====
+    // ===== HERO BUTTONS (Ø£Ù†Ø§ Ø·Ø§Ù„Ø¨ / Ø£Ù†Ø§ Ù…Ø¯Ø±Ø³) =====
     const btnHeroStudent = document.getElementById("btnHeroStudent");
     const btnHeroTeacher = document.getElementById("btnHeroTeacher");
     const btnHeroGuest = document.getElementById("btnHeroGuest");
@@ -6209,7 +6992,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const isHidden = whiteboardPanel.classList.contains("hidden");
             if (isHidden) {
                 whiteboardPanel.classList.remove("hidden");
-                // لما أفتح اللوحة، أهيّئ الكانفاس وأحمّل الرسمة
+                // Ù„Ù…Ø§ Ø£ÙØªØ­ Ø§Ù„Ù„ÙˆØ­Ø©، Ø£Ù‡ÙŠÙ‘Ø¦ Ø§Ù„ÙƒØ§Ù†ÙØ§Ø³ ÙˆØ£Ø­مّل Ø§Ù„Ø±Ø³Ù…Ø©
                 initWhiteboardCanvas();
             } else {
                 whiteboardPanel.classList.add("hidden");
@@ -6229,7 +7012,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             whiteboardState.size = v;
             wbSizeVal.textContent = v + "px";
         });
-        // قيمة ابتدائية
+        // Ù‚ÙŠÙ…Ø© Ø§Ø¨ØªØ¯Ø§Ø¦ÙŠØ©
         whiteboardState.size = Number(wbSizeInput.value) || 3;
         wbSizeVal.textContent = whiteboardState.size + "px";
     }
@@ -6295,7 +7078,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const version = versionInput ? versionInput.value : "student";
 
             if (version === "student") {
-                // مهما كان checkbox تبع Teacher Notes، نخفيه في Student version
+                // Ù…Ù‡Ù…Ø§ ÙƒØ§ن checkbox ØªØ¨Ø¹ Teacher Notes، Ù†Ø®Ùيه Ùي Student version
                 includeTeacherNotes = false;
             }
 
@@ -6358,10 +7141,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    // تشيك التذكير بعد ما نحمّل الإعدادات
+    // ØªØ´ÙŠÙƒ Ø§Ù„ØªØ°ÙƒÙŠØ± Ø¨Ø¹Ø¯ Ù…Ø§ Ù†Ø­مّل Ø§Ù„Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª
     checkBackupReminder();
 
-    // أزرار إغلاق المودال
+    // Ø£Ø²Ø±Ø§Ø± Ø¥ØºÙ„Ø§ق Ø§Ù„Ù…ÙˆØ¯Ø§ل
     document
         .querySelectorAll("[data-close-export-modal], #exportCancelBtn")
         .forEach((el) => {
@@ -6420,16 +7203,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         const allSeen = allVocab.every((v) => visited.has(v.id));
 
         if (allSeen) {
-            // لما يمرّ على كل الكلمات مرة واحدة على الأقل
+            // Ù„Ù…Ø§ ÙŠÙ…Ø±ّ Ø¹Ù„Ù‰ Ùƒل Ø§Ù„ÙƒÙ„Ù…Ø§Øª Ù…Ø±Ø© ÙˆØ§Ø­Ø¯Ø© Ø¹Ù„Ù‰ Ø§Ù„Ø£قل
             markLessonSectionDone("vocabulary");
             updateLessonProgressUI();
         }
     }
     function updateLessonProgressUI() {
-        // حدّث شريط التقدم
+        // Ø­Ø¯Ù‘Ø« Ø´Ø±ÙŠØ· Ø§Ù„ØªÙ‚Ø¯م
         updateProgressBar();
 
-        // حدّث بادج قسم المفردات فقط
+        // Ø­Ø¯Ù‘Ø« Ø¨Ø§Ø¯Ø¬ Ù‚Ø³م Ø§Ù„Ù…ÙØ±Ø¯Ø§Øª ÙÙ‚Ø·
         updateSectionStatusBadge("vocabulary");
     }
 
@@ -6439,7 +7222,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             vocabModalState.index =
                 (vocabModalState.index - 1 + vocabModalState.list.length) %
                 vocabModalState.list.length;
-            vocabModalState.showExamples = true; // نرجّع الأمثلة ظاهرة عند الانتقال
+            vocabModalState.showExamples = true; // Ù†Ø±Ø¬Ù‘Ø¹ Ø§Ù„Ø£Ù…Ø«Ù„Ø© Ø¸Ø§Ù‡Ø±Ø© Ø¹Ù†Ø¯ Ø§Ù„Ø§Ù†ØªÙ‚Ø§ل
             renderVocabModalFromState();
         });
     }
@@ -6548,10 +7331,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (errorBox) errorBox.textContent = "";
 
-        // الدور المقصود: لو جاي من زر Student / Teacher في الهيرو
+        // Ø§Ù„Ø¯ÙˆØ± Ø§Ù„Ù…Ù‚ØµÙˆØ¯: Ù„Ùˆ Ø¬Ø§ي من Ø²Ø± Student / Teacher Ùي Ø§Ù„Ù‡ÙŠØ±Ùˆ
         let role = roleSelect ? roleSelect.value : "student";
         if (modal && modal.dataset.forcedRole) {
-            role = modal.dataset.forcedRole; // student أو teacher
+            role = modal.dataset.forcedRole; // student Ø£Ùˆ teacher
         }
 
         try {
@@ -6562,7 +7345,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     if (errorBox) errorBox.textContent = "Teacher access is restricted.";
                     return;
                 }
-                // المدرّس: sign in ثم sign up لو مش موجود
+                // Ø§Ù„Ù…Ø¯Ø±Ù‘Ø³: sign in Ø«م sign up Ù„Ùˆ Ù…Ø´ Ù…ÙˆØ¬ÙˆØ¯
                 try {
                     cred = await auth.signInWithEmailAndPassword(email, password);
                 } catch (err) {
@@ -6576,16 +7359,16 @@ document.addEventListener("DOMContentLoaded", async () => {
                     }
                 }
             } else {
-                // الطالب: فقط تسجيل دخول بحساب جاهز
+                // Ø§Ù„Ø·Ø§Ù„Ø¨: ÙÙ‚Ø· ØªØ³Ø¬يل Ø¯Ø®Ùˆل Ø¨Ø­Ø³Ø§Ø¨ Ø¬Ø§Ù‡Ø²
                 try {
                     cred = await auth.signInWithEmailAndPassword(email, password);
                 } catch (err) {
                     if (err.code === "auth/user-not-found") {
                         if (errorBox) {
                             errorBox.textContent =
-                                "لا يوجد حساب بهذا الإيميل. تواصلي مع المدرّس ليعمل لك حساب.";
+                                "No account exists for this email. Please ask the teacher to create an account for you.";
                         } else {
-                            alert("لا يوجد حساب بهذا الإيميل. اسألي المدرس يعمل لك حساب.");
+                            alert("No account exists for this email. Please ask the teacher to create an account for you.");
                         }
                         return;
                     }
@@ -6593,7 +7376,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
             }
 
-            // نقرأ بيانات المستخدم من Firestore
+            // Ù†Ù‚Ø±Ø£ Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ù…Ø³ØªØ®Ø¯م من Firestore
 	            const { role: resolvedRole } = await resolveUserRole({
 	                db,
 	                uid: cred.user.uid,
@@ -6625,7 +7408,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 role: finalRole,
             };
 
-            // خزّن الدور محلياً عشان نرجع له بعد الـ refresh
+            // Ø®Ø²ّن Ø§Ù„Ø¯ÙˆØ± Ù…Ø­Ù„ÙŠØ§Ù‹ Ø¹Ø´Ø§ن Ù†Ø±Ø¬Ø¹ له Ø¨Ø¹Ø¯ Ø§Ù„Ù€ refresh
             try {
                 localStorage.setItem(LS_USER_ROLE_KEY, finalRole);
             } catch (e) {
@@ -6636,19 +7419,19 @@ document.addEventListener("DOMContentLoaded", async () => {
             updateAuthUI();
 
 
-            // 🔁 توجيه حسب الدور
+            // Route by role.
             if (finalRole === "teacher") {
-                // نزامن بيانات الطلاب من السحابة ونفتح Teacher Dashboard
+                // Ù†Ø²Ø§من Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ø·Ù„Ø§Ø¨ من Ø§Ù„Ø³Ø­Ø§Ø¨Ø© ÙˆÙ†ÙØªØ­ Teacher Dashboard
                 await syncTeacherStudentsFromCloud();
                 renderStudents();
                 renderTeacherPicker();
                 goToTeacherDashboard();
             } else {
                 // STUDENT:
-                // نحمّل بيانات الطالب / تقدمه من السحابة (لو عندك هذه الدالة)
+                // Ù†Ø­مّل Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ø·Ø§Ù„Ø¨ / ØªÙ‚Ø¯مه من Ø§Ù„Ø³Ø­Ø§Ø¨Ø© (Ù„Ùˆ Ø¹Ù†Ø¯Ùƒ Ù‡Ø°ه Ø§Ù„Ø¯Ø§Ù„Ø©)
                 await loadStudentProgressFromCloud?.();
 
-                // نربط الطالب الحالي بـ currentStudentId
+                // Ù†Ø±Ø¨Ø· Ø§Ù„Ø·Ø§Ù„Ø¨ Ø§Ù„Ø­Ø§لي Ø¨Ù€ currentStudentId
                 appState.students = [
                     {
                         id: appState.currentUser.uid,
@@ -6661,16 +7444,16 @@ document.addEventListener("DOMContentLoaded", async () => {
                 ];
                 appState.currentStudentId = appState.currentUser.uid;
 
-                // مباشرة نفتح صفحة الوحدات
+                // Ù…Ø¨Ø§Ø´Ø±Ø© Ù†ÙØªØ­ ØµÙØ­Ø© Ø§Ù„ÙˆØ­Ø¯Ø§Øª
                 goToLevels();
             }
         } catch (err) {
             console.error("Auth error:", err);
             if (errorBox) {
                 if (err.code === "auth/wrong-password" || err.code === "auth/invalid-login-credentials") {
-                    errorBox.textContent = "كلمة السر غير صحيحة. حاولي مرة ثانية.";
+                    errorBox.textContent = "Incorrect password. Please try again.";
                 } else {
-                    errorBox.textContent = "مشكلة في تسجيل الدخول: " + err.message;
+                    errorBox.textContent = "Login problem: " + err.message;
                 }
             } else {
                 alert("Auth error: " + err.message);
@@ -6766,7 +7549,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         createStudentForm.addEventListener("submit", async (e) => {
             e.preventDefault();
 
-            // تأكيد أن المستخدم الحالي مدرّس
+            // ØªØ£ÙƒÙŠØ¯ Ø£ن Ø§Ù„Ù…Ø³ØªØ®Ø¯م Ø§Ù„Ø­Ø§لي Ù…Ø¯Ø±Ù‘Ø³
             if (!appState.currentUser || appState.currentUser.role !== "teacher") {
                 alert("Only teachers can create students.");
                 return;
@@ -6816,7 +7599,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     return;
                 }
 
-                // 🧑‍🎓 إنشاء المستخدم الجديد باستخدام الـ secondary auth
+                // Create the new user with secondary auth.
                 await createStudentAccount({
                     db,
                     firebase,
@@ -6826,7 +7609,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     password,
                 });
 
-                // تنظيف الحقول
+                // ØªÙ†Ø¸ÙŠÙ Ø§Ù„Ø­Ù‚Ùˆل
                 emailEl.value = "";
                 passwordEl.value = "";
 
@@ -6989,3 +7772,6 @@ function toast(message) {
 
 // ---- Expose key functions to window for cross-module access ----
 try { Object.assign(window, { saveLessonToLS, toast, renderLesson, renderLevels }); } catch (e) { }
+
+
+
