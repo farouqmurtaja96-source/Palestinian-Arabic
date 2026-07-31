@@ -21,28 +21,35 @@ import { lessonId as preIntermediateFinalId, lesson as preIntermediateFinal } fr
 import { lessonId as intermediateReview3Id, lesson as intermediateReview3 } from './review/intermediateReview3.js';
 import { lessonId as intermediateFinalId, lesson as intermediateFinal } from './review/intermediateFinal.js';
 import { lessonId as placementTestId, lesson as placementTest } from './review/placementTest.js';
+import { practiceChallengeOverrides } from '../practiceChallengeOverrides.js';
+
+const withPracticeChallenge = (id, lesson) => {
+  const override = practiceChallengeOverrides[id];
+  if (!override) return lesson;
+  return { ...lesson, practice: { ...lesson.practice, ...override } };
+};
 
 export const defaultLessons = {
-  [greetingsId]: greetings,
+  [greetingsId]: withPracticeChallenge(greetingsId, greetings),
   [fooddrinkId]: fooddrink,
-  [familyId]: family,
-  [transportationId]: transportation,
-  [weathersmalltalkId]: weathersmalltalk,
-  [apartmentId]: apartment,
-  [workstudyId]: workstudy,
-  [dailyId]: dailyRoutine,
-  [healthId]: health,
-  [complaintsId]: complaints,
-  [shoppingId]: shopping,
-  [feelingsId]: feelings,
-  [plansId]: plans,
-  [hobbiesId]: hobbies,
-  [opinionsId]: opinions,
-  [beginnerReview1Id]: beginnerReview1,
-  [beginnerFinalId]: beginnerFinal,
-  [preIntermediateReview2Id]: preIntermediateReview2,
-  [preIntermediateFinalId]: preIntermediateFinal,
-  [intermediateReview3Id]: intermediateReview3,
-  [intermediateFinalId]: intermediateFinal,
+  [familyId]: withPracticeChallenge(familyId, family),
+  [transportationId]: withPracticeChallenge(transportationId, transportation),
+  [weathersmalltalkId]: withPracticeChallenge(weathersmalltalkId, weathersmalltalk),
+  [apartmentId]: withPracticeChallenge(apartmentId, apartment),
+  [workstudyId]: withPracticeChallenge(workstudyId, workstudy),
+  [dailyId]: withPracticeChallenge(dailyId, dailyRoutine),
+  [healthId]: withPracticeChallenge(healthId, health),
+  [complaintsId]: withPracticeChallenge(complaintsId, complaints),
+  [shoppingId]: withPracticeChallenge(shoppingId, shopping),
+  [feelingsId]: withPracticeChallenge(feelingsId, feelings),
+  [plansId]: withPracticeChallenge(plansId, plans),
+  [hobbiesId]: withPracticeChallenge(hobbiesId, hobbies),
+  [opinionsId]: withPracticeChallenge(opinionsId, opinions),
+  [beginnerReview1Id]: withPracticeChallenge(beginnerReview1Id, beginnerReview1),
+  [beginnerFinalId]: withPracticeChallenge(beginnerFinalId, beginnerFinal),
+  [preIntermediateReview2Id]: withPracticeChallenge(preIntermediateReview2Id, preIntermediateReview2),
+  [preIntermediateFinalId]: withPracticeChallenge(preIntermediateFinalId, preIntermediateFinal),
+  [intermediateReview3Id]: withPracticeChallenge(intermediateReview3Id, intermediateReview3),
+  [intermediateFinalId]: withPracticeChallenge(intermediateFinalId, intermediateFinal),
   [placementTestId]: placementTest,
 };
