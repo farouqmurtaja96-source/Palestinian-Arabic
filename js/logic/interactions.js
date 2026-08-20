@@ -3884,6 +3884,7 @@ function renderDialogueTab(container, lesson) {
     const controls = document.createElement("div");
     controls.style.display = "flex";
     controls.style.gap = "6px";
+    controls.style.flexWrap = "wrap";
 
     const btnToggleEnglish = document.createElement("button");
     btnToggleEnglish.className = "btn btn--ghost btn--sm";
@@ -3902,10 +3903,18 @@ function renderDialogueTab(container, lesson) {
     btnDone.textContent = "Mark Dialogue as Done";
     btnDone.addEventListener("click", () => setStudentProgressField("dialogue", true));
 
+    const dialogueQuestions = safeArr(lesson?.dialogue?.questions);
+    const btnToggleQuestions = document.createElement("button");
+    btnToggleQuestions.className = "btn btn--ghost btn--sm";
+    btnToggleQuestions.textContent = "Dialogue Questions";
+    btnToggleQuestions.setAttribute("aria-haspopup", "dialog");
+    btnToggleQuestions.hidden = dialogueQuestions.length === 0;
+
     controls.appendChild(btnToggleArabic);
     controls.appendChild(btnToggleEnglish);
     controls.appendChild(btnToggleArabeezy);
     controls.appendChild(btnDone);
+    controls.appendChild(btnToggleQuestions);
 
     header.appendChild(title);
     header.appendChild(controls);
@@ -3960,6 +3969,85 @@ function renderDialogueTab(container, lesson) {
     layout.appendChild(enCol);
     layout.appendChild(arCol);
 
+    let questionsModal = null;
+    let questionsSection = null;
+    let closeQuestionsButton = null;
+    if (dialogueQuestions.length) {
+        questionsModal = document.createElement("div");
+        questionsModal.className = "dialogue-questions-modal";
+        questionsModal.hidden = true;
+        questionsModal.setAttribute("role", "dialog");
+        questionsModal.setAttribute("aria-modal", "true");
+        questionsModal.setAttribute("aria-labelledby", "dialogueQuestionsTitle");
+
+        const questionsBackdrop = document.createElement("button");
+        questionsBackdrop.type = "button";
+        questionsBackdrop.className = "dialogue-questions-modal__backdrop";
+        questionsBackdrop.setAttribute("aria-label", "Close dialogue questions");
+
+        questionsSection = document.createElement("section");
+        questionsSection.className = "dialogue-questions";
+        questionsSection.id = "dialogueQuestionsPanel";
+        btnToggleQuestions.setAttribute("aria-controls", questionsSection.id);
+
+        closeQuestionsButton = document.createElement("button");
+        closeQuestionsButton.type = "button";
+        closeQuestionsButton.className = "dialogue-questions__close";
+        closeQuestionsButton.textContent = "×";
+        closeQuestionsButton.setAttribute("aria-label", "Close dialogue questions");
+        questionsSection.appendChild(closeQuestionsButton);
+
+        const questionsTitle = document.createElement("h5");
+        questionsTitle.className = "dialogue-questions__title";
+        questionsTitle.id = "dialogueQuestionsTitle";
+        questionsTitle.textContent = "Dialogue Questions";
+        questionsSection.appendChild(questionsTitle);
+
+        const questionsList = document.createElement("ol");
+        questionsList.className = "dialogue-questions__list";
+
+        dialogueQuestions.forEach((question) => {
+            const item = document.createElement("li");
+            item.className = "dialogue-question";
+
+            const arQuestion = document.createElement("div");
+            arQuestion.className = "dialogue-question__ar";
+            arQuestion.dir = "rtl";
+            arQuestion.textContent = question.ar || "";
+            item.appendChild(arQuestion);
+
+            if (question.en) {
+                const enQuestion = document.createElement("div");
+                enQuestion.className = "dialogue-question__en";
+                enQuestion.textContent = question.en;
+                item.appendChild(enQuestion);
+            }
+
+            questionsList.appendChild(item);
+        });
+
+        questionsSection.appendChild(questionsList);
+        questionsModal.appendChild(questionsBackdrop);
+        questionsModal.appendChild(questionsSection);
+
+        const closeQuestionsModal = () => {
+            questionsModal.hidden = true;
+            btnToggleQuestions.focus();
+        };
+
+        closeQuestionsButton.addEventListener("click", closeQuestionsModal);
+        questionsBackdrop.addEventListener("click", closeQuestionsModal);
+        questionsModal.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") closeQuestionsModal();
+        });
+    }
+
+    btnToggleQuestions.addEventListener("click", () => {
+        if (!questionsModal) return;
+        questionsModal.hidden = false;
+        closeQuestionsButton?.focus();
+    });
+
     let englishVisible = true;
     let arabicVisible = true;
     let arabeezyVisible = true;
@@ -3995,6 +4083,9 @@ function renderDialogueTab(container, lesson) {
         arCol.querySelectorAll(".dialogue-text").forEach((el) => {
             el.style.display = arabicVisible ? "" : "none";
         });
+        questionsSection?.querySelectorAll(".dialogue-question__ar").forEach((el) => {
+            el.style.display = arabicVisible ? "" : "none";
+        });
     }
 
     function updateArabeezyVisibility() {
@@ -4006,6 +4097,9 @@ function renderDialogueTab(container, lesson) {
     btnToggleEnglish.addEventListener("click", () => {
         englishVisible = !englishVisible;
         adjustLayout();
+        questionsSection?.querySelectorAll(".dialogue-question__en").forEach((el) => {
+            el.style.display = englishVisible ? "" : "none";
+        });
     });
 
     btnToggleArabic.addEventListener("click", () => {
@@ -4027,6 +4121,7 @@ function renderDialogueTab(container, lesson) {
 
     container.appendChild(header);
     container.appendChild(layout);
+    if (questionsModal) container.appendChild(questionsModal);
 
     if (appState.teacherMode) {
         const note = document.createElement("p");

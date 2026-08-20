@@ -496,6 +496,7 @@ export function buildUnitGenerationPrompt({ unit, level, action, count, difficul
     return [
         "You are helping a Palestinian Arabic teacher build live lesson material.",
         "Dialect target: Palestinian Arabic close to Gaza usage.",
+        "Follow CURRICULUM_STANDARDS_AR.md and curriculum standard version 1.0.0.",
         `Level: ${level.label}`,
         `Unit: ${unit.title}`,
         `Unit function: ${unit.function}`,
@@ -506,7 +507,11 @@ export function buildUnitGenerationPrompt({ unit, level, action, count, difficul
         "Follow the lesson section order from the curriculum blueprint.",
         "For vocabulary, include Arabic, English, Arabeezy, hint, example Arabic sentence, example Arabeezy, example English.",
         "For adjectives, include masculine, feminine, and plural in the hint.",
-        "For verbs, include past, present, future, and command forms in the hint.",
+        "Do not use an unintroduced word in a controlled example.",
+        "A new conjugation of a known verb is allowed only with a complete formHint: base form, used form, person, meaning, and an Arabic and English explanation of the changed prefix/suffix.",
+        "Do not introduce past, future, or command incidentally in a present-tense lesson; teach it explicitly or label it as receptive listening language.",
+        "Use one productive Gaza-Palestinian form per meaning; put regional alternatives in recognitionVariants.",
+        "For verbs, include only the forms required by this lesson's communicative goal.",
         "Keep the content natural, teacher-friendly, and suitable for a foreign student.",
         "Do not auto-save. Return preview content the teacher can approve.",
     ].join("\n");
