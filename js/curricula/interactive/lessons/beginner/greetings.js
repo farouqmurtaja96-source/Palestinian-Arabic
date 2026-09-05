@@ -229,6 +229,30 @@ export const lesson = {
                 exampleEn: "Thank you very much. - You're welcome, no problem.",
             },
             {
+                id: "wala_yhemmak_3ala_rasi",
+                ar: "ولا يهمك، على راسي.",
+                en: "Don’t worry, it’s my pleasure.",
+                enArabeezy: "wala yhemmak, 3ala rasi.",
+                hint: "Very natural Palestinian response. Warm, friendly, and supportive (informal).",
+                exampleAr: "ولا يهمك، على راسي. بأي وقت.",
+                exampleArabeezy: "wala yhemmak, 3ala rasi. bi ay wa2et.",
+                exampleEn: "Don’t worry, it’s my pleasure. Anytime.",
+            }
+
+            ,
+            {
+                id: "law_samaHt",
+                ar: "لَوْ سَمَحْت",
+                en: "please / excuse me",
+                enArabeezy: "law_sama7t / law_sama7ti",
+                hint:
+                    "Polite way to ask for something: ‘please’. Fem لَوْ سَمَحْتِي, plural لَوْ سَمَحْتُوا.",
+                exampleAr: "لَوْ سَمَحْت، عِيد الْجُمْلَة.",
+                exampleArabeezy: "law sama7t, 3eed el-jumle.",
+                exampleEn: "Please repeat the sentence.",
+
+            },
+            {
                 id: "ma3_salama",
                 ar: "مَع السَّلَامَة",
                 en: "Goodbye",

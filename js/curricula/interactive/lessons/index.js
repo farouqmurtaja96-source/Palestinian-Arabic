@@ -24,6 +24,7 @@ import { lessonId as placementTestId, lesson as placementTest } from './review/p
 import { practiceChallengeOverrides } from '../practiceChallengeOverrides.js';
 
 const withPracticeChallenge = (id, lesson) => {
+  if (String(id).startsWith('Review-') || String(id).startsWith('Assessment-')) return lesson;
   const override = practiceChallengeOverrides[id];
   if (!override) return lesson;
   return { ...lesson, practice: { ...lesson.practice, ...override } };
